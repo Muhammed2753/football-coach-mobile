@@ -1,0 +1,28 @@
+{
+  "expo": {
+    "name": "Football Coach Mobile",
+    "slug": "football-coach-mobile",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "assetBundlePatterns": ["**/*"],
+    "plugins": [
+      ["expo-router", {
+        "root": "./app",
+        "origin": "http://localhost"
+      }],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Allow Football Coach to access your photos.",
+          "cameraPermission": "Allow Football Coach to access your camera."
+        }
+      ]
+    ],
+    "scheme": "footballcoach",
+    "platforms": ["ios", "android"],
+    "android": {
+      "package": "com.footballcoach.app"
+    },
+    "owner": "ajai"
+  }
+}
