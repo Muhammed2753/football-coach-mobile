@@ -1,8 +1,56 @@
 // app/HallOfFame.js
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useRef } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, FlatList, Alert } from 'react-native';
 import { useFocusEffect, useRouter } from 'expo-router';
 import { getAllPlayers, deletePlayer, getTotalPlayersCount } from './utils/playerDatabase';
+
+const getRarityColor = (overall) => {
+  if (overall >= 86) return '#D4AF37';
+  if (overall >= 75) return '#FFD700';
+  if (overall >= 65) return '#C0C0C0';
+  return '#CD7F32';
+};
+
+const PlayerItem = React.memo(({ item, onView, onDelete }) => (
+  <TouchableOpacity
+    style={[styles.playerCard, { borderLeftColor: getRarityColor(item.overall || 0), borderLeftWidth: 5 }]}
+    onPress={() => onView(item)}
+  >
+    <View style={styles.playerHeader}>
+      <View>
+        <Text style={styles.playerName}>{item.name || 'Anonymous'}</Text>
+        <Text style={styles.playerInfo}>
+          {item.positions?.[0] || 'CM'} • Age {item.age || 20}
+        </Text>
+      </View>
+      <Text style={[styles.playerRating, { color: getRarityColor(item.overall || 0) }]}>
+        {item.overall || 75}
+      </Text>
+    </View>
+
+    <View style={styles.playerStats}>
+      <View style={styles.stat}>
+        <Text style={styles.statLabel}>Club</Text>
+        <Text style={styles.statValue}>{item.club || 'N/A'}</Text>
+      </View>
+      <View style={styles.stat}>
+        <Text style={styles.statLabel}>Created</Text>
+        <Text style={styles.statValue}>
+          {new Date(item.createdAt || Date.now()).toLocaleDateString()}
+        </Text>
+      </View>
+    </View>
+
+    <View style={styles.actions}>
+      <TouchableOpacity style={styles.viewBtn} onPress={() => onView(item)}>
+        <Text style={styles.btnText}>👁 View</Text>
+      </TouchableOpacity>
+      <TouchableOpacity style={styles.deleteBtn} onPress={() => onDelete(item.id, item.name || 'Player')}>
+        <Text style={styles.btnText}>🗑 Delete</Text>
+      </TouchableOpacity>
+    </View>
+  </TouchableOpacity>
+));
 
 export default function HallOfFame() {
   const router = useRouter();
@@ -11,6 +59,10 @@ export default function HallOfFame() {
   const [filteredPlayers, setFilteredPlayers] = useState([]);
   const [selectedFilter, setSelectedFilter] = useState('all');
   const [sortBy, setSortBy] = useState('recent');
+
+  // Use refs so loadPlayers always reads the latest filter/sort values
+  const filterRef = useRef('all');
+  const sortRef = useRef('recent');
 
   useFocusEffect(
     useCallback(() => {
@@ -24,7 +76,7 @@ export default function HallOfFame() {
       const count = await getTotalPlayersCount();
       setPlayers(allPlayers);
       setTotalCount(count);
-      applyFilters(allPlayers, selectedFilter, sortBy);
+      applyFilters(allPlayers, filterRef.current, sortRef.current);
     } catch (error) {
       console.error('Error loading players:', error);
       Alert.alert('Error', 'Could not load players.');
@@ -33,11 +85,9 @@ export default function HallOfFame() {
 
   const applyFilters = (playersList, filter, sort) => {
     let result = [...playersList];
-
     if (filter !== 'all') {
       result = result.filter(p => p.positions && p.positions[0] === filter);
     }
-
     if (sort === 'rating') {
       result.sort((a, b) => (b.overall || 0) - (a.overall || 0));
     } else if (sort === 'age') {
@@ -45,21 +95,22 @@ export default function HallOfFame() {
     } else {
       result.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
     }
-
     setFilteredPlayers(result);
   };
 
   const handleFilterChange = (filter) => {
+    filterRef.current = filter;
     setSelectedFilter(filter);
-    applyFilters(players, filter, sortBy);
+    applyFilters(players, filter, sortRef.current);
   };
 
   const handleSortChange = (sort) => {
+    sortRef.current = sort;
     setSortBy(sort);
-    applyFilters(players, selectedFilter, sort);
+    applyFilters(players, filterRef.current, sort);
   };
 
-  const handleDelete = (playerId, playerName) => {
+  const handleDelete = useCallback((playerId, playerName) => {
     Alert.alert(
       'Delete Player?',
       `Are you sure you want to delete ${playerName}?`,
@@ -67,92 +118,39 @@ export default function HallOfFame() {
         { text: 'Cancel', style: 'cancel' },
         {
           text: 'Delete',
+          style: 'destructive',
           onPress: async () => {
             await deletePlayer(playerId);
             loadPlayers();
             Alert.alert('Success', 'Player deleted!');
           },
-          style: 'destructive',
         },
       ]
     );
-  };
+  }, []);
 
-  const handleViewPlayer = (playerData) => {
+  const handleViewPlayer = useCallback((playerData) => {
     router.push({
       pathname: '/PlayerCardScreen',
-      params: { data: JSON.stringify(playerData) }
+      params: { data: JSON.stringify(playerData) },
     });
-  };
+  }, []);
 
-  const getRarityColor = (overall) => {
-    if (overall >= 86) return '#D4AF37';
-    if (overall >= 75) return '#FFD700';
-    if (overall >= 65) return '#C0C0C0';
-    return '#CD7F32';
-  };
+  const renderItem = useCallback(({ item }) => (
+    <PlayerItem item={item} onView={handleViewPlayer} onDelete={handleDelete} />
+  ), [handleViewPlayer, handleDelete]);
 
-  const PlayerItem = ({ item }) => (
-    <TouchableOpacity 
-      style={[styles.playerCard, { borderLeftColor: getRarityColor(item.overall || 0), borderLeftWidth: 5 }]}
-      onPress={() => handleViewPlayer(item)}
-    >
-      <View style={styles.playerHeader}>
-        <View>
-          <Text style={styles.playerName}>{item.name || 'Anonymous'}</Text>
-          <Text style={styles.playerInfo}>
-            {item.positions?.[0] || 'CM'} • Age {item.age || 20}
-          </Text>
-        </View>
-        <Text style={[styles.playerRating, { color: getRarityColor(item.overall || 0) }]}>
-          {item.overall || 75}
-        </Text>
-      </View>
-
-      <View style={styles.playerStats}>
-        <View style={styles.stat}>
-          <Text style={styles.statLabel}>Club</Text>
-          <Text style={styles.statValue}>{item.club || 'N/A'}</Text>
-        </View>
-        <View style={styles.stat}>
-          <Text style={styles.statLabel}>Created</Text>
-          <Text style={styles.statValue}>
-            {new Date(item.createdAt || Date.now()).toLocaleDateString()}
-          </Text>
-        </View>
-      </View>
-
-      <View style={styles.actions}>
-        <TouchableOpacity 
-          style={styles.viewBtn}
-          onPress={() => handleViewPlayer(item)}
-        >
-          <Text style={styles.btnText}>👁 View</Text>
-        </TouchableOpacity>
-        <TouchableOpacity 
-          style={styles.deleteBtn}
-          onPress={() => handleDelete(item.id, item.name || 'Player')}
-        >
-          <Text style={styles.btnText}>🗑 Delete</Text>
-        </TouchableOpacity>
-      </View>
-    </TouchableOpacity>
-  );
-
-  const EmptyComponent = () => (
+  const EmptyComponent = useCallback(() => (
     <View style={styles.emptyState}>
       <Text style={styles.emptyText}>📭 No players found</Text>
       <Text style={styles.emptySubtext}>
         {selectedFilter !== 'all' ? `No ${selectedFilter} players found` : 'Create your first player to get started!'}
       </Text>
-      <TouchableOpacity 
-        style={styles.createBtn}
-        onPress={() => router.push('/ProfileForm')}
-      >
+      <TouchableOpacity style={styles.createBtn} onPress={() => router.push('/ProfileForm')}>
         <Text style={styles.createBtnText}>➕ Create Player</Text>
       </TouchableOpacity>
     </View>
-  );
+  ), [selectedFilter]);
 
   return (
     <View style={styles.container}>
@@ -203,7 +201,7 @@ export default function HallOfFame() {
       <FlatList
         data={filteredPlayers}
         keyExtractor={item => item.id}
-        renderItem={({ item }) => <PlayerItem item={item} />}
+        renderItem={renderItem}
         ListEmptyComponent={EmptyComponent}
         contentContainerStyle={styles.listContainer}
         style={styles.flatList}
