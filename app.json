@@ -1,28 +1,68 @@
 {
   "expo": {
-    "name": "Football Coach Mobile",
+    "name": "Football Coach",
     "slug": "football-coach-mobile",
     "version": "1.0.0",
     "orientation": "portrait",
-    "assetBundlePatterns": ["**/*"],
+    "icon": "./assets/images/icon.png",
+    "userInterfaceStyle": "dark",
+    "splash": {
+      "image": "./assets/images/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#0d1b2a"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "plugins": [
-      ["expo-router", {
-        "root": "./app",
-        "origin": "http://localhost"
-      }],
+      "expo-router",
       [
         "expo-image-picker",
         {
-          "photosPermission": "Allow Football Coach to access your photos.",
-          "cameraPermission": "Allow Football Coach to access your camera."
+          "photosPermission": "Allow Football Coach to access your photos to set your player profile picture.",
+          "cameraPermission": "Allow Football Coach to access your camera to take a profile picture."
         }
-      ]
+      ],
+      [
+        "react-native-google-mobile-ads",
+        {
+          "androidAppId": "ca-app-pub-3609023299103795~9714265148",
+          "iosAppId": "ca-app-pub-3609023299103795~9714265148",
+          "userTrackingPermission": "This allows us to deliver personalized ads to you."
+        }
+      ],
+      "expo-font",
+      "expo-image",
+      "expo-sharing",
+      "expo-web-browser"
     ],
     "scheme": "footballcoach",
-    "platforms": ["ios", "android"],
     "android": {
-      "package": "com.footballcoach.app"
+      "package": "com.zeedain14.footballcoachmobile",
+      "versionCode": 1,
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/images/android-icon-foreground.png",
+        "backgroundColor": "#0d1b2a"
+      },
+      "permissions": [
+        "INTERNET",
+        "ACCESS_NETWORK_STATE"
+      ]
     },
-    "owner": "ajai"
+    "ios": {
+      "bundleIdentifier": "com.zeedain14.footballcoachmobile",
+      "infoPlist": {
+        "NSUserTrackingUsageDescription": "This allows us to deliver personalized ads to you."
+      }
+    },
+    "web": {
+      "favicon": "./assets/images/favicon.png"
+    },
+    "owner": "zeedain14",
+    "extra": {
+      "eas": {
+        "projectId": "b6b2547d-284d-4bc3-9237-fa1eeee0d4e5"
+      }
+    }
   }
 }

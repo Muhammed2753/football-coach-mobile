@@ -1,5 +1,7 @@
 // app/utils/vipSystem.js
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { auth, db } from './firebaseConfig';
+import { doc, getDoc } from 'firebase/firestore';
 
 const VIP_KEY = 'football_coach_vip_status';
 const VIP_EXPIRY_KEY = 'football_coach_vip_expiry';
@@ -9,17 +11,17 @@ const VIP_EXPIRY_KEY = 'football_coach_vip_expiry';
  */
 export const VIP_PLANS = {
   FREE: {
-    name: 'Free Player',
+    name: 'Free Coach',
     price: 'FREE',
     duration: 'Forever',
     features: [
-      '✅ Create unlimited players',
-      '✅ Save 5 players',
-      '✅ Basic player card',
-      '✅ Standard themes',
-      '❌ No AI Coach',
-      '❌ No comparison mode',
-      '❌ No PDF export',
+      '✅ Create up to 3 players',
+      '✅ Basic player stats',
+      '✅ Simple player cards',
+      '✅ 2 team formations',
+      '❌ No advanced analytics',
+      '❌ No team comparison',
+      '❌ Limited training drills',
     ],
     color: '#CD7F32',
   },
@@ -29,61 +31,67 @@ export const VIP_PLANS = {
     duration: '/month',
     features: [
       '✅ Create unlimited players',
-      '✅ Save UNLIMITED players',
-      '✅ Premium player card designs',
-      '✅ 5 custom themes',
-      '✅ AI Coach recommendations',
-      '✅ Side-by-side comparison',
-      '✅ Export card to PDF',
+      '✅ Advanced player statistics',
+      '✅ Performance tracking',
+      '✅ 8 team formations',
+      '✅ Training drill library',
+      '✅ Player comparison tool',
+      '✅ Match analysis',
       '✅ Ad-free experience',
-      '✅ Priority support',
-      '✅ Weekly training tips',
     ],
     color: '#FFD700',
   },
   YEARLY: {
-    name: 'Elite Champion',
-    price: '$39.99',
-    duration: '/year (Save 33%)',
+    name: 'Elite Coach',
+    price: '$24.99',
+    duration: '/year (Save 30%)',
     features: [
-      '✅ ALL Pro Coach features',
-      '✅ 10 custom themes',
-      '✅ AI Coach (unlimited)',
-      '✅ Career timeline (5 years)',
-      '✅ Advanced comparison (3 players)',
-      '✅ Export as PNG/PDF',
-      '✅ VIP badge on cards',
-      '✅ Exclusive drills',
-      '✅ Personal mentor access',
-      '✅ Early access to new features',
+      '✅ All Pro Coach features',
+      '✅ Season planning tools',
+      '✅ Team chemistry analysis',
+      '✅ Injury tracking system',
+      '✅ Custom formation builder',
+      '✅ Export team reports',
+      '✅ Multi-team management',
+      '✅ Priority support',
     ],
     color: '#D4AF37',
   },
 };
 
 /**
- * Check if user is VIP
+ * Check if user is VIP - checks Firestore first, falls back to AsyncStorage
  */
 export const isUserVIP = async () => {
   try {
-    const vipStatus = await AsyncStorage.getItem(VIP_KEY);
-    const expiry = await AsyncStorage.getItem(VIP_EXPIRY_KEY);
-    
-    if (!vipStatus || vipStatus === 'false') return false;
-    
-    if (expiry) {
-      const expiryDate = new Date(expiry);
-      if (new Date() > expiryDate) {
-        // VIP expired
-        await AsyncStorage.setItem(VIP_KEY, 'false');
-        return false;
+    const userId = auth?.currentUser?.uid;
+
+    if (userId && db) {
+      const snap = await getDoc(doc(db, 'users', userId));
+      if (snap.exists()) {
+        const data = snap.data();
+        if (!data.isVIP) return false;
+        if (data.vipExpiry && new Date() > new Date(data.vipExpiry)) return false;
+        // Cache result locally
+        await AsyncStorage.setItem('isVIP', 'true');
+        return true;
       }
     }
-    
+
+    // Fallback to local cache
+    const cached = await AsyncStorage.getItem('isVIP');
+    const expiry = await AsyncStorage.getItem(VIP_EXPIRY_KEY);
+    if (cached !== 'true') return false;
+    if (expiry && new Date() > new Date(expiry)) {
+      await AsyncStorage.setItem('isVIP', 'false');
+      return false;
+    }
     return true;
   } catch (error) {
     console.error('Error checking VIP status:', error);
-    return false;
+    // Last resort: use cache
+    const cached = await AsyncStorage.getItem('isVIP');
+    return cached === 'true';
   }
 };
 
@@ -107,11 +115,13 @@ export const activateVIP = async (planType, days = 30) => {
   try {
     const expiryDate = new Date();
     expiryDate.setDate(expiryDate.getDate() + days);
-    
+
+    // Set both keys for compatibility
+    await AsyncStorage.setItem('isVIP', 'true');
     await AsyncStorage.setItem(VIP_KEY, 'true');
     await AsyncStorage.setItem(VIP_EXPIRY_KEY, expiryDate.toISOString());
     await AsyncStorage.setItem('vip_tier', planType);
-    
+
     return { success: true, expiryDate };
   } catch (error) {
     console.error('Error activating VIP:', error);
@@ -125,9 +135,9 @@ export const activateVIP = async (planType, days = 30) => {
 export const canSaveMorePlayers = async (totalPlayers) => {
   const isVIP = await isUserVIP();
   
-  if (isVIP) return true; // Unlimited
+  if (isVIP) return true; // Unlimited for VIP
   
-  return totalPlayers < 5; // Free: max 5
+  return totalPlayers < 3; // Free: max 3 players
 };
 
 /**
@@ -135,7 +145,7 @@ export const canSaveMorePlayers = async (totalPlayers) => {
  */
 export const getMaxSavedPlayers = async () => {
   const isVIP = await isUserVIP();
-  return isVIP ? 999 : 5;
+  return isVIP ? 999 : 3; // Free users get 3 players max
 };
 
 /**

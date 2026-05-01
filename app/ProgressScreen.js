@@ -1,102 +1,132 @@
 // app/ProgressScreen.js
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Modal } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { logTrainingSession, calculateProgress, checkMilestones } from './utils/TrainingEngine';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function ProgressScreen() {
   const router = useRouter();
-  const { playerData, plan } = useLocalSearchParams();
+  const { playerData, plan, data } = useLocalSearchParams();
   
-  // Safety check
-  if (!playerData || !plan) {
-    return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#0d1b2a' }}>
-        <Text style={{ color: '#f1faee', fontSize: 16 }}>Loading progress data...</Text>
-      </View>
-    );
-  }
-  
-  const player = JSON.parse(playerData);
-  const trainingPlan = JSON.parse(plan);
-  
+  const [player, setPlayer] = useState(null);
+  const [trainingPlan, setTrainingPlan] = useState(null);
   const [currentWeek, setCurrentWeek] = useState(1);
   const [completedSessions, setCompletedSessions] = useState({});
   const [progressData, setProgressData] = useState({});
-  const [milestones, setMilestones] = useState([]);
-  const [showWeeklyDetails, setShowWeeklyDetails] = useState(false);
+  const [loading, setLoading] = useState(true);
 
-  // Initialize progress tracking
   useEffect(() => {
-    const initialProgress = {};
-    Object.keys(player.attrs).forEach(attr => {
-      initialProgress[attr] = {
-        initial: player.attrs[attr],
-        current: player.attrs[attr],
-        logs: [],
+    const loadData = async () => {
+      try {
+        let playerObj = null;
+        let planObj = null;
+
+        // Try to get data from params
+        if (playerData && plan) {
+          playerObj = JSON.parse(playerData);
+          planObj = JSON.parse(plan);
+        } else if (data) {
+          playerObj = JSON.parse(data);
+        } else {
+          // Try to load from AsyncStorage
+          const savedPlayer = await AsyncStorage.getItem('trainingPlayerData');
+          const savedPlan = await AsyncStorage.getItem('currentTrainingPlan');
+          
+          if (savedPlayer) playerObj = JSON.parse(savedPlayer);
+          if (savedPlan) planObj = JSON.parse(savedPlan);
+        }
+
+        if (playerObj) {
+          setPlayer(playerObj);
+          
+          // Initialize progress data
+          const attrs = playerObj.attrs || playerObj;
+          const initialProgress = {};
+          Object.keys(attrs).forEach(attr => {
+            initialProgress[attr] = {
+              initial: attrs[attr] || 0,
+              current: attrs[attr] || 0,
+              logs: [],
+            };
+          });
+          setProgressData(initialProgress);
+        }
+
+        if (planObj) {
+          setTrainingPlan(planObj);
+        }
+
+        // Load saved progress
+        const savedProgress = await AsyncStorage.getItem('trainingProgress');
+        if (savedProgress) {
+          const progress = JSON.parse(savedProgress);
+          setCompletedSessions(progress.completedSessions || {});
+          setCurrentWeek(progress.currentWeek || 1);
+          if (progress.progressData) {
+            setProgressData(progress.progressData);
+          }
+        }
+
+      } catch (error) {
+        console.error('Error loading progress data:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadData();
+  }, [playerData, plan, data]);
+
+  const saveProgress = async () => {
+    try {
+      const progressToSave = {
+        completedSessions,
+        currentWeek,
+        progressData,
+        lastUpdated: new Date().toISOString()
       };
-    });
-    setProgressData(initialProgress);
-  }, []);
+      await AsyncStorage.setItem('trainingProgress', JSON.stringify(progressToSave));
+    } catch (error) {
+      console.error('Error saving progress:', error);
+    }
+  };
 
   const completeSession = (week) => {
-    const weekPlan = trainingPlan.schedule[week - 1];
-    const intensity = trainingPlan.intensity === 'light' ? 0.5 : trainingPlan.intensity === 'moderate' ? 1 : trainingPlan.intensity === 'intense' ? 1.5 : 2;
-    
-    // Log the session
-    const sessionLog = logTrainingSession(
-      player.id || 'player',
-      week,
-      weekPlan.focus.key,
-      intensity,
-      true
-    );
+    if (!trainingPlan || !trainingPlan.schedule) return;
 
-    // Update completed sessions
-    setCompletedSessions({
+    const weekPlan = trainingPlan.schedule[week - 1];
+    if (!weekPlan) return;
+
+    // Mark session as completed
+    const newCompletedSessions = {
       ...completedSessions,
       [week]: true,
-    });
+    };
+    setCompletedSessions(newCompletedSessions);
 
     // Update progress for focused attribute
     const updatedProgress = { ...progressData };
     const attr = weekPlan.focus.key;
-    const oldValue = updatedProgress[attr].current;
-    const newValue = calculateProgress(oldValue, 1, intensity);
-    updatedProgress[attr].current = newValue;
-    updatedProgress[attr].logs.push(sessionLog);
     
-    // Also slightly improve nearby related attributes
-    improveSupportingAttributes(updatedProgress, attr, intensity * 0.5);
-    
-    setProgressData(updatedProgress);
-
-    // Check for milestones
-    const newMilestones = checkMilestones(updatedProgress, progressData);
-    if (newMilestones.length > 0) {
-      setMilestones([...milestones, ...newMilestones]);
+    if (updatedProgress[attr]) {
+      const oldValue = updatedProgress[attr].current;
+      const improvement = trainingPlan.intensity === 'light' ? 0.5 : 
+                         trainingPlan.intensity === 'moderate' ? 1 : 
+                         trainingPlan.intensity === 'intense' ? 1.5 : 2;
+      
+      const newValue = Math.min(99, oldValue + improvement);
+      updatedProgress[attr].current = newValue;
+      updatedProgress[attr].logs.push({
+        week,
+        improvement,
+        date: new Date().toISOString()
+      });
     }
-  };
 
-  const improveSupportingAttributes = (progress, focusAttr, intensity) => {
-    // Improve related attributes slightly
-    const relationships = {
-      acceleration: ['sprintSpeed', 'agility'],
-      sprintSpeed: ['acceleration', 'stamina'],
-      finishing: ['shotPower', 'composure'],
-      dribbling: ['ballControl', 'balance'],
-      crossing: ['accuracy', 'vision'],
-      marking: ['positioning', 'reactions'],
-      strength: ['stamina', 'jumping'],
-    };
+    setProgressData(updatedProgress);
+    saveProgress();
 
-    const related = relationships[focusAttr] || [];
-    related.forEach(relAttr => {
-      if (progress[relAttr]) {
-        const oldVal = progress[relAttr].current;
-        progress[relAttr].current = calculateProgress(oldVal, 1, intensity * 0.3);
-      }
-    });
+    Alert.alert('Session Complete!', `Week ${week} training completed. Keep it up!`);
   };
 
   const getOverallImprovement = () => {
@@ -104,27 +134,72 @@ export default function ProgressScreen() {
     Object.keys(progressData).forEach(attr => {
       totalImprovement += progressData[attr].current - progressData[attr].initial;
     });
-    return totalImprovement;
+    return Math.round(totalImprovement * 10) / 10;
   };
 
   const getCompletionPercentage = () => {
+    if (!trainingPlan || !trainingPlan.schedule) return 0;
     const totalSessions = trainingPlan.schedule.length;
     const completed = Object.keys(completedSessions).length;
     return Math.round((completed / totalSessions) * 100);
   };
 
-  const weekPlan = trainingPlan.schedule[currentWeek - 1];
+  if (loading) {
+    return (
+      <View style={styles.center}>
+        <Text style={styles.loadingText}>Loading progress...</Text>
+      </View>
+    );
+  }
+
+  if (!player) {
+    return (
+      <View style={styles.container}>
+        <Text style={styles.title}>📊 Track Progress</Text>
+        <View style={styles.noDataCard}>
+          <Text style={styles.noDataTitle}>No Training Plan</Text>
+          <Text style={styles.noDataText}>Create a training plan to start tracking progress</Text>
+          <TouchableOpacity 
+            onPress={() => router.push('/TrainingPlanScreen')} 
+            style={styles.createButton}
+          >
+            <Text style={styles.createButtonText}>📋 Create Training Plan</Text>
+          </TouchableOpacity>
+        </View>
+        <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
+          <Text style={styles.backText}>← Back</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
+
+  const currentWeekPlan = trainingPlan?.schedule?.[currentWeek - 1];
   const isWeekCompleted = completedSessions[currentWeek];
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      {/* Header */}
       <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
         <Text style={styles.backText}>← Back</Text>
       </TouchableOpacity>
 
-      <Text style={styles.title}>🏋️ Training Progress</Text>
+      <Text style={styles.title}>📊 Training Progress</Text>
       <Text style={styles.subtitle}>{player.name} - Week {currentWeek}/12</Text>
+
+      {/* Progress Overview */}
+      <View style={styles.statsGrid}>
+        <View style={styles.statCard}>
+          <Text style={styles.statLabel}>Completion</Text>
+          <Text style={styles.statValue}>{getCompletionPercentage()}%</Text>
+        </View>
+        <View style={styles.statCard}>
+          <Text style={styles.statLabel}>Improvement</Text>
+          <Text style={styles.statValue}>+{getOverallImprovement()}</Text>
+        </View>
+        <View style={styles.statCard}>
+          <Text style={styles.statLabel}>Week</Text>
+          <Text style={styles.statValue}>{currentWeek}/12</Text>
+        </View>
+      </View>
 
       {/* Progress Bar */}
       <View style={styles.progressSection}>
@@ -139,44 +214,24 @@ export default function ProgressScreen() {
         <Text style={styles.progressText}>{getCompletionPercentage()}% Complete</Text>
       </View>
 
-      {/* Overall Stats */}
-      <View style={styles.statsGrid}>
-        <View style={styles.statCard}>
-          <Text style={styles.statLabel}>Total Improvement</Text>
-          <Text style={styles.statValue}>{getOverallImprovement()}</Text>
-        </View>
-        <View style={styles.statCard}>
-          <Text style={styles.statLabel}>Weeks Done</Text>
-          <Text style={styles.statValue}>{Object.keys(completedSessions).length}</Text>
-        </View>
-        <View style={styles.statCard}>
-          <Text style={styles.statLabel}>Milestones</Text>
-          <Text style={styles.statValue}>{milestones.length}</Text>
-        </View>
-      </View>
-
-      {/* Current Week Plan */}
-      {weekPlan && (
+      {/* Current Week */}
+      {currentWeekPlan && (
         <View style={styles.weekSection}>
           <Text style={styles.weekTitle}>📅 This Week's Focus</Text>
           <View style={[styles.weekCard, isWeekCompleted && styles.weekCardCompleted]}>
             <Text style={styles.focusAttr}>
-              {weekPlan.focus.key.replace(/([A-Z])/g, ' $1').trim().toUpperCase()}
+              {currentWeekPlan.focus.key.replace(/([A-Z])/g, ' $1').trim().toUpperCase()}
             </Text>
             <Text style={styles.focusLevel}>
-              Current: {progressData[weekPlan.focus.key]?.current || weekPlan.focus.value}/99
+              Current: {progressData[currentWeekPlan.focus.key]?.current || currentWeekPlan.focus.value}/99
             </Text>
 
-            <Text style={styles.exercisesTitle}>Exercises:</Text>
-            {weekPlan.session.exercises.map((exercise, idx) => (
+            <Text style={styles.exercisesTitle}>This Week's Training:</Text>
+            {currentWeekPlan.session.exercises.map((exercise, idx) => (
               <Text key={idx} style={styles.exercise}>
                 • {exercise}
               </Text>
             ))}
-
-            <Text style={styles.sessionInfo}>
-              {weekPlan.session.duration} | {weekPlan.session.reps} sessions
-            </Text>
 
             <TouchableOpacity
               onPress={() => completeSession(currentWeek)}
@@ -184,14 +239,15 @@ export default function ProgressScreen() {
                 styles.completeButton,
                 isWeekCompleted && styles.completeButtonDone,
               ]}
+              disabled={isWeekCompleted}
             >
               <Text style={styles.completeButtonText}>
-                {isWeekCompleted ? '✓ Week Complete!' : '✓ Mark as Complete'}
+                {isWeekCompleted ? '✓ Week Complete!' : '✓ Complete This Week'}
               </Text>
             </TouchableOpacity>
           </View>
 
-          {/* Navigation */}
+          {/* Week Navigation */}
           <View style={styles.weekNavigation}>
             <TouchableOpacity
               onPress={() => setCurrentWeek(Math.max(1, currentWeek - 1))}
@@ -199,13 +255,6 @@ export default function ProgressScreen() {
               style={[styles.navButton, currentWeek === 1 && styles.navButtonDisabled]}
             >
               <Text style={styles.navButtonText}>← Previous</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              onPress={() => setShowWeeklyDetails(!showWeeklyDetails)}
-              style={styles.detailsButton}
-            >
-              <Text style={styles.detailsButtonText}>View All Weeks</Text>
             </TouchableOpacity>
 
             <TouchableOpacity
@@ -219,160 +268,83 @@ export default function ProgressScreen() {
         </View>
       )}
 
-      {/* Progress Summary */}
-      <Text style={styles.summaryTitle}>📊 Attribute Progress</Text>
-      {trainingPlan.focus.map(weakness => {
-        const prog = progressData[weakness.key];
-        if (!prog) return null;
+      {/* Attribute Progress */}
+      {trainingPlan && trainingPlan.focus && (
+        <View style={styles.attributesSection}>
+          <Text style={styles.attributesTitle}>📈 Attribute Progress</Text>
+          {trainingPlan.focus.map(weakness => {
+            const prog = progressData[weakness.key];
+            if (!prog) return null;
 
-        const improvement = prog.current - prog.initial;
-        const improvementPercent = Math.round((improvement / 99) * 100);
-
-        return (
-          <View key={weakness.key} style={styles.progressCard}>
-            <View style={styles.progressHeader}>
-              <Text style={styles.progressAttr}>
-                {weakness.key.replace(/([A-Z])/g, ' $1').trim()}
-              </Text>
-              <Text style={[styles.progressValue, improvement > 0 && styles.progressValuePositive]}>
-                {prog.initial} → {prog.current} {improvement > 0 && `(+${improvement})`}
-              </Text>
-            </View>
-            <View style={styles.progressBar}>
-              <View
-                style={[
-                  styles.progressFill,
-                  { width: `${(prog.current / 99) * 100}%` }
-                ]}
-              />
-            </View>
-          </View>
-        );
-      })}
-
-      {/* Milestones */}
-      {milestones.length > 0 && (
-        <View style={styles.milestonesSection}>
-          <Text style={styles.milestonesTitle}>🎉 Milestones Achieved</Text>
-          {milestones.map((milestone, idx) => (
-            <View key={idx} style={styles.milestoneCard}>
-              <Text style={styles.milestoneText}>
-                {milestone.message}
-              </Text>
-            </View>
-          ))}
+            const improvement = prog.current - prog.initial;
+            return (
+              <View key={weakness.key} style={styles.attributeCard}>
+                <View style={styles.attributeHeader}>
+                  <Text style={styles.attributeName}>
+                    {weakness.key.replace(/([A-Z])/g, ' $1').trim()}
+                  </Text>
+                  <Text style={[styles.attributeValue, improvement > 0 && styles.attributeValuePositive]}>
+                    {prog.initial} → {prog.current} {improvement > 0 && `(+${improvement})`}
+                  </Text>
+                </View>
+                <View style={styles.progressBar}>
+                  <View
+                    style={[
+                      styles.progressFill,
+                      { width: `${(prog.current / 99) * 100}%` }
+                    ]}
+                  />
+                </View>
+              </View>
+            );
+          })}
         </View>
       )}
-
-      {/* All Weeks Modal */}
-      <Modal visible={showWeeklyDetails} animationType="slide" transparent={false}>
-        <ScrollView contentContainerStyle={styles.modalContainer}>
-          <TouchableOpacity
-            onPress={() => setShowWeeklyDetails(false)}
-            style={styles.closeButton}
-          >
-            <Text style={styles.closeText}>✕ Close</Text>
-          </TouchableOpacity>
-
-          <Text style={styles.allWeeksTitle}>All 12 Weeks</Text>
-          {trainingPlan.schedule.map((week, idx) => (
-            <View
-              key={idx}
-              style={[
-                styles.weekListCard,
-                completedSessions[week.week] && styles.weekListCardDone,
-              ]}
-            >
-              <View style={styles.weekListHeader}>
-                <Text style={styles.weekListNumber}>Week {week.week}</Text>
-                {completedSessions[week.week] && (
-                  <Text style={styles.weekListDone}>✓ Done</Text>
-                )}
-              </View>
-              <Text style={styles.weekListFocus}>
-                Focus: {week.focus.key.replace(/([A-Z])/g, ' $1').trim()}
-              </Text>
-              <TouchableOpacity
-                onPress={() => {
-                  setCurrentWeek(week.week);
-                  setShowWeeklyDetails(false);
-                }}
-                style={styles.selectWeekButton}
-              >
-                <Text style={styles.selectWeekText}>Select Week</Text>
-              </TouchableOpacity>
-            </View>
-          ))}
-        </ScrollView>
-      </Modal>
     </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
+  center: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#0d1b2a' },
+  loadingText: { color: '#a8dadc', fontSize: 16 },
   container: { padding: 20, backgroundColor: '#0d1b2a', paddingBottom: 40 },
   backButton: { paddingVertical: 8, paddingHorizontal: 12, backgroundColor: '#1b263b', borderRadius: 8, alignSelf: 'flex-start', marginBottom: 16 },
   backText: { color: '#f1faee', fontSize: 14, fontWeight: '600' },
-
   title: { fontSize: 28, fontWeight: 'bold', color: '#f1faee', marginBottom: 4 },
   subtitle: { fontSize: 16, color: '#a8dadc', marginBottom: 20 },
-
-  progressSection: { marginBottom: 24 },
-  progressBar: { height: 12, backgroundColor: '#1b263b', borderRadius: 6, overflow: 'hidden', marginBottom: 8 },
-  progressFill: { height: '100%', backgroundColor: '#4CAF50', borderRadius: 6 },
-  progressText: { color: '#a8dadc', fontSize: 14, fontWeight: '600', textAlign: 'center' },
-
-  statsGrid: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 24 },
+  statsGrid: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 20 },
   statCard: { flex: 1, backgroundColor: '#1b263b', borderRadius: 10, padding: 12, marginHorizontal: 4, alignItems: 'center' },
   statLabel: { color: '#a8dadc', fontSize: 12, marginBottom: 6 },
-  statValue: { color: '#1e88e5', fontSize: 24, fontWeight: 'bold' },
-
-  weekSection: { marginBottom: 24 },
+  statValue: { color: '#1e88e5', fontSize: 20, fontWeight: 'bold' },
+  progressSection: { marginBottom: 20 },
+  progressBar: { height: 10, backgroundColor: '#1b263b', borderRadius: 5, overflow: 'hidden', marginBottom: 8 },
+  progressFill: { height: '100%', backgroundColor: '#4CAF50', borderRadius: 5 },
+  progressText: { color: '#a8dadc', fontSize: 14, fontWeight: '600', textAlign: 'center' },
+  weekSection: { marginBottom: 20 },
   weekTitle: { fontSize: 18, fontWeight: '700', color: '#f1faee', marginBottom: 12 },
   weekCard: { backgroundColor: '#1b263b', borderRadius: 12, padding: 16, borderLeftWidth: 4, borderLeftColor: '#FFD700' },
   weekCardCompleted: { borderLeftColor: '#4CAF50', opacity: 0.8 },
-
   focusAttr: { fontSize: 18, fontWeight: '700', color: '#FFD700', marginBottom: 8 },
   focusLevel: { color: '#a8dadc', fontSize: 14, marginBottom: 12 },
-
   exercisesTitle: { fontSize: 14, fontWeight: '600', color: '#f1faee', marginBottom: 8 },
   exercise: { color: '#a8dadc', fontSize: 13, marginBottom: 4, marginLeft: 8 },
-  sessionInfo: { color: '#a8dadc', fontSize: 12, marginTop: 12, fontStyle: 'italic' },
-
   completeButton: { marginTop: 16, paddingVertical: 12, backgroundColor: '#1e88e5', borderRadius: 8, alignItems: 'center' },
   completeButtonDone: { backgroundColor: '#4CAF50' },
   completeButtonText: { color: '#fff', fontSize: 16, fontWeight: '700' },
-
   weekNavigation: { flexDirection: 'row', justifyContent: 'space-between', marginTop: 16 },
   navButton: { flex: 1, paddingVertical: 10, marginHorizontal: 4, backgroundColor: '#1b263b', borderRadius: 8, alignItems: 'center' },
   navButtonDisabled: { opacity: 0.3 },
   navButtonText: { color: '#f1faee', fontSize: 14, fontWeight: '600' },
-  detailsButton: { flex: 1, paddingVertical: 10, marginHorizontal: 4, backgroundColor: '#1e88e5', borderRadius: 8, alignItems: 'center' },
-  detailsButtonText: { color: '#fff', fontSize: 14, fontWeight: '600' },
-
-  summaryTitle: { fontSize: 18, fontWeight: '700', color: '#f1faee', marginTop: 24, marginBottom: 12 },
-  progressCard: { backgroundColor: '#1b263b', borderRadius: 10, padding: 12, marginBottom: 10 },
-  progressHeader: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 8 },
-  progressAttr: { color: '#f1faee', fontSize: 14, fontWeight: '600' },
-  progressValue: { color: '#a8dadc', fontSize: 14 },
-  progressValuePositive: { color: '#4CAF50', fontWeight: 'bold' },
-
-  milestonesSection: { marginTop: 24 },
-  milestonesTitle: { fontSize: 18, fontWeight: '700', color: '#FFD700', marginBottom: 12 },
-  milestoneCard: { backgroundColor: '#1b263b', borderRadius: 10, padding: 12, marginBottom: 10, borderLeftWidth: 4, borderLeftColor: '#FFD700' },
-  milestoneText: { color: '#f1faee', fontSize: 14, fontWeight: '600' },
-
-  modalContainer: { padding: 20, backgroundColor: '#0d1b2a', paddingBottom: 40 },
-  closeButton: { alignSelf: 'flex-end', paddingVertical: 8, paddingHorizontal: 12, backgroundColor: '#1b263b', borderRadius: 8, marginBottom: 16 },
-  closeText: { color: '#f1faee', fontSize: 14, fontWeight: '600' },
-
-  allWeeksTitle: { fontSize: 24, fontWeight: 'bold', color: '#f1faee', marginBottom: 16 },
-  weekListCard: { backgroundColor: '#1b263b', borderRadius: 10, padding: 12, marginBottom: 10, borderLeftWidth: 4, borderLeftColor: '#a8dadc' },
-  weekListCardDone: { borderLeftColor: '#4CAF50', opacity: 0.7 },
-  weekListHeader: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 6 },
-  weekListNumber: { fontSize: 16, fontWeight: '700', color: '#1e88e5' },
-  weekListDone: { color: '#4CAF50', fontSize: 14, fontWeight: 'bold' },
-  weekListFocus: { color: '#a8dadc', fontSize: 13, marginBottom: 8 },
-  selectWeekButton: { paddingVertical: 8, backgroundColor: '#1e88e5', borderRadius: 6, alignItems: 'center' },
-  selectWeekText: { color: '#fff', fontSize: 12, fontWeight: '600' },
+  attributesSection: { marginTop: 20 },
+  attributesTitle: { fontSize: 18, fontWeight: '700', color: '#f1faee', marginBottom: 12 },
+  attributeCard: { backgroundColor: '#1b263b', borderRadius: 10, padding: 12, marginBottom: 10 },
+  attributeHeader: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 8 },
+  attributeName: { color: '#f1faee', fontSize: 14, fontWeight: '600' },
+  attributeValue: { color: '#a8dadc', fontSize: 14 },
+  attributeValuePositive: { color: '#4CAF50', fontWeight: 'bold' },
+  noDataCard: { backgroundColor: '#1b263b', borderRadius: 12, padding: 20, alignItems: 'center', marginBottom: 20 },
+  noDataTitle: { fontSize: 18, fontWeight: 'bold', color: '#f1faee', marginBottom: 10 },
+  noDataText: { fontSize: 14, color: '#a8dadc', textAlign: 'center', marginBottom: 16 },
+  createButton: { backgroundColor: '#1e88e5', paddingVertical: 12, paddingHorizontal: 20, borderRadius: 8 },
+  createButtonText: { color: '#fff', fontSize: 16, fontWeight: '600' }
 });

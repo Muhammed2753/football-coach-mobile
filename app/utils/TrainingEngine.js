@@ -94,29 +94,64 @@ export const createTrainingPlan = (playerAttrs, weaknesses, intensity = 'moderat
 const generateWeeklySession = (weakness, intensity) => {
   const sessions = {
     diving: {
-      exercises: ['Reflex drills', 'Dive technique', 'Positioning practice'],
+      exercises: [
+        'Diving technique drills (7mlc style)',
+        'Reflex diving with tennis balls', 
+        'Positioning and angle work',
+        'Recovery and second save practice'
+      ],
       duration: `${45 * intensity} mins`,
       reps: Math.ceil(3 * intensity),
+      youtubeChannels: ['7mlc', 'ZTH Training', 'Joner Football'],
+      tips: 'Focus on footwork before diving. Lead with hands, not body.'
     },
     handling: {
-      exercises: ['Ball catching', 'Grip strength', 'One-handed saves'],
+      exercises: [
+        'W-grip catching drills',
+        'High ball collection under pressure',
+        'One-handed saves and parrying',
+        'Distribution after saves'
+      ],
       duration: `${45 * intensity} mins`,
       reps: Math.ceil(3 * intensity),
+      youtubeChannels: ['Joner Football', 'The Modern Goalkeeper'],
+      tips: 'Soft hands, watch the ball into your chest, secure before distributing.'
     },
     kicking: {
-      exercises: ['Distribution kicks', 'Long ball accuracy', 'Footwork'],
+      exercises: [
+        'Goal kicks for accuracy and distance',
+        'Quick distribution throws',
+        'Footwork and kicking technique',
+        'Under pressure distribution'
+      ],
       duration: `${40 * intensity} mins`,
       reps: Math.ceil(2 * intensity),
+      youtubeChannels: ['All Attack', 'Unisport'],
+      tips: 'Accuracy over power. Pick your target before kicking.'
     },
     positioning: {
-      exercises: ['Reading the game', 'Zone coverage', 'Communication'],
+      exercises: [
+        'Angle narrowing drills',
+        'Communication with defense',
+        'Reading the game situations',
+        'Coming off the line timing'
+      ],
       duration: `${50 * intensity} mins`,
       reps: Math.ceil(3 * intensity),
+      youtubeChannels: ['ZTH Training', 'Football Protocol'],
+      tips: 'Stay central, communicate constantly, trust your instincts.'
     },
     reflexes: {
-      exercises: ['Reaction drills', 'Quick hands', 'Eye coordination'],
+      exercises: [
+        'Reaction ball training',
+        'Multiple ball saves',
+        'Close-range shot stopping',
+        'Agility ladder for quick feet'
+      ],
       duration: `${40 * intensity} mins`,
       reps: Math.ceil(4 * intensity),
+      youtubeChannels: ['7mlc', 'The Modern Goalkeeper'],
+      tips: 'Stay relaxed, react naturally, trust your training.'
     },
     acceleration: {
       exercises: ['Sprint starts', 'Explosive power', 'Agility ladder'],

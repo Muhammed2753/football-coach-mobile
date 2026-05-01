@@ -115,7 +115,7 @@ export const searchPlayersByName = async (query) => {
 export const filterPlayersByPosition = async (position) => {
   try {
     const players = await getAllPlayers();
-    return players.filter(p => p.positions[0] === position);
+    return players.filter(p => Array.isArray(p.positions) && p.positions[0] === position);
   } catch (error) {
     console.error('Error filtering players:', error);
     return [];

@@ -1,31 +1,174 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput, Alert, Share } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput, Alert, Share, Linking } from 'react-native';
 import { useRouter } from 'expo-router';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function AnalyticsFeedbackScreen() {
   const router = useRouter();
   const [feedback, setFeedback] = useState('');
   const [rating, setRating] = useState(0);
+  const [votes, setVotes] = useState({
+    multiLanguage: 0,
+    videoTutorials: 0,
+    multiplayer: 0
+  });
+  const [userVotes, setUserVotes] = useState({
+    multiLanguage: false,
+    videoTutorials: false,
+    multiplayer: false
+  });
 
-  const handleSubmitFeedback = () => {
+  const [realStats, setRealStats] = useState({ players: 0, hours: 0, plans: 0 });
+
+  useEffect(() => {
+    loadVotes();
+    loadRealStats();
+  }, []);
+
+  const loadRealStats = async () => {
+    try {
+      const sessions = await AsyncStorage.getItem('training_sessions');
+      const players = await AsyncStorage.getItem('football_coach_players');
+      const parsed = sessions ? JSON.parse(sessions) : [];
+      const totalMinutes = parsed.reduce((sum, s) => sum + parseInt(s.duration || 0), 0);
+      const playerCount = players ? JSON.parse(players).length : 0;
+      setRealStats({
+        players: playerCount,
+        hours: Math.round((totalMinutes / 60) * 10) / 10,
+        plans: parsed.length,
+      });
+    } catch (e) {
+      console.error('Failed to load stats:', e);
+    }
+  };
+
+  const loadVotes = async () => {
+    try {
+      const storedVotes = await AsyncStorage.getItem('feature_votes');
+      const storedUserVotes = await AsyncStorage.getItem('user_votes');
+      
+      if (storedVotes) {
+        setVotes(JSON.parse(storedVotes));
+      }
+      if (storedUserVotes) {
+        setUserVotes(JSON.parse(storedUserVotes));
+      }
+    } catch (error) {
+      console.error('Failed to load votes:', error);
+    }
+  };
+
+  const handleVote = async (feature) => {
+    if (userVotes[feature]) {
+      // Unvote
+      const newVotes = { ...votes, [feature]: votes[feature] - 1 };
+      const newUserVotes = { ...userVotes, [feature]: false };
+      
+      setVotes(newVotes);
+      setUserVotes(newUserVotes);
+      
+      await AsyncStorage.setItem('feature_votes', JSON.stringify(newVotes));
+      await AsyncStorage.setItem('user_votes', JSON.stringify(newUserVotes));
+      
+      Alert.alert('Vote Removed', 'Your vote has been removed');
+    } else {
+      // Vote
+      const newVotes = { ...votes, [feature]: votes[feature] + 1 };
+      const newUserVotes = { ...userVotes, [feature]: true };
+      
+      setVotes(newVotes);
+      setUserVotes(newUserVotes);
+      
+      await AsyncStorage.setItem('feature_votes', JSON.stringify(newVotes));
+      await AsyncStorage.setItem('user_votes', JSON.stringify(newUserVotes));
+      
+      Alert.alert('Vote Counted!', 'Thank you for your feedback');
+    }
+  };
+
+  const resetVotes = async () => {
+    Alert.alert(
+      'Reset All Votes',
+      'Are you sure you want to reset all votes to zero?',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Reset',
+          style: 'destructive',
+          onPress: async () => {
+            const resetVotes = { multiLanguage: 0, videoTutorials: 0, multiplayer: 0 };
+            const resetUserVotes = { multiLanguage: false, videoTutorials: false, multiplayer: false };
+            
+            setVotes(resetVotes);
+            setUserVotes(resetUserVotes);
+            
+            await AsyncStorage.setItem('feature_votes', JSON.stringify(resetVotes));
+            await AsyncStorage.setItem('user_votes', JSON.stringify(resetUserVotes));
+            
+            Alert.alert('Success', 'All votes have been reset to zero');
+          }
+        }
+      ]
+    );
+  };
+
+  const handleSubmitFeedback = async () => {
     if (feedback.trim().length < 10) {
       Alert.alert('Error', 'Please provide at least 10 characters of feedback.');
       return;
     }
 
-    Alert.alert(
-      'Thank You!',
-      'Your feedback has been submitted successfully.',
-      [{ text: 'OK', onPress: () => setFeedback('') }]
-    );
+    if (rating === 0) {
+      Alert.alert('Error', 'Please provide a rating.');
+      return;
+    }
+
+    try {
+      const subject = `Football Coach App Feedback - Rating: ${rating}/5`;
+      const body = `
+Feedback Report
+===============
+
+Rating: ${rating}/5 stars
+Date: ${new Date().toLocaleDateString()}
+Time: ${new Date().toLocaleTimeString()}
+
+User Feedback:
+${feedback}
+
+---
+Sent from Football Coach Mobile App
+      `;
+
+      const emailUrl = `mailto:muhammedajayi14@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+      
+      await Linking.openURL(emailUrl);
+
+      Alert.alert(
+        'Thank You!',
+        'Your feedback report will be sent to muhammedajayi14@gmail.com',
+        [{ text: 'OK', onPress: () => { setFeedback(''); setRating(0); } }]
+      );
+    } catch (error) {
+      Alert.alert('Error', 'Failed to open email app. Please try again.');
+    }
   };
 
   const handleShareApp = () => {
     Share.share({
-      message: 'Check out Football Coach Mobile - The ultimate training app for young players! 🎯⚽',
+      message: 'Check out Football Coach Mobile - The ultimate training app for young players! 🎯⚽\n\nContact: muhammedajayi14@gmail.com',
       title: 'Football Coach Mobile',
-      url: 'https://footballcoach.app',
     }).catch((error) => console.log(error));
+  };
+
+  const sendDirectEmail = () => {
+    const subject = 'Football Coach App - Direct Contact';
+    const body = 'Hello,\n\nI would like to get in touch regarding the Football Coach Mobile app.\n\nBest regards';
+    const emailUrl = `mailto:muhammedajayi14@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    
+    Linking.openURL(emailUrl).catch(() => {
+      Alert.alert('Error', 'Could not open email app');
+    });
   };
 
   const renderStars = () => {
@@ -62,31 +205,32 @@ export default function AnalyticsFeedbackScreen() {
         <View style={styles.analyticsCard}>
           <View style={styles.statItem}>
             <Text style={styles.statLabel}>Players Created</Text>
-            <Text style={styles.statValue}>5</Text>
+            <Text style={styles.statValue}>{realStats.players}</Text>
           </View>
           <View style={styles.divider} />
           <View style={styles.statItem}>
             <Text style={styles.statLabel}>Total Training Hours</Text>
-            <Text style={styles.statValue}>24.5h</Text>
+            <Text style={styles.statValue}>{realStats.hours}h</Text>
           </View>
         </View>
 
         <View style={styles.analyticsCard}>
           <View style={styles.statItem}>
-            <Text style={styles.statLabel}>Training Plans Created</Text>
-            <Text style={styles.statValue}>8</Text>
+            <Text style={styles.statLabel}>Sessions Logged</Text>
+            <Text style={styles.statValue}>{realStats.plans}</Text>
           </View>
           <View style={styles.divider} />
           <View style={styles.statItem}>
-            <Text style={styles.statLabel}>Average Rating</Text>
-            <Text style={styles.statValue}>4.5/5</Text>
+            <Text style={styles.statLabel}>App Rating</Text>
+            <Text style={styles.statValue}>{rating > 0 ? `${rating}/5` : '—'}</Text>
           </View>
         </View>
       </View>
 
       {/* Feedback Section */}
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>💬 Send Us Feedback</Text>
+        <Text style={styles.sectionTitle}>💬 Send Feedback Report</Text>
+        <Text style={styles.emailInfo}>Reports sent to: muhammedajayi14@gmail.com</Text>
 
         <Text style={styles.label}>Rate Your Experience</Text>
         {renderStars()}
@@ -107,91 +251,86 @@ export default function AnalyticsFeedbackScreen() {
           style={[styles.button, styles.primaryButton]}
           onPress={handleSubmitFeedback}
         >
-          <Text style={styles.buttonText}>📤 Submit Feedback</Text>
-        </TouchableOpacity>
-      </View>
-
-      {/* Bug Reports Section */}
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>🐛 Bug Reports</Text>
-
-        <TouchableOpacity style={styles.reportButton}>
-          <Text style={styles.reportButtonText}>📧 Email Support</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.reportButton}>
-          <Text style={styles.reportButtonText}>💬 Chat with Support</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.reportButton}>
-          <Text style={styles.reportButtonText}>🔗 View Known Issues</Text>
+          <Text style={styles.buttonText}>📧 Send Feedback Report</Text>
         </TouchableOpacity>
       </View>
 
       {/* Feature Requests Section */}
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>💡 Feature Requests</Text>
+        <View style={styles.sectionHeader}>
+          <Text style={styles.sectionTitle}>💡 Feature Requests</Text>
+          <TouchableOpacity onPress={resetVotes} style={styles.resetButton}>
+            <Text style={styles.resetButtonText}>Reset Votes</Text>
+          </TouchableOpacity>
+        </View>
 
-        <TouchableOpacity style={styles.featureButton}>
+        <TouchableOpacity 
+          style={[styles.featureButton, userVotes.multiLanguage && styles.featureButtonVoted]}
+          onPress={() => handleVote('multiLanguage')}
+        >
           <View>
             <Text style={styles.featureTitle}>⭐ Multi-Language Support</Text>
-            <Text style={styles.featureCount}>👥 234 votes</Text>
+            <Text style={styles.featureCount}>👥 {votes.multiLanguage} votes</Text>
           </View>
-          <Text style={styles.voteButton}>Vote</Text>
+          <Text style={[styles.voteButton, userVotes.multiLanguage && styles.voteButtonActive]}>
+            {userVotes.multiLanguage ? '✓ Voted' : 'Vote'}
+          </Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.featureButton}>
+        <TouchableOpacity 
+          style={[styles.featureButton, userVotes.videoTutorials && styles.featureButtonVoted]}
+          onPress={() => handleVote('videoTutorials')}
+        >
           <View>
             <Text style={styles.featureTitle}>🎬 Video Tutorials</Text>
-            <Text style={styles.featureCount}>👥 189 votes</Text>
+            <Text style={styles.featureCount}>👥 {votes.videoTutorials} votes</Text>
           </View>
-          <Text style={styles.voteButton}>Vote</Text>
+          <Text style={[styles.voteButton, userVotes.videoTutorials && styles.voteButtonActive]}>
+            {userVotes.videoTutorials ? '✓ Voted' : 'Vote'}
+          </Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.featureButton}>
+        <TouchableOpacity 
+          style={[styles.featureButton, userVotes.multiplayer && styles.featureButtonVoted]}
+          onPress={() => handleVote('multiplayer')}
+        >
           <View>
             <Text style={styles.featureTitle}>👥 Multiplayer Mode</Text>
-            <Text style={styles.featureCount}>👥 456 votes</Text>
+            <Text style={styles.featureCount}>👥 {votes.multiplayer} votes</Text>
           </View>
-          <Text style={styles.voteButton}>Vote</Text>
+          <Text style={[styles.voteButton, userVotes.multiplayer && styles.voteButtonActive]}>
+            {userVotes.multiplayer ? '✓ Voted' : 'Vote'}
+          </Text>
         </TouchableOpacity>
       </View>
 
-      {/* Share & Invite */}
+      {/* Share App */}
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>🌟 Share & Invite</Text>
+        <Text style={styles.sectionTitle}>🌟 Share App</Text>
 
         <TouchableOpacity style={styles.button} onPress={handleShareApp}>
           <Text style={styles.buttonText}>📱 Share App with Friends</Text>
         </TouchableOpacity>
+      </View>
 
-        <TouchableOpacity style={styles.button}>
-          <Text style={styles.buttonText}>🎁 Invite & Earn Rewards</Text>
+      {/* Contact Developer */}
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>📞 Contact Developer</Text>
+
+        <View style={styles.contactCard}>
+          <Text style={styles.contactLabel}>Developer Email</Text>
+          <TouchableOpacity onPress={sendDirectEmail}>
+            <Text style={styles.contactValue}>muhammedajayi14@gmail.com</Text>
+          </TouchableOpacity>
+        </View>
+
+        <TouchableOpacity style={styles.button} onPress={sendDirectEmail}>
+          <Text style={styles.buttonText}>📧 Send Direct Email</Text>
         </TouchableOpacity>
       </View>
 
-      {/* Contact Info */}
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>📞 Contact Us</Text>
-
-        <View style={styles.contactCard}>
-          <Text style={styles.contactLabel}>Email</Text>
-          <Text style={styles.contactValue}>support@footballcoach.app</Text>
-        </View>
-
-        <View style={styles.contactCard}>
-          <Text style={styles.contactLabel}>Website</Text>
-          <Text style={styles.contactValue}>www.footballcoach.app</Text>
-        </View>
-
-        <View style={styles.contactCard}>
-          <Text style={styles.contactLabel}>Social Media</Text>
-          <Text style={styles.contactValue}>@footballcoachapp</Text>
-        </View>
-      </View>
-
       <View style={styles.footer}>
-        <Text style={styles.footerText}>We value your feedback!</Text>
+        <Text style={styles.footerText}>All feedback reports are sent to muhammedajayi14@gmail.com</Text>
       </View>
     </ScrollView>
   );
@@ -229,6 +368,29 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: '#2196F3',
     marginBottom: 12,
+  },
+  sectionHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  resetButton: {
+    backgroundColor: '#dc3545',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 6,
+  },
+  resetButtonText: {
+    color: '#fff',
+    fontSize: 12,
+    fontWeight: '600',
+  },
+  emailInfo: {
+    fontSize: 12,
+    color: '#4CAF50',
+    marginBottom: 16,
+    fontStyle: 'italic',
   },
   analyticsCard: {
     backgroundColor: '#2a2a2a',
@@ -290,6 +452,7 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   button: {
+    backgroundColor: '#2a2a2a',
     paddingVertical: 12,
     paddingHorizontal: 16,
     borderRadius: 10,
@@ -304,20 +467,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
   },
-  reportButton: {
-    backgroundColor: '#2a2a2a',
-    paddingVertical: 14,
-    paddingHorizontal: 16,
-    borderRadius: 10,
-    marginBottom: 10,
-    borderLeftWidth: 4,
-    borderLeftColor: '#FF5722',
-  },
-  reportButtonText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: '500',
-  },
   featureButton: {
     backgroundColor: '#2a2a2a',
     paddingVertical: 12,
@@ -329,6 +478,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderLeftWidth: 4,
     borderLeftColor: '#4CAF50',
+  },
+  featureButtonVoted: {
+    borderLeftColor: '#2196F3',
+    backgroundColor: '#1a3a4a',
   },
   featureTitle: {
     color: '#fff',
@@ -349,6 +502,9 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     fontSize: 12,
   },
+  voteButtonActive: {
+    backgroundColor: '#2196F3',
+  },
   contactCard: {
     backgroundColor: '#2a2a2a',
     padding: 12,
@@ -362,8 +518,9 @@ const styles = StyleSheet.create({
   },
   contactValue: {
     fontSize: 14,
-    color: '#2196F3',
+    color: '#4CAF50',
     fontWeight: '500',
+    textDecorationLine: 'underline',
   },
   footer: {
     alignItems: 'center',
@@ -371,8 +528,9 @@ const styles = StyleSheet.create({
     marginTop: 32,
   },
   footerText: {
-    color: '#666',
-    fontSize: 14,
+    color: '#4CAF50',
+    fontSize: 12,
     fontStyle: 'italic',
+    textAlign: 'center',
   },
 });
