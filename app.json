@@ -23,14 +23,6 @@
           "cameraPermission": "Allow Football Coach to access your camera to take a profile picture."
         }
       ],
-      [
-        "react-native-google-mobile-ads",
-        {
-          "androidAppId": "ca-app-pub-3609023299103795~9714265148",
-          "iosAppId": "ca-app-pub-3609023299103795~9714265148",
-          "userTrackingPermission": "This allows us to deliver personalized ads to you."
-        }
-      ],
       "expo-font",
       "expo-image",
       "expo-sharing",
@@ -50,10 +42,7 @@
       ]
     },
     "ios": {
-      "bundleIdentifier": "com.zeedain14.footballcoachmobile",
-      "infoPlist": {
-        "NSUserTrackingUsageDescription": "This allows us to deliver personalized ads to you."
-      }
+      "bundleIdentifier": "com.zeedain14.footballcoachmobile"
     },
     "web": {
       "favicon": "./assets/images/favicon.png"
