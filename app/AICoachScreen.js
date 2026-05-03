@@ -7,12 +7,135 @@ import {
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { AICoachSystem } from './utils/AICoachSystem';
-        exercises: []
-      }]);
-      return;
+import AdBanner from '../components/AdBanner';
+
+// Translation dictionary (simplified example)
+const t = {
+  dailyWisdom: 'Daily Wisdom',
+  inspirationFrom: 'Inspiration from athletes & leaders',
+  back: 'Back',
+  selectLanguage: 'Select Language',
+  cancel: 'Cancel',
+  addQuote: 'Add Your Quote',
+  yourName: 'Your Name',
+  yourQuote: 'Your Quote',
+  submit: 'Submit',
+  emptyFieldsError: 'Please fill in both fields',
+  profanityError: 'Please remove inappropriate language',
+  successMessage: 'Quote added successfully!',
+  consultingAI: 'Consulting AI Coach...',
+  errorTitle: 'Something went wrong',
+  tryAgain: 'Try Again',
+  noTipsYet: 'No tips yet',
+  createProfile: 'Create a player profile to get started',
+  createPlayer: 'Create Player',
+  refreshQuotes: 'Refresh Quotes',
+  football: 'Football',
+  basketball: 'Basketball',
+  tennis: 'Tennis',
+  boxing: 'Boxing',
+  athletics: 'Athletics',
+  gymnastics: 'Gymnastics',
+  coach: 'Coach',
+  business: 'Business',
+  entertainment: 'Entertainment',
+  leadership: 'Leadership',
+  wisdom: 'Wisdom',
+  motivation: 'Motivation',
+  productivity: 'Productivity',
+  customQuotes: 'Custom Quotes',
+};
+
+// Available languages
+const LANGUAGES = [
+  { code: 'en', name: 'English', flag: '🇬🇧' },
+  { code: 'es', name: 'Spanish', flag: '🇪🇸' },
+  { code: 'fr', name: 'French', flag: '🇫🇷' },
+  { code: 'de', name: 'German', flag: '🇩🇪' },
+];
+
+// Category filter options
+const CATEGORIES = [
+  { key: 'all', label: 'All', icon: '🌟' },
+  { key: 'football', label: 'Football', icon: '⚽' },
+  { key: 'motivation', label: 'Motivation', icon: '🔥' },
+  { key: 'leadership', label: 'Leadership', icon: '👑' },
+  { key: 'wisdom', label: 'Wisdom', icon: '📚' },
+  { key: 'custom', label: 'Custom', icon: '📝' },
+];
+
+const AICoachScreen = () => {
+  const router = useRouter();
+  const params = useLocalSearchParams();
+  
+  // State declarations
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [tips, setTips] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState('all');
+  const [showMotivational, setShowMotivational] = useState(true);
+  const [selectedLanguage, setSelectedLanguage] = useState('en');
+  const [showLanguagePicker, setShowLanguagePicker] = useState(false);
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [newQuoteName, setNewQuoteName] = useState('');
+  const [newQuoteText, setNewQuoteText] = useState('');
+  const [customQuotes, setCustomQuotes] = useState([]);
+  const [filtered, setFiltered] = useState([]);
+
+  // Load data on mount
+  useEffect(() => {
+    loadData();
+    loadCustomQuotes();
+  }, []);
+
+  // Load motivational quotes when category changes
+  useEffect(() => {
+    if (showMotivational) {
+      loadMotivationalQuotes();
     }
+  }, [selectedCategory, showMotivational]);
+
+  // Load custom quotes from AsyncStorage
+  const loadCustomQuotes = async () => {
+    try {
+      const stored = await AsyncStorage.getItem('customQuotes');
+      if (stored) {
+        setCustomQuotes(JSON.parse(stored));
+      }
+    } catch (err) {
+      console.error('Failed to load custom quotes:', err);
+    }
+  };
+
+  // Save custom quotes to AsyncStorage
+  const saveCustomQuotes = async (quotes) => {
+    try {
+      await AsyncStorage.setItem('customQuotes', JSON.stringify(quotes));
+      setCustomQuotes(quotes);
+    } catch (err) {
+      console.error('Failed to save custom quotes:', err);
+    }
+  };
+
+  // Main data loading function
+  const loadData = async () => {
+    try {
+      setLoading(true);
+      // Initialize AICoachSystem if needed
+      await AICoachSystem.initialize();
+      setLoading(false);
+    } catch (err) {
+      setError(err.message);
+      setLoading(false);
+    }
+  };
+
+  // Load and filter motivational quotes
+  const loadMotivationalQuotes = () => {
+    let filtered = [];
     
-    if (selectedCategory === 'all') {
+    // Filter custom quotes by category
+    if (selectedCategory === 'all' || selectedCategory === 'custom') {
       const customWithCategory = customQuotes.map(cq => ({
         player: cq.name,
         quote: cq.text,
@@ -20,36 +143,44 @@ import { AICoachSystem } from './utils/AICoachSystem';
         isCustom: true
       }));
       filtered = [...filtered, ...customWithCategory];
-      console.log(`âž• Added ${customWithCategory.length} custom quotes`);
+      console.log(`➕ Added ${customWithCategory.length} custom quotes`);
     }
     
+    // Add AI-generated quotes (example - replace with actual API call)
+    // const aiQuotes = await AICoachSystem.getMotivationalQuotes(selectedCategory);
+    // filtered = [...filtered, ...aiQuotes];
+    
+    // Shuffle and limit results
     const shuffled = filtered.sort(() => Math.random() - 0.5);
     const count = Math.min(5, shuffled.length);
     const selected = shuffled.slice(0, count);
     
-    console.log(`âœ… Selected ${selected.length} quotes to display`);
+    console.log(`✅ Selected ${selected.length} quotes to display`);
     
+    // Format quotes for display
     const translatedTips = selected.map((q, i) => ({
       id: `quote-${i}-${Date.now()}-${Math.random()}`,
-      category: `${q.isCustom ? 'ðŸ“' : getCategoryIcon(q.category)} ${getCategoryLabel(q.category)}`,
-      tip: `"${translateQuote(q.quote, selectedLanguage)}"\n\nâ€” ${q.player}`,
+      category: `${q.isCustom ? '📝' : getCategoryIcon(q.category)} ${getCategoryLabel(q.category)}`,
+      tip: `"${translateQuote(q.quote, selectedLanguage)}"\n\n— ${q.player}`,
       exercises: []
     }));
     
     setTips(translatedTips);
   };
 
+  // Helper: Get icon for category
   const getCategoryIcon = (category) => {
     const icons = {
-      football: 'âš½', basketball: 'ðŸ€', tennis: 'ðŸŽ¾',
-      boxing: 'ðŸ¥Š', athletics: 'ðŸƒ', gymnastics: 'ðŸ¤¸',
-      coach: 'ðŸ‘”', business: 'ðŸ’¼', entertainment: 'ðŸŽ¬',
-      leadership: 'ðŸ‘‘', wisdom: 'ðŸ“š', motivation: 'ðŸ”¥',
-      productivity: 'âš¡', custom: 'ðŸ“'
+      football: '⚽', basketball: '🏀', tennis: '🎾',
+      boxing: '🥊', athletics: '🏃', gymnastics: '🤸',
+      coach: '👔', business: '💼', entertainment: '🎬',
+      leadership: '👑', wisdom: '📚', motivation: '🔥',
+      productivity: '⚡', custom: '📝'
     };
-    return icons[category] || 'ðŸ’­';
+    return icons[category] || '💭';
   };
 
+  // Helper: Get label for category
   const getCategoryLabel = (category) => {
     const labels = {
       football: t.football, basketball: t.basketball, tennis: t.tennis,
@@ -61,6 +192,20 @@ import { AICoachSystem } from './utils/AICoachSystem';
     return labels[category] || category;
   };
 
+  // Helper: Simple quote translation (replace with real translation API)
+  const translateQuote = (quote, lang) => {
+    if (lang === 'en') return quote;
+    // Add real translation logic here
+    return `[${lang}] ${quote}`;
+  };
+
+  // Helper: Basic profanity filter (replace with robust solution)
+  const containsProfanity = (text) => {
+    const badWords = ['badword1', 'badword2']; // Replace with actual list
+    return badWords.some(word => text.toLowerCase().includes(word));
+  };
+
+  // Handle adding a new custom quote
   const handleAddQuote = () => {
     if (!newQuoteName.trim() || !newQuoteText.trim()) {
       Alert.alert('Error', t.emptyFieldsError);
@@ -93,12 +238,23 @@ import { AICoachSystem } from './utils/AICoachSystem';
     }
   };
 
+  // Handle back navigation
   const handleGoBack = () => {
     try {
       router.back();
     } catch (error) {
-      console.log('â¬…ï¸ Back not available, navigating to home');
+      console.log('⬅️ Back not available, navigating to home');
       router.replace('/');
+    }
+  };
+
+  // Save language preference
+  const saveLanguage = async (code) => {
+    try {
+      await AsyncStorage.setItem('preferredLanguage', code);
+      setSelectedLanguage(code);
+    } catch (err) {
+      console.error('Failed to save language:', err);
     }
   };
 
@@ -129,13 +285,13 @@ import { AICoachSystem } from './utils/AICoachSystem';
   }
 
   return (
-    // âœ… Wrap in flex container for banner at bottom
+    // ✅ Wrap in flex container for banner at bottom
     <View style={{ flex: 1, backgroundColor: '#0d1b2a' }}>
       <ScrollView style={styles.container} contentContainerStyle={styles.content}>
         {/* Header with Back & Language */}
         <View style={styles.header}>
           <TouchableOpacity onPress={handleGoBack} style={styles.backBtn} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
-            <Text style={styles.backText}>â† {t.back}</Text>
+            <Text style={styles.backText}>← {t.back}</Text>
           </TouchableOpacity>
           
           <TouchableOpacity 
@@ -148,7 +304,7 @@ import { AICoachSystem } from './utils/AICoachSystem';
           </TouchableOpacity>
         </View>
         
-        <Text style={styles.title}>ðŸ§  {t.dailyWisdom}</Text>
+        <Text style={styles.title}>🧠 {t.dailyWisdom}</Text>
         <Text style={styles.subtitle}>{t.inspirationFrom}</Text>
 
         {/* Category Filter Chips */}
@@ -165,7 +321,7 @@ import { AICoachSystem } from './utils/AICoachSystem';
                 selectedCategory === cat.key && styles.categoryChipActive
               ]}
               onPress={() => {
-                console.log('ðŸŽ¯ Category selected:', cat.key);
+                console.log('🎯 Category selected:', cat.key);
                 setSelectedCategory(cat.key);
                 if (showMotivational) {
                   loadMotivationalQuotes();
@@ -187,12 +343,12 @@ import { AICoachSystem } from './utils/AICoachSystem';
           style={styles.addQuoteButton}
           onPress={() => setShowAddModal(true)}
         >
-          <Text style={styles.addQuoteButtonText}>âœï¸ {t.addQuote}</Text>
+          <Text style={styles.addQuoteButtonText}>✍️ {t.addQuote}</Text>
         </TouchableOpacity>
 
         {showMotivational && (
           <View style={styles.motivationalHeader}>
-            <Text style={styles.motivationalTitle}>ðŸŒŸ {t.dailyWisdom}</Text>
+            <Text style={styles.motivationalTitle}>🌟 {t.dailyWisdom}</Text>
             <Text style={styles.motivationalSubtitle}>{t.inspirationFrom}</Text>
           </View>
         )}
@@ -206,7 +362,7 @@ import { AICoachSystem } from './utils/AICoachSystem';
               {tip.exercises?.length > 0 && (
                 <View style={styles.exercises}>
                   {tip.exercises.map((ex, eidx) => (
-                    <Text key={eidx} style={styles.exercise}>â€¢ {ex}</Text>
+                    <Text key={eidx} style={styles.exercise}>• {ex}</Text>
                   ))}
                 </View>
               )}
@@ -260,7 +416,7 @@ import { AICoachSystem } from './utils/AICoachSystem';
                   <Text style={styles.languageItemText}>
                     {lang.flag} {lang.name}
                   </Text>
-                  {selectedLanguage === lang.code && <Text style={styles.checkmark}>âœ“</Text>}
+                  {selectedLanguage === lang.code && <Text style={styles.checkmark}>✓</Text>}
                 </TouchableOpacity>
               ))}
               <TouchableOpacity 
@@ -324,11 +480,13 @@ import { AICoachSystem } from './utils/AICoachSystem';
         </Modal>
       </ScrollView>
 
-      {/* âœ… Banner Ad - Sticks to bottom, hidden for VIP */}
+      {/* ✅ Banner Ad - Sticks to bottom, hidden for VIP */}
       <AdBanner />
     </View>
   );
-}
+};
+
+export default AICoachScreen;
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#0d1b2a' },
