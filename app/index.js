@@ -1,9 +1,9 @@
-// app/index.js
+﻿// app/index.js
 import React, { useEffect, useState, useCallback } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { useRouter, useFocusEffect } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { checkDailyReminder, checkAchievements, getUnreadCount } from './utils/notificationSystem';
+import { checkDailyReminder, checkAchievements, getUnreadCount } from '';
 
 export default function HomeScreen() {
   const router = useRouter();
@@ -115,13 +115,13 @@ export default function HomeScreen() {
         {/* Header */}
         <View style={styles.header}>
           <View>
-            <Text style={styles.title}>⚽ Football Coach</Text>
+            <Text style={styles.title}>âš½ Football Coach</Text>
             <Text style={styles.subtitle}>
               Welcome back, {user?.name || 'Coach'}!
-              {isVIP && ' ⭐ VIP'}
+              {isVIP && ' â­ VIP'}
             </Text>
             {streak > 0 && (
-              <Text style={styles.streakText}>🔥 {streak} day streak!</Text>
+              <Text style={styles.streakText}>ðŸ”¥ {streak} day streak!</Text>
             )}
           </View>
           <View style={styles.headerButtons}>
@@ -129,7 +129,7 @@ export default function HomeScreen() {
               style={styles.notificationButton} 
               onPress={() => router.push('/NotificationScreen')}
             >
-              <Text style={styles.notificationIcon}>🔔</Text>
+              <Text style={styles.notificationIcon}>ðŸ””</Text>
               {unreadNotifications > 0 && (
                 <View style={styles.badge}>
                   <Text style={styles.badgeText}>{unreadNotifications}</Text>
@@ -137,7 +137,7 @@ export default function HomeScreen() {
               )}
             </TouchableOpacity>
             <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
-              <Text style={styles.logoutText}>🚪</Text>
+              <Text style={styles.logoutText}>ðŸšª</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -147,18 +147,18 @@ export default function HomeScreen() {
           style={styles.primaryButton}
           onPress={() => router.push('/ProfileForm')}
         >
-          <Text style={styles.primaryButtonText}>✨ Start My Profile</Text>
+          <Text style={styles.primaryButtonText}>âœ¨ Start My Profile</Text>
         </TouchableOpacity>
 
         {/* Features Section */}
         <View style={styles.featuresSection}>
-          <Text style={styles.sectionTitle}>🌟 Premium Features</Text>
+          <Text style={styles.sectionTitle}>ðŸŒŸ Premium Features</Text>
 
           <TouchableOpacity
             style={styles.featureButton}
             onPress={() => router.push('/PositionQuiz')}
           >
-            <Text style={styles.buttonIcon}>🎯</Text>
+            <Text style={styles.buttonIcon}>ðŸŽ¯</Text>
             <View style={styles.buttonContent}>
               <Text style={styles.buttonTitle}>Find My Position</Text>
               <Text style={styles.buttonDesc}>Discover your ideal playing position</Text>
@@ -169,7 +169,7 @@ export default function HomeScreen() {
             style={styles.featureButton}
             onPress={() => router.push('/DrillLibrary')}
           >
-            <Text style={styles.buttonIcon}>⚽</Text>
+            <Text style={styles.buttonIcon}>âš½</Text>
             <View style={styles.buttonContent}>
               <Text style={styles.buttonTitle}>Drill Library</Text>
               <Text style={styles.buttonDesc}>10 essential training drills</Text>
@@ -180,7 +180,7 @@ export default function HomeScreen() {
             style={styles.featureButton}
             onPress={() => router.push('/ProgressTracker')}
           >
-            <Text style={styles.buttonIcon}>📊</Text>
+            <Text style={styles.buttonIcon}>ðŸ“Š</Text>
             <View style={styles.buttonContent}>
               <Text style={styles.buttonTitle}>Progress Tracker</Text>
               <Text style={styles.buttonDesc}>Log and track your training</Text>
@@ -191,7 +191,7 @@ export default function HomeScreen() {
             style={styles.featureButton}
             onPress={() => (isVIP ? router.push('/VIPChat') : handleSubscribe())}
           >
-            <Text style={styles.buttonIcon}>💬</Text>
+            <Text style={styles.buttonIcon}>ðŸ’¬</Text>
             <View style={styles.buttonContent}>
               <Text style={styles.buttonTitle}>VIP Coach Chat</Text>
               <Text style={styles.buttonDesc}>
@@ -204,7 +204,7 @@ export default function HomeScreen() {
             style={styles.featureButton}
             onPress={() => router.push('/LeaderboardScreen')}
           >
-            <Text style={styles.buttonIcon}>🏆</Text>
+            <Text style={styles.buttonIcon}>ðŸ†</Text>
             <View style={styles.buttonContent}>
               <Text style={styles.buttonTitle}>Leaderboard</Text>
               <Text style={styles.buttonDesc}>Compete with other players</Text>
@@ -215,7 +215,7 @@ export default function HomeScreen() {
             style={styles.featureButton}
             onPress={() => router.push('/ChallengesScreen')}
           >
-            <Text style={styles.buttonIcon}>🎯</Text>
+            <Text style={styles.buttonIcon}>ðŸŽ¯</Text>
             <View style={styles.buttonContent}>
               <Text style={styles.buttonTitle}>Weekly Challenges</Text>
               <Text style={styles.buttonDesc}>Complete challenges, earn rewards</Text>
@@ -226,7 +226,7 @@ export default function HomeScreen() {
             style={styles.featureButton}
             onPress={() => router.push('/ProgressScreen')}
           >
-            <Text style={styles.buttonIcon}>📈</Text>
+            <Text style={styles.buttonIcon}>ðŸ“ˆ</Text>
             <View style={styles.buttonContent}>
               <Text style={styles.buttonTitle}>Analytics Dashboard</Text>
               <Text style={styles.buttonDesc}>Monitor your improvement</Text>
@@ -236,13 +236,13 @@ export default function HomeScreen() {
 
         {/* Settings */}
         <View style={styles.settingsSection}>
-          <Text style={styles.sectionTitle}>⚙️ Settings & Support</Text>
+          <Text style={styles.sectionTitle}>âš™ï¸ Settings & Support</Text>
 
           <TouchableOpacity
             style={styles.settingButton}
             onPress={() => router.push('/HallOfFame')}
           >
-            <Text style={styles.buttonIcon}>🏆</Text>
+            <Text style={styles.buttonIcon}>ðŸ†</Text>
             <View style={styles.buttonContent}>
               <Text style={styles.buttonTitle}>Hall of Fame</Text>
               <Text style={styles.buttonDesc}>View all your players</Text>
@@ -254,7 +254,7 @@ export default function HomeScreen() {
               style={[styles.settingButton, styles.vipSettingButton]}
               onPress={handleSubscribe}
             >
-              <Text style={styles.buttonIcon}>⭐</Text>
+              <Text style={styles.buttonIcon}>â­</Text>
               <View style={styles.buttonContent}>
                 <Text style={styles.buttonTitle}>Upgrade to VIP</Text>
                 <Text style={styles.buttonDesc}>Unlock premium features</Text>
@@ -264,7 +264,7 @@ export default function HomeScreen() {
 
           {isVIP && (
             <View style={[styles.settingButton, styles.vipActiveButton]}>
-              <Text style={styles.buttonIcon}>⭐</Text>
+              <Text style={styles.buttonIcon}>â­</Text>
               <View style={styles.buttonContent}>
                 <Text style={styles.buttonTitle}>VIP Active</Text>
                 <Text style={styles.buttonDesc}>You have premium access!</Text>
@@ -276,7 +276,7 @@ export default function HomeScreen() {
             style={styles.featureButton}
             onPress={() => router.push('/PerformanceGraphsScreen')}
           >
-            <Text style={styles.buttonIcon}>📈</Text>
+            <Text style={styles.buttonIcon}>ðŸ“ˆ</Text>
             <View style={styles.buttonContent}>
               <Text style={styles.buttonTitle}>Performance Graphs</Text>
               <Text style={styles.buttonDesc}>Visual progress analytics</Text>
@@ -287,7 +287,7 @@ export default function HomeScreen() {
             style={styles.featureButton}
             onPress={() => router.push('/AICoachScreen')}
           >
-            <Text style={styles.buttonIcon}>🧠</Text>
+            <Text style={styles.buttonIcon}>ðŸ§ </Text>
             <View style={styles.buttonContent}>
               <Text style={styles.buttonTitle}>AI Coach</Text>
               <Text style={styles.buttonDesc}>Get personalized tips</Text>
@@ -298,7 +298,7 @@ export default function HomeScreen() {
             style={styles.settingButton}
             onPress={() => router.push('/SettingsScreen')}
           >
-            <Text style={styles.buttonIcon}>⚙️</Text>
+            <Text style={styles.buttonIcon}>âš™ï¸</Text>
             <View style={styles.buttonContent}>
               <Text style={styles.buttonTitle}>Settings</Text>
               <Text style={styles.buttonDesc}>Preferences & data export</Text>
@@ -309,7 +309,7 @@ export default function HomeScreen() {
             style={styles.settingButton}
             onPress={() => router.push('/AnalyticsFeedbackScreen')}
           >
-            <Text style={styles.buttonIcon}>📈</Text>
+            <Text style={styles.buttonIcon}>ðŸ“ˆ</Text>
             <View style={styles.buttonContent}>
               <Text style={styles.buttonTitle}>Analytics & Feedback</Text>
               <Text style={styles.buttonDesc}>Share your experience</Text>
@@ -319,8 +319,8 @@ export default function HomeScreen() {
 
         {/* Footer */}
         <View style={styles.infoBox}>
-          <Text style={styles.infoText}>🎯 Version 1.0.0</Text>
-          <Text style={styles.infoText}>Made with ❤️ for young footballers worldwide</Text>
+          <Text style={styles.infoText}>ðŸŽ¯ Version 1.0.0</Text>
+          <Text style={styles.infoText}>Made with â¤ï¸ for young footballers worldwide</Text>
         </View>
       </View>
     </ScrollView>

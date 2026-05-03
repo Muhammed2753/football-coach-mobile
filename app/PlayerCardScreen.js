@@ -1,12 +1,12 @@
-// app/PlayerCardScreen.js
+﻿// app/PlayerCardScreen.js
 import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity, ScrollView, Alert, Platform } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
-import { getAllPlayers } from './utils/playerDatabase';
-// ✅ Import ad components
-import AdBanner from './components/AdBanner';
-import { useInterstitialAd } from './hooks/useInterstitialAd';
-// ✅ Import sharing libraries
+import { getAllPlayers } from '';
+// âœ… Import ad components
+import AdBanner from '';
+import { useInterstitialAd } from '';
+// âœ… Import sharing libraries
 import * as Sharing from 'expo-sharing';
 import { captureRef } from 'react-native-view-shot';
 
@@ -17,10 +17,10 @@ export default function PlayerCardScreen() {
   const [loading, setLoading] = useState(true);
   const [sharing, setSharing] = useState(false);
   
-  // ✅ Ref for capturing the card image
+  // âœ… Ref for capturing the card image
   const cardRef = useRef(null);
   
-  // ✅ Initialize interstitial ad hook
+  // âœ… Initialize interstitial ad hook
   const { show: showInterstitial } = useInterstitialAd();
 
   useEffect(() => {
@@ -46,7 +46,7 @@ export default function PlayerCardScreen() {
     loadPlayer();
   }, [data]);
 
-  // ✅ Helper: Show interstitial before navigation (30% chance)
+  // âœ… Helper: Show interstitial before navigation (30% chance)
   const navigateWithAd = (route, params) => {
     if (Math.random() > 0.7) {
       showInterstitial();
@@ -54,7 +54,7 @@ export default function PlayerCardScreen() {
     setTimeout(() => router.push({ pathname: route, params }), 500);
   };
 
-  // ✅ Share Player Card Function
+  // âœ… Share Player Card Function
   const handleShareCard = async () => {
     if (sharing) return;
     setSharing(true);
@@ -83,7 +83,7 @@ export default function PlayerCardScreen() {
         });
       } else {
         // Fallback for web: share text + link
-        const shareText = `Check out my Football Coach player card!\n\n${player.name} - ${player.overall} OVR\nPosition: ${player.positions?.[0] || 'CM'}\n\nCreated with Football Coach App 🏆⚽`;
+        const shareText = `Check out my Football Coach player card!\n\n${player.name} - ${player.overall} OVR\nPosition: ${player.positions?.[0] || 'CM'}\n\nCreated with Football Coach App ðŸ†âš½`;
         
         if (navigator.share) {
           await navigator.share({
@@ -122,26 +122,26 @@ export default function PlayerCardScreen() {
         <Text style={styles.noPlayerTitle}>No Player Found</Text>
         <Text style={styles.noPlayerText}>Please create a profile first</Text>
         <TouchableOpacity onPress={() => router.push('/ProfileForm')} style={styles.createButton}>
-          <Text style={styles.createButtonText}>📝 Create Profile</Text>
+          <Text style={styles.createButtonText}>ðŸ“ Create Profile</Text>
         </TouchableOpacity>
         <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-          <Text style={styles.backButtonText}>← Back</Text>
+          <Text style={styles.backButtonText}>â† Back</Text>
         </TouchableOpacity>
       </View>
     );
   }
 
   return (
-    // ✅ Wrap in flex container for banner at bottom
+    // âœ… Wrap in flex container for banner at bottom
     <View style={{ flex: 1, backgroundColor: '#0d1b2a' }}>
       <ScrollView contentContainerStyle={styles.container}>
         <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-          <Text style={styles.backButtonText}>← Back</Text>
+          <Text style={styles.backButtonText}>â† Back</Text>
         </TouchableOpacity>
 
-        <Text style={styles.title}>⚽ Player Card</Text>
+        <Text style={styles.title}>âš½ Player Card</Text>
 
-        {/* ✅ Add ref to the card container for screenshot capture */}
+        {/* âœ… Add ref to the card container for screenshot capture */}
         <View ref={cardRef} style={styles.card}>
           {/* Card Header */}
           <View style={styles.cardHeader}>
@@ -156,7 +156,7 @@ export default function PlayerCardScreen() {
               <Image source={{ uri: player.image }} style={styles.avatar} />
             ) : (
               <View style={[styles.avatar, styles.placeholderAvatar]}>
-                <Text style={styles.placeholderText}>⚽</Text>
+                <Text style={styles.placeholderText}>âš½</Text>
               </View>
             )}
             <View style={styles.nameSection}>
@@ -205,14 +205,14 @@ export default function PlayerCardScreen() {
           </View>
         </View>
 
-        {/* ✅ Share Button - Added Here */}
+        {/* âœ… Share Button - Added Here */}
         <TouchableOpacity 
           onPress={handleShareCard}
           disabled={sharing}
           style={[styles.shareButton, sharing && styles.shareButtonDisabled]}
         >
           <Text style={styles.shareButtonText}>
-            {sharing ? '⏳ Sharing...' : '📤 Share Card'}
+            {sharing ? 'â³ Sharing...' : 'ðŸ“¤ Share Card'}
           </Text>
         </TouchableOpacity>
 
@@ -222,40 +222,40 @@ export default function PlayerCardScreen() {
             onPress={() => navigateWithAd('/TrainingPlanScreen', { data: JSON.stringify(player) })} 
             style={styles.actionButton}
           >
-            <Text style={styles.actionButtonText}>📋 Training Plan</Text>
+            <Text style={styles.actionButtonText}>ðŸ“‹ Training Plan</Text>
           </TouchableOpacity>
 
           <TouchableOpacity 
             onPress={() => navigateWithAd('/ProgressScreen', { playerData: JSON.stringify(player) })} 
             style={styles.actionButton}
           >
-            <Text style={styles.actionButtonText}>📊 Track Progress</Text>
+            <Text style={styles.actionButtonText}>ðŸ“Š Track Progress</Text>
           </TouchableOpacity>
 
           <TouchableOpacity 
             onPress={() => router.push({ pathname: '/WeaknessScreen', params: { data: JSON.stringify(player) } })} 
             style={styles.actionButton}
           >
-            <Text style={styles.actionButtonText}>🎯 View Weaknesses</Text>
+            <Text style={styles.actionButtonText}>ðŸŽ¯ View Weaknesses</Text>
           </TouchableOpacity>
 
           <TouchableOpacity 
             onPress={() => navigateWithAd('/AICoachScreen', { playerData: JSON.stringify(player) })} 
             style={styles.actionButton}
           >
-            <Text style={styles.actionButtonText}>🧠 AI Coach</Text>
+            <Text style={styles.actionButtonText}>ðŸ§  AI Coach</Text>
           </TouchableOpacity>
 
           <TouchableOpacity 
             onPress={() => router.push('/VIPChat')} 
             style={styles.actionButton}
           >
-            <Text style={styles.actionButtonText}>💬 VIP Chat</Text>
+            <Text style={styles.actionButtonText}>ðŸ’¬ VIP Chat</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>
 
-      {/* ✅ Banner Ad - Sticks to bottom, hidden for VIP */}
+      {/* âœ… Banner Ad - Sticks to bottom, hidden for VIP */}
       <AdBanner />
     </View>
   );

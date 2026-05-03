@@ -1,8 +1,8 @@
-// app/WeaknessScreen.js
+﻿// app/WeaknessScreen.js
 import React, { useState, useEffect } from 'react';
 import { View, Text, ScrollView, StyleSheet, TouchableOpacity } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
-import { getAllPlayers } from './utils/playerDatabase';
+import { getAllPlayers } from '';
 
 export default function WeaknessScreen() {
   const router = useRouter();
@@ -82,10 +82,10 @@ export default function WeaknessScreen() {
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-        <Text style={styles.backText}>← Back</Text>
+        <Text style={styles.backText}>â† Back</Text>
       </TouchableOpacity>
 
-      <Text style={styles.title}>🎯 Your Weaknesses</Text>
+      <Text style={styles.title}>ðŸŽ¯ Your Weaknesses</Text>
       <Text style={styles.subtitle}>{player.name} - {player.positions?.[0] || 'CM'}</Text>
 
       {weaknesses.length > 0 ? (
@@ -115,7 +115,7 @@ export default function WeaknessScreen() {
         </View>
       ) : (
         <View style={styles.noWeaknesses}>
-          <Text style={styles.noWeaknessesText}>🎉 No Major Weaknesses!</Text>
+          <Text style={styles.noWeaknessesText}>ðŸŽ‰ No Major Weaknesses!</Text>
           <Text style={styles.noWeaknessesSubtext}>All your key attributes are above 70!</Text>
         </View>
       )}
@@ -124,7 +124,7 @@ export default function WeaknessScreen() {
         onPress={() => router.push({ pathname: '/TrainingPlanScreen', params: { data: JSON.stringify(player) } })} 
         style={styles.trainingButton}
       >
-        <Text style={styles.trainingButtonText}>📋 Create Training Plan</Text>
+        <Text style={styles.trainingButtonText}>ðŸ“‹ Create Training Plan</Text>
       </TouchableOpacity>
     </ScrollView>
   );

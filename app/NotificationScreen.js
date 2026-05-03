@@ -1,8 +1,8 @@
-// app/NotificationScreen.js
+﻿// app/NotificationScreen.js
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert } from 'react-native';
 import { useRouter } from 'expo-router';
-import { getNotifications, markAsRead } from './utils/notificationSystem';
+import { getNotifications, markAsRead } from '';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function NotificationScreen() {
@@ -28,7 +28,7 @@ export default function NotificationScreen() {
   };
 
   const handleNotificationPress = async (notification) => {
-    console.log('🔔 Notification pressed:', notification);
+    console.log('ðŸ”” Notification pressed:', notification);
     
     // Prevent double-taps
     if (isLoading) return;
@@ -36,46 +36,46 @@ export default function NotificationScreen() {
     try {
       // Mark as read FIRST (before navigation)
       await markAsRead(notification.id);
-      console.log('✅ Marked as read:', notification.id);
+      console.log('âœ… Marked as read:', notification.id);
 
-      // Navigate based on type — WITHOUT passing complex data
+      // Navigate based on type â€” WITHOUT passing complex data
       switch (notification.type) {
         case 'reminder':
         case 'tip':
-          console.log('🔄 Navigating to TrainingPlanScreen...');
-          // Just navigate — let TrainingPlanScreen load its own data
+          console.log('ðŸ”„ Navigating to TrainingPlanScreen...');
+          // Just navigate â€” let TrainingPlanScreen load its own data
           router.push('/TrainingPlanScreen');
           break;
           
         case 'achievement':
         case 'milestone':
-          console.log('🔄 Navigating to ProgressScreen...');
+          console.log('ðŸ”„ Navigating to ProgressScreen...');
           router.push('/ProgressScreen');
           break;
           
         default:
-          console.log('🔄 Navigating to home...');
+          console.log('ðŸ”„ Navigating to home...');
           router.push('/');
       }
     } catch (error) {
-      console.error('❌ Failed handling notification:', error);
+      console.error('âŒ Failed handling notification:', error);
       Alert.alert(
         'Navigation Error',
         'Could not open the requested screen. Please try again.',
         [{ text: 'OK' }]
       );
     }
-    // NOTE: Don't call loadNotifications() here — it causes re-render during navigation
+    // NOTE: Don't call loadNotifications() here â€” it causes re-render during navigation
     // The screen will refresh automatically when you come back
   };
 
   const getIcon = (type) => {
     switch (type) {
-      case 'achievement': return '🏆';
-      case 'reminder': return '⚽';
-      case 'tip': return '💡';
-      case 'milestone': return '⭐';
-      default: return '📢';
+      case 'achievement': return 'ðŸ†';
+      case 'reminder': return 'âš½';
+      case 'tip': return 'ðŸ’¡';
+      case 'milestone': return 'â­';
+      default: return 'ðŸ“¢';
     }
   };
 
@@ -83,7 +83,7 @@ export default function NotificationScreen() {
     return (
       <View style={styles.container}>
         <View style={styles.header}>
-          <Text style={styles.title}>🔔 Notifications</Text>
+          <Text style={styles.title}>ðŸ”” Notifications</Text>
         </View>
         <View style={styles.loading}>
           <Text style={styles.loadingText}>Loading...</Text>
@@ -96,9 +96,9 @@ export default function NotificationScreen() {
     <View style={styles.container}>
       <View style={styles.header}>
         <TouchableOpacity onPress={() => router.back()} disabled={isLoading}>
-          <Text style={[styles.backButton, isLoading && styles.disabled]}>← Back</Text>
+          <Text style={[styles.backButton, isLoading && styles.disabled]}>â† Back</Text>
         </TouchableOpacity>
-        <Text style={styles.title}>🔔 Notifications</Text>
+        <Text style={styles.title}>ðŸ”” Notifications</Text>
       </View>
 
       <ScrollView style={styles.list}>
@@ -124,7 +124,7 @@ export default function NotificationScreen() {
               <View style={styles.content}>
                 <Text style={styles.message}>{notification.message}</Text>
                 <Text style={styles.time}>
-                  {new Date(notification.timestamp).toLocaleDateString()} • {new Date(notification.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                  {new Date(notification.timestamp).toLocaleDateString()} â€¢ {new Date(notification.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
                 </Text>
               </View>
               {!notification.read && <View style={styles.dot} />}

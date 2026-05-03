@@ -1,8 +1,8 @@
-// app/PaymentScreen.js
+﻿// app/PaymentScreen.js
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Alert, ActivityIndicator, ScrollView } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
-import { startCheckout } from './utils/stripePayment';
+import { startCheckout } from '';
 
 export default function PaymentScreen() {
   const router = useRouter();
@@ -28,7 +28,7 @@ export default function PaymentScreen() {
   return (
     <ScrollView style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.title}>💳 Secure Payment</Text>
+        <Text style={styles.title}>ðŸ’³ Secure Payment</Text>
         <Text style={styles.subtitle}>Complete your {planName} subscription</Text>
         <View style={styles.orderSummary}>
           <Text style={styles.orderText}>Plan: {planName}</Text>
@@ -39,11 +39,11 @@ export default function PaymentScreen() {
 
       <View style={styles.form}>
         <View style={styles.securityInfo}>
-          <Text style={styles.securityTitle}>🔒 Secure Checkout via Stripe</Text>
-          <Text style={styles.securityText}>• Card details are entered on Stripe's secure page</Text>
-          <Text style={styles.securityText}>• We never see or store your card number</Text>
-          <Text style={styles.securityText}>• 256-bit SSL encryption</Text>
-          <Text style={styles.securityText}>• PCI DSS Level 1 compliant</Text>
+          <Text style={styles.securityTitle}>ðŸ”’ Secure Checkout via Stripe</Text>
+          <Text style={styles.securityText}>â€¢ Card details are entered on Stripe's secure page</Text>
+          <Text style={styles.securityText}>â€¢ We never see or store your card number</Text>
+          <Text style={styles.securityText}>â€¢ 256-bit SSL encryption</Text>
+          <Text style={styles.securityText}>â€¢ PCI DSS Level 1 compliant</Text>
         </View>
 
         <TouchableOpacity

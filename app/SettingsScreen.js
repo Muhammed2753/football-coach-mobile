@@ -1,9 +1,9 @@
-// app/SettingsScreen.js
+﻿// app/SettingsScreen.js
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert, Switch } from 'react-native';
 import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { exportAllData, exportTrainingSessions, generateProgressReport } from './utils/exportSystem';
+import { exportAllData, exportTrainingSessions, generateProgressReport } from '';
 
 export default function SettingsScreen() {
   const router = useRouter();
@@ -81,9 +81,9 @@ export default function SettingsScreen() {
     <View style={styles.container}>
       <View style={styles.header}>
         <TouchableOpacity onPress={() => router.back()}>
-          <Text style={styles.backButton}>← Back</Text>
+          <Text style={styles.backButton}>â† Back</Text>
         </TouchableOpacity>
-        <Text style={styles.title}>⚙️ Settings</Text>
+        <Text style={styles.title}>âš™ï¸ Settings</Text>
       </View>
 
       <ScrollView style={styles.content}>
@@ -92,7 +92,7 @@ export default function SettingsScreen() {
         
         <View style={styles.settingRow}>
           <View style={styles.settingInfo}>
-            <Text style={styles.settingLabel}>🔔 Notifications</Text>
+            <Text style={styles.settingLabel}>ðŸ”” Notifications</Text>
             <Text style={styles.settingDesc}>Daily reminders and updates</Text>
           </View>
           <Switch
@@ -104,7 +104,7 @@ export default function SettingsScreen() {
 
         <View style={styles.settingRow}>
           <View style={styles.settingInfo}>
-            <Text style={styles.settingLabel}>🌙 Dark Mode</Text>
+            <Text style={styles.settingLabel}>ðŸŒ™ Dark Mode</Text>
             <Text style={styles.settingDesc}>Always enabled</Text>
           </View>
           <Switch
@@ -116,7 +116,7 @@ export default function SettingsScreen() {
 
         <View style={styles.settingRow}>
           <View style={styles.settingInfo}>
-            <Text style={styles.settingLabel}>💾 Auto Backup</Text>
+            <Text style={styles.settingLabel}>ðŸ’¾ Auto Backup</Text>
             <Text style={styles.settingDesc}>Weekly cloud backup</Text>
           </View>
           <Switch
@@ -130,7 +130,7 @@ export default function SettingsScreen() {
         <Text style={styles.sectionTitle}>Data Management</Text>
 
         <TouchableOpacity style={styles.actionButton} onPress={handleExportAll}>
-          <Text style={styles.actionIcon}>📦</Text>
+          <Text style={styles.actionIcon}>ðŸ“¦</Text>
           <View style={styles.actionInfo}>
             <Text style={styles.actionLabel}>Export All Data</Text>
             <Text style={styles.actionDesc}>Backup everything as JSON</Text>
@@ -138,7 +138,7 @@ export default function SettingsScreen() {
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.actionButton} onPress={handleExportSessions}>
-          <Text style={styles.actionIcon}>📊</Text>
+          <Text style={styles.actionIcon}>ðŸ“Š</Text>
           <View style={styles.actionInfo}>
             <Text style={styles.actionLabel}>Export Training Sessions</Text>
             <Text style={styles.actionDesc}>Download as CSV spreadsheet</Text>
@@ -146,7 +146,7 @@ export default function SettingsScreen() {
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.actionButton} onPress={handleGenerateReport}>
-          <Text style={styles.actionIcon}>📄</Text>
+          <Text style={styles.actionIcon}>ðŸ“„</Text>
           <View style={styles.actionInfo}>
             <Text style={styles.actionLabel}>Generate Progress Report</Text>
             <Text style={styles.actionDesc}>Detailed training summary</Text>
@@ -154,7 +154,7 @@ export default function SettingsScreen() {
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.actionButton} onPress={handleClearCache}>
-          <Text style={styles.actionIcon}>🗑️</Text>
+          <Text style={styles.actionIcon}>ðŸ—‘ï¸</Text>
           <View style={styles.actionInfo}>
             <Text style={styles.actionLabel}>Clear Cache</Text>
             <Text style={styles.actionDesc}>Free up storage space</Text>
@@ -168,7 +168,7 @@ export default function SettingsScreen() {
           style={styles.actionButton}
           onPress={() => router.push('/PrivacyPolicyScreen')}
         >
-          <Text style={styles.actionIcon}>🔒</Text>
+          <Text style={styles.actionIcon}>ðŸ”’</Text>
           <View style={styles.actionInfo}>
             <Text style={styles.actionLabel}>Privacy Policy</Text>
             <Text style={styles.actionDesc}>How we protect your data</Text>
@@ -179,7 +179,7 @@ export default function SettingsScreen() {
           style={styles.actionButton}
           onPress={() => router.push('/TermsOfServiceScreen')}
         >
-          <Text style={styles.actionIcon}>📜</Text>
+          <Text style={styles.actionIcon}>ðŸ“œ</Text>
           <View style={styles.actionInfo}>
             <Text style={styles.actionLabel}>Terms of Service</Text>
             <Text style={styles.actionDesc}>Usage agreement</Text>
@@ -193,7 +193,7 @@ export default function SettingsScreen() {
           style={[styles.actionButton, styles.dangerButton]}
           onPress={handleDeleteAccount}
         >
-          <Text style={styles.actionIcon}>⚠️</Text>
+          <Text style={styles.actionIcon}>âš ï¸</Text>
           <View style={styles.actionInfo}>
             <Text style={[styles.actionLabel, styles.dangerText]}>Delete Account</Text>
             <Text style={styles.actionDesc}>Permanently remove all data</Text>
@@ -202,7 +202,7 @@ export default function SettingsScreen() {
 
         <View style={styles.footer}>
           <Text style={styles.version}>Version 1.0.0</Text>
-          <Text style={styles.copyright}>© 2024 Football Coach</Text>
+          <Text style={styles.copyright}>Â© 2024 Football Coach</Text>
         </View>
       </ScrollView>
     </View>

@@ -1,17 +1,17 @@
-// app/utils/paymentProcessor.js
+﻿// app/utils/paymentProcessor.js
 // IMPORTANT: Raw card numbers are NEVER sent to any server.
 // Card data is tokenized client-side via Stripe before any network call.
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { activateVIP } from './vipSystem';
-import { startCheckout } from './stripePayment';
+import { activateVIP } from '';
+import { startCheckout } from '';
 
 /**
- * processPayment — delegates to Stripe Checkout (server-side session).
+ * processPayment â€” delegates to Stripe Checkout (server-side session).
  * Card details are entered on Stripe's hosted page, never in this app.
  */
 export const processPayment = async (paymentData) => {
   try {
-    // Use Stripe Checkout — card data never touches this app
+    // Use Stripe Checkout â€” card data never touches this app
     const result = await startCheckout(paymentData.planType);
     if (!result.success) {
       return { success: false, error: result.error };

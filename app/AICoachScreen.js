@@ -1,4 +1,4 @@
-// app/AICoachScreen.js
+﻿// app/AICoachScreen.js
 import React, { useState, useEffect } from 'react';
 import { 
   View, Text, StyleSheet, ScrollView, TouchableOpacity, 
@@ -6,14 +6,14 @@ import {
 } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { AICoachSystem } from './utils/aiCoachSystem';
+import { AICoachSystem } from '';
 import { 
   MOTIVATIONAL_QUOTES, TRANSLATIONS, 
   containsProfanity, translateQuote 
-} from './utils/inspirations';
-// ✅ Import ad components
-import AdBanner from './components/AdBanner';
-import { useInterstitialAd } from './hooks/useInterstitialAd';
+} from '';
+// âœ… Import ad components
+import AdBanner from '';
+import { useInterstitialAd } from '';
 
 const CUSTOM_QUOTES_KEY = 'custom_motivational_quotes';
 const SELECTED_LANGUAGE_KEY = 'selected_language';
@@ -36,29 +36,29 @@ export default function AICoachScreen() {
   const [newQuoteText, setNewQuoteText] = useState('');
   const [showLanguagePicker, setShowLanguagePicker] = useState(false);
 
-  // ✅ Initialize interstitial ad hook
+  // âœ… Initialize interstitial ad hook
   const { show: showInterstitial } = useInterstitialAd();
 
   const CATEGORIES = [
-    { key: 'all', label: 'All', icon: '🌟' },
-    { key: 'football', label: 'Football', icon: '⚽' },
-    { key: 'basketball', label: 'Basketball', icon: '🏀' },
-    { key: 'tennis', label: 'Tennis', icon: '🎾' },
-    { key: 'boxing', label: 'Boxing', icon: '🥊' },
-    { key: 'coach', label: 'Coach', icon: '👔' },
-    { key: 'business', label: 'Business', icon: '💼' },
-    { key: 'leadership', label: 'Leadership', icon: '👑' },
+    { key: 'all', label: 'All', icon: 'ðŸŒŸ' },
+    { key: 'football', label: 'Football', icon: 'âš½' },
+    { key: 'basketball', label: 'Basketball', icon: 'ðŸ€' },
+    { key: 'tennis', label: 'Tennis', icon: 'ðŸŽ¾' },
+    { key: 'boxing', label: 'Boxing', icon: 'ðŸ¥Š' },
+    { key: 'coach', label: 'Coach', icon: 'ðŸ‘”' },
+    { key: 'business', label: 'Business', icon: 'ðŸ’¼' },
+    { key: 'leadership', label: 'Leadership', icon: 'ðŸ‘‘' },
   ];
 
   const LANGUAGES = [
-    { code: 'en', name: 'English', flag: '🇬🇧' },
-    { code: 'es', name: 'Español', flag: '🇪🇸' },
-    { code: 'fr', name: 'Français', flag: '🇫🇷' },
-    { code: 'pt', name: 'Português', flag: '🇵🇹' },
-    { code: 'ar', name: 'العربية', flag: '🇸🇦' },
-    { code: 'zh', name: '中文', flag: '🇨🇳' },
-    { code: 'de', name: 'Deutsch', flag: '🇩🇪' },
-    { code: 'it', name: 'Italiano', flag: '🇮🇹' },
+    { code: 'en', name: 'English', flag: 'ðŸ‡¬ðŸ‡§' },
+    { code: 'es', name: 'EspaÃ±ol', flag: 'ðŸ‡ªðŸ‡¸' },
+    { code: 'fr', name: 'FranÃ§ais', flag: 'ðŸ‡«ðŸ‡·' },
+    { code: 'pt', name: 'PortuguÃªs', flag: 'ðŸ‡µðŸ‡¹' },
+    { code: 'ar', name: 'Ø§Ù„Ø¹Ø±Ø¨ÙŠØ©', flag: 'ðŸ‡¸ðŸ‡¦' },
+    { code: 'zh', name: 'ä¸­æ–‡', flag: 'ðŸ‡¨ðŸ‡³' },
+    { code: 'de', name: 'Deutsch', flag: 'ðŸ‡©ðŸ‡ª' },
+    { code: 'it', name: 'Italiano', flag: 'ðŸ‡®ðŸ‡¹' },
   ];
 
   const t = TRANSLATIONS[selectedLanguage] || TRANSLATIONS['en'];
@@ -147,7 +147,7 @@ export default function AICoachScreen() {
   };
 
   const loadMotivationalQuotes = () => {
-    console.log('🔄 Loading quotes for category:', selectedCategory);
+    console.log('ðŸ”„ Loading quotes for category:', selectedCategory);
     
     let filtered = [...MOTIVATIONAL_QUOTES];
     
@@ -157,15 +157,15 @@ export default function AICoachScreen() {
         const match = q.category && q.category.trim().toLowerCase() === selectedCategory.trim().toLowerCase();
         return match;
       });
-      console.log(`🔍 Filtered: ${beforeCount} → ${filtered.length} quotes`);
+      console.log(`ðŸ” Filtered: ${beforeCount} â†’ ${filtered.length} quotes`);
       
       if (filtered.length > 0) {
-        console.log('📝 Sample:', filtered.slice(0, 2).map(q => `${q.player} (${q.category})`));
+        console.log('ðŸ“ Sample:', filtered.slice(0, 2).map(q => `${q.player} (${q.category})`));
       }
     }
     
     if (filtered.length === 0 && selectedCategory !== 'all') {
-      console.warn(`⚠️ No quotes found for category: ${selectedCategory}`);
+      console.warn(`âš ï¸ No quotes found for category: ${selectedCategory}`);
       setTips([{
         id: `empty-${selectedCategory}`,
         category: getCategoryIcon(selectedCategory) + ' ' + getCategoryLabel(selectedCategory),
@@ -183,19 +183,19 @@ export default function AICoachScreen() {
         isCustom: true
       }));
       filtered = [...filtered, ...customWithCategory];
-      console.log(`➕ Added ${customWithCategory.length} custom quotes`);
+      console.log(`âž• Added ${customWithCategory.length} custom quotes`);
     }
     
     const shuffled = filtered.sort(() => Math.random() - 0.5);
     const count = Math.min(5, shuffled.length);
     const selected = shuffled.slice(0, count);
     
-    console.log(`✅ Selected ${selected.length} quotes to display`);
+    console.log(`âœ… Selected ${selected.length} quotes to display`);
     
     const translatedTips = selected.map((q, i) => ({
       id: `quote-${i}-${Date.now()}-${Math.random()}`,
-      category: `${q.isCustom ? '📝' : getCategoryIcon(q.category)} ${getCategoryLabel(q.category)}`,
-      tip: `"${translateQuote(q.quote, selectedLanguage)}"\n\n— ${q.player}`,
+      category: `${q.isCustom ? 'ðŸ“' : getCategoryIcon(q.category)} ${getCategoryLabel(q.category)}`,
+      tip: `"${translateQuote(q.quote, selectedLanguage)}"\n\nâ€” ${q.player}`,
       exercises: []
     }));
     
@@ -204,13 +204,13 @@ export default function AICoachScreen() {
 
   const getCategoryIcon = (category) => {
     const icons = {
-      football: '⚽', basketball: '🏀', tennis: '🎾',
-      boxing: '🥊', athletics: '🏃', gymnastics: '🤸',
-      coach: '👔', business: '💼', entertainment: '🎬',
-      leadership: '👑', wisdom: '📚', motivation: '🔥',
-      productivity: '⚡', custom: '📝'
+      football: 'âš½', basketball: 'ðŸ€', tennis: 'ðŸŽ¾',
+      boxing: 'ðŸ¥Š', athletics: 'ðŸƒ', gymnastics: 'ðŸ¤¸',
+      coach: 'ðŸ‘”', business: 'ðŸ’¼', entertainment: 'ðŸŽ¬',
+      leadership: 'ðŸ‘‘', wisdom: 'ðŸ“š', motivation: 'ðŸ”¥',
+      productivity: 'âš¡', custom: 'ðŸ“'
     };
-    return icons[category] || '💭';
+    return icons[category] || 'ðŸ’­';
   };
 
   const getCategoryLabel = (category) => {
@@ -260,7 +260,7 @@ export default function AICoachScreen() {
     try {
       router.back();
     } catch (error) {
-      console.log('⬅️ Back not available, navigating to home');
+      console.log('â¬…ï¸ Back not available, navigating to home');
       router.replace('/');
     }
   };
@@ -292,13 +292,13 @@ export default function AICoachScreen() {
   }
 
   return (
-    // ✅ Wrap in flex container for banner at bottom
+    // âœ… Wrap in flex container for banner at bottom
     <View style={{ flex: 1, backgroundColor: '#0d1b2a' }}>
       <ScrollView style={styles.container} contentContainerStyle={styles.content}>
         {/* Header with Back & Language */}
         <View style={styles.header}>
           <TouchableOpacity onPress={handleGoBack} style={styles.backBtn} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
-            <Text style={styles.backText}>← {t.back}</Text>
+            <Text style={styles.backText}>â† {t.back}</Text>
           </TouchableOpacity>
           
           <TouchableOpacity 
@@ -311,7 +311,7 @@ export default function AICoachScreen() {
           </TouchableOpacity>
         </View>
         
-        <Text style={styles.title}>🧠 {t.dailyWisdom}</Text>
+        <Text style={styles.title}>ðŸ§  {t.dailyWisdom}</Text>
         <Text style={styles.subtitle}>{t.inspirationFrom}</Text>
 
         {/* Category Filter Chips */}
@@ -328,7 +328,7 @@ export default function AICoachScreen() {
                 selectedCategory === cat.key && styles.categoryChipActive
               ]}
               onPress={() => {
-                console.log('🎯 Category selected:', cat.key);
+                console.log('ðŸŽ¯ Category selected:', cat.key);
                 setSelectedCategory(cat.key);
                 if (showMotivational) {
                   loadMotivationalQuotes();
@@ -350,12 +350,12 @@ export default function AICoachScreen() {
           style={styles.addQuoteButton}
           onPress={() => setShowAddModal(true)}
         >
-          <Text style={styles.addQuoteButtonText}>✍️ {t.addQuote}</Text>
+          <Text style={styles.addQuoteButtonText}>âœï¸ {t.addQuote}</Text>
         </TouchableOpacity>
 
         {showMotivational && (
           <View style={styles.motivationalHeader}>
-            <Text style={styles.motivationalTitle}>🌟 {t.dailyWisdom}</Text>
+            <Text style={styles.motivationalTitle}>ðŸŒŸ {t.dailyWisdom}</Text>
             <Text style={styles.motivationalSubtitle}>{t.inspirationFrom}</Text>
           </View>
         )}
@@ -369,7 +369,7 @@ export default function AICoachScreen() {
               {tip.exercises?.length > 0 && (
                 <View style={styles.exercises}>
                   {tip.exercises.map((ex, eidx) => (
-                    <Text key={eidx} style={styles.exercise}>• {ex}</Text>
+                    <Text key={eidx} style={styles.exercise}>â€¢ {ex}</Text>
                   ))}
                 </View>
               )}
@@ -423,7 +423,7 @@ export default function AICoachScreen() {
                   <Text style={styles.languageItemText}>
                     {lang.flag} {lang.name}
                   </Text>
-                  {selectedLanguage === lang.code && <Text style={styles.checkmark}>✓</Text>}
+                  {selectedLanguage === lang.code && <Text style={styles.checkmark}>âœ“</Text>}
                 </TouchableOpacity>
               ))}
               <TouchableOpacity 
@@ -487,7 +487,7 @@ export default function AICoachScreen() {
         </Modal>
       </ScrollView>
 
-      {/* ✅ Banner Ad - Sticks to bottom, hidden for VIP */}
+      {/* âœ… Banner Ad - Sticks to bottom, hidden for VIP */}
       <AdBanner />
     </View>
   );

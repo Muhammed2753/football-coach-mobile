@@ -1,6 +1,6 @@
-// app/utils/vipSystem.js
+﻿// app/utils/vipSystem.js
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { auth, db } from './firebaseConfig';
+import { auth, db } from '';
 import { doc, getDoc } from 'firebase/firestore';
 
 const VIP_KEY = 'football_coach_vip_status';
@@ -15,13 +15,13 @@ export const VIP_PLANS = {
     price: 'FREE',
     duration: 'Forever',
     features: [
-      '✅ Create up to 3 players',
-      '✅ Basic player stats',
-      '✅ Simple player cards',
-      '✅ 2 team formations',
-      '❌ No advanced analytics',
-      '❌ No team comparison',
-      '❌ Limited training drills',
+      'âœ… Create up to 3 players',
+      'âœ… Basic player stats',
+      'âœ… Simple player cards',
+      'âœ… 2 team formations',
+      'âŒ No advanced analytics',
+      'âŒ No team comparison',
+      'âŒ Limited training drills',
     ],
     color: '#CD7F32',
   },
@@ -30,14 +30,14 @@ export const VIP_PLANS = {
     price: '$4.99',
     duration: '/month',
     features: [
-      '✅ Create unlimited players',
-      '✅ Advanced player statistics',
-      '✅ Performance tracking',
-      '✅ 8 team formations',
-      '✅ Training drill library',
-      '✅ Player comparison tool',
-      '✅ Match analysis',
-      '✅ Ad-free experience',
+      'âœ… Create unlimited players',
+      'âœ… Advanced player statistics',
+      'âœ… Performance tracking',
+      'âœ… 8 team formations',
+      'âœ… Training drill library',
+      'âœ… Player comparison tool',
+      'âœ… Match analysis',
+      'âœ… Ad-free experience',
     ],
     color: '#FFD700',
   },
@@ -46,14 +46,14 @@ export const VIP_PLANS = {
     price: '$24.99',
     duration: '/year (Save 30%)',
     features: [
-      '✅ All Pro Coach features',
-      '✅ Season planning tools',
-      '✅ Team chemistry analysis',
-      '✅ Injury tracking system',
-      '✅ Custom formation builder',
-      '✅ Export team reports',
-      '✅ Multi-team management',
-      '✅ Priority support',
+      'âœ… All Pro Coach features',
+      'âœ… Season planning tools',
+      'âœ… Team chemistry analysis',
+      'âœ… Injury tracking system',
+      'âœ… Custom formation builder',
+      'âœ… Export team reports',
+      'âœ… Multi-team management',
+      'âœ… Priority support',
     ],
     color: '#D4AF37',
   },

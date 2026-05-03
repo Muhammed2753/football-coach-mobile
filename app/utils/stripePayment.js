@@ -1,7 +1,7 @@
-// app/utils/stripePayment.js
+﻿// app/utils/stripePayment.js
 import { Linking } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { auth } from './firebaseConfig';
+import { auth } from '';
 
 const BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL || 'http://localhost:3000';
 

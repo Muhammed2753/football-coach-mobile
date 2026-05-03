@@ -1,9 +1,9 @@
-// app/PositionQuiz.js
+﻿// app/PositionQuiz.js
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Alert } from 'react-native';
 import { useRouter } from 'expo-router';
-// ✅ Import interstitial ad hook
-import { useInterstitialAd } from './hooks/useInterstitialAd';
+// âœ… Import interstitial ad hook
+import { useInterstitialAd } from '';
 
 export default function PositionQuiz() {
   const router = useRouter();
@@ -11,7 +11,7 @@ export default function PositionQuiz() {
   const [answers, setAnswers] = useState({});
   const [isCalculating, setIsCalculating] = useState(false);
   
-  // ✅ Initialize interstitial ad hook
+  // âœ… Initialize interstitial ad hook
   const { show: showInterstitial } = useInterstitialAd();
 
   const questions = [
@@ -125,7 +125,7 @@ export default function PositionQuiz() {
       newAnswers[position] = (newAnswers[position] || 0) + option.points[position];
     });
 
-    console.log('🎯 Quiz Progress:', {
+    console.log('ðŸŽ¯ Quiz Progress:', {
       question: currentQuestion + 1,
       selected: option.text,
       points: option.points,
@@ -148,7 +148,7 @@ export default function PositionQuiz() {
         const entries = Object.entries(finalAnswers || {});
         
         if (!entries || entries.length === 0) {
-          Alert.alert('⚠️ No Result', 'Could not determine a position.', [
+          Alert.alert('âš ï¸ No Result', 'Could not determine a position.', [
             { text: 'Retake Quiz', onPress: resetQuiz }
           ]);
           setIsCalculating(false);
@@ -160,20 +160,20 @@ export default function PositionQuiz() {
         
         const results = sorted.map(([key, score], index) => {
           const name = getPositionName(key);
-          const emoji = ['🥇', '🥈', '🥉'][index];
+          const emoji = ['ðŸ¥‡', 'ðŸ¥ˆ', 'ðŸ¥‰'][index];
           return `${emoji} ${name} (${score} pts)`;
         });
 
-        while (results.length < 3) results.push('—');
+        while (results.length < 3) results.push('â€”');
 
         Alert.alert(
-          '🎯 Your Ideal Positions!',
+          'ðŸŽ¯ Your Ideal Positions!',
           results.join('\n') + '\n\nThese positions match your playing style best!',
           [
             {
               text: 'Create Player Card',
               onPress: () => {
-                // ✅ Show interstitial before navigating to ProfileForm (30% chance)
+                // âœ… Show interstitial before navigating to ProfileForm (30% chance)
                 if (Math.random() > 0.7) {
                   showInterstitial();
                 }
@@ -183,7 +183,7 @@ export default function PositionQuiz() {
                   try {
                     router.push('/ProfileForm');
                   } catch (err) {
-                    console.error('❌ Navigation failed:', err);
+                    console.error('âŒ Navigation failed:', err);
                     Alert.alert('Error', 'Profile form not found. Please check your app routes.');
                   }
                 }, 600);
@@ -199,7 +199,7 @@ export default function PositionQuiz() {
           { cancelable: false, onDismiss: () => setIsCalculating(false) }
         );
       } catch (error) {
-        console.error('💥 showResults error:', error);
+        console.error('ðŸ’¥ showResults error:', error);
         Alert.alert('Error', 'Something went wrong. Please try again.', [
           { text: 'Retake Quiz', onPress: resetQuiz }
         ]);
@@ -214,9 +214,9 @@ export default function PositionQuiz() {
     <ScrollView style={styles.container} keyboardShouldPersistTaps="handled">
       <View style={styles.header}>
         <TouchableOpacity onPress={() => router.back()} disabled={isCalculating}>
-          <Text style={[styles.backButton, isCalculating && styles.disabled]}>← Back</Text>
+          <Text style={[styles.backButton, isCalculating && styles.disabled]}>â† Back</Text>
         </TouchableOpacity>
-        <Text style={styles.title}>🎯 Find My Position</Text>
+        <Text style={styles.title}>ðŸŽ¯ Find My Position</Text>
         <Text style={styles.subtitle}>Discover your ideal playing position</Text>
       </View>
 

@@ -1,8 +1,8 @@
-// app/HallOfFame.js
+﻿// app/HallOfFame.js
 import React, { useState, useCallback, useRef } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, FlatList, Alert } from 'react-native';
 import { useFocusEffect, useRouter } from 'expo-router';
-import { getAllPlayers, deletePlayer, getTotalPlayersCount } from './utils/playerDatabase';
+import { getAllPlayers, deletePlayer, getTotalPlayersCount } from '';
 
 const getRarityColor = (overall) => {
   if (overall >= 86) return '#D4AF37';
@@ -20,7 +20,7 @@ const PlayerItem = React.memo(({ item, onView, onDelete }) => (
       <View>
         <Text style={styles.playerName}>{item.name || 'Anonymous'}</Text>
         <Text style={styles.playerInfo}>
-          {item.positions?.[0] || 'CM'} • Age {item.age || 20}
+          {item.positions?.[0] || 'CM'} â€¢ Age {item.age || 20}
         </Text>
       </View>
       <Text style={[styles.playerRating, { color: getRarityColor(item.overall || 0) }]}>
@@ -43,10 +43,10 @@ const PlayerItem = React.memo(({ item, onView, onDelete }) => (
 
     <View style={styles.actions}>
       <TouchableOpacity style={styles.viewBtn} onPress={() => onView(item)}>
-        <Text style={styles.btnText}>👁 View</Text>
+        <Text style={styles.btnText}>ðŸ‘ View</Text>
       </TouchableOpacity>
       <TouchableOpacity style={styles.deleteBtn} onPress={() => onDelete(item.id, item.name || 'Player')}>
-        <Text style={styles.btnText}>🗑 Delete</Text>
+        <Text style={styles.btnText}>ðŸ—‘ Delete</Text>
       </TouchableOpacity>
     </View>
   </TouchableOpacity>
@@ -142,12 +142,12 @@ export default function HallOfFame() {
 
   const EmptyComponent = useCallback(() => (
     <View style={styles.emptyState}>
-      <Text style={styles.emptyText}>📭 No players found</Text>
+      <Text style={styles.emptyText}>ðŸ“­ No players found</Text>
       <Text style={styles.emptySubtext}>
         {selectedFilter !== 'all' ? `No ${selectedFilter} players found` : 'Create your first player to get started!'}
       </Text>
       <TouchableOpacity style={styles.createBtn} onPress={() => router.push('/ProfileForm')}>
-        <Text style={styles.createBtnText}>➕ Create Player</Text>
+        <Text style={styles.createBtnText}>âž• Create Player</Text>
       </TouchableOpacity>
     </View>
   ), [selectedFilter]);
@@ -155,7 +155,7 @@ export default function HallOfFame() {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.title}>🏆 Hall of Fame</Text>
+        <Text style={styles.title}>ðŸ† Hall of Fame</Text>
         <Text style={styles.subtitle}>Total Players: {totalCount}</Text>
       </View>
 
@@ -182,19 +182,19 @@ export default function HallOfFame() {
           style={[styles.sortBtn, sortBy === 'recent' && styles.sortBtnActive]}
           onPress={() => handleSortChange('recent')}
         >
-          <Text style={styles.sortText}>📅 Recent</Text>
+          <Text style={styles.sortText}>ðŸ“… Recent</Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={[styles.sortBtn, sortBy === 'rating' && styles.sortBtnActive]}
           onPress={() => handleSortChange('rating')}
         >
-          <Text style={styles.sortText}>⭐ Rating</Text>
+          <Text style={styles.sortText}>â­ Rating</Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={[styles.sortBtn, sortBy === 'age' && styles.sortBtnActive]}
           onPress={() => handleSortChange('age')}
         >
-          <Text style={styles.sortText}>🎂 Age</Text>
+          <Text style={styles.sortText}>ðŸŽ‚ Age</Text>
         </TouchableOpacity>
       </View>
 
@@ -212,7 +212,7 @@ export default function HallOfFame() {
         style={styles.backBtn}
         onPress={() => router.back()}
       >
-        <Text style={styles.backText}>← Back</Text>
+        <Text style={styles.backText}>â† Back</Text>
       </TouchableOpacity>
     </View>
   );

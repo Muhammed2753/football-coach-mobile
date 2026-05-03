@@ -1,8 +1,8 @@
-// Smart Training System
+﻿// Smart Training System
 // Firebase disabled - using local storage only
 export const generateTrainingPlan = async () => ({ drills: [] });
 export const saveProgress = async () => {};
-import { AnalyticsEngine } from './analyticsEngine';
+import { AnalyticsEngine } from '';
 
 export class SmartTrainingSystem {
   // Generate adaptive training plan

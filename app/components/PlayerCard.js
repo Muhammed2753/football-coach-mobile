@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity, Alert, ScrollView, Share } from 'react-native';
-import { getAllPlayers, updatePlayer } from '../utils/playerDatabase';
+import { getAllPlayers, updatePlayer } from '';
 import { useRouter } from 'expo-router';
 
 const getStatColor = (value) => {
@@ -39,7 +39,7 @@ function InteractiveStarRating({ value, onChange }) {
             style={styles.starButton}
           >
             <Text style={[styles.star, currentValue >= star && styles.starActive]}>
-              ★
+              â˜…
             </Text>
           </TouchableOpacity>
         </View>
@@ -107,7 +107,7 @@ export default function PlayerCard({ data }) {
         club: player.club || 'Free Agent'
       };
       await Share.share({
-        message: `🎴 Check out my Football Coach player card!\n\n⚽ ${cardData.name}\n🏆 Overall: ${cardData.overall}\n📍 Position: ${cardData.position}\n🎂 Age: ${cardData.age}\n🏟️ Club: ${cardData.club}\n\nDownload Football Coach Mobile to create your own!`,
+        message: `ðŸŽ´ Check out my Football Coach player card!\n\nâš½ ${cardData.name}\nðŸ† Overall: ${cardData.overall}\nðŸ“ Position: ${cardData.position}\nðŸŽ‚ Age: ${cardData.age}\nðŸŸï¸ Club: ${cardData.club}\n\nDownload Football Coach Mobile to create your own!`,
         title: 'My Player Card'
       });
     } catch (error) {
@@ -123,11 +123,11 @@ export default function PlayerCard({ data }) {
           <Text style={styles.noPlayerTitle}>No Player Found</Text>
           <Text style={styles.noPlayerText}>Please create a profile first</Text>
           <TouchableOpacity onPress={() => router.push('/ProfileForm')} style={styles.createProfileButton}>
-            <Text style={styles.createProfileButtonText}>📝 Create Profile</Text>
+            <Text style={styles.createProfileButtonText}>ðŸ“ Create Profile</Text>
           </TouchableOpacity>
         </View>
         <TouchableOpacity onPress={() => router.push('/')} style={styles.backButton}>
-          <Text style={styles.backButtonText}>← Back to Home</Text>
+          <Text style={styles.backButtonText}>â† Back to Home</Text>
         </TouchableOpacity>
       </ScrollView>
     );
@@ -237,27 +237,27 @@ export default function PlayerCard({ data }) {
       {!data && (
         <>
           <TouchableOpacity onPress={sharePlayerCard} style={styles.shareButton}>
-            <Text style={styles.shareButtonText}>📤 Share My Card</Text>
+            <Text style={styles.shareButtonText}>ðŸ“¤ Share My Card</Text>
           </TouchableOpacity>
 
           <TouchableOpacity onPress={() => router.push('/VIPChat')} style={styles.chatButton}>
-            <Text style={styles.chatButtonText}>💬 VIP Coach Chat</Text>
+            <Text style={styles.chatButtonText}>ðŸ’¬ VIP Coach Chat</Text>
           </TouchableOpacity>
 
           <View style={styles.actionContainer}>
             <TouchableOpacity onPress={() => router.push('/TrainingPlanScreen')} style={styles.actionButton}>
-              <Text style={styles.actionButtonText}>📋 Create Training Plan</Text>
+              <Text style={styles.actionButtonText}>ðŸ“‹ Create Training Plan</Text>
             </TouchableOpacity>
             <TouchableOpacity onPress={() => router.push('/WeaknessScreen')} style={styles.actionButton}>
-              <Text style={styles.actionButtonText}>🎯 View Weaknesses</Text>
+              <Text style={styles.actionButtonText}>ðŸŽ¯ View Weaknesses</Text>
             </TouchableOpacity>
             <TouchableOpacity onPress={() => router.push('/ProgressScreen')} style={styles.actionButton}>
-              <Text style={styles.actionButtonText}>📊 Track Progress</Text>
+              <Text style={styles.actionButtonText}>ðŸ“Š Track Progress</Text>
             </TouchableOpacity>
           </View>
 
           <TouchableOpacity onPress={() => router.push('/')} style={styles.backButton}>
-            <Text style={styles.backButtonText}>← Back to Home</Text>
+            <Text style={styles.backButtonText}>â† Back to Home</Text>
           </TouchableOpacity>
         </>
       )}

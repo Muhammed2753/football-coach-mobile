@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from 'react';
+﻿import React, { useEffect, useState } from 'react';
 import { View, Text, Image, StyleSheet, ActivityIndicator, Animated } from 'react-native';
 import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { footballQuotes } from '../assets/data/footballQuotes';
+import { footballQuotes } from '';
 
 export default function SplashScreen() {
   const router = useRouter();
@@ -57,8 +57,8 @@ export default function SplashScreen() {
   return (
     <View style={styles.container}>
       <Animated.View style={[styles.content, { opacity: fadeAnim }]}>
-        <Image source={require('../assets/images/icon.png')} style={styles.logo} />
-        <Text style={styles.title}>⚽ Football Coach</Text>
+        <Image source={require('')} style={styles.logo} />
+        <Text style={styles.title}>âš½ Football Coach</Text>
         <Text style={styles.subtitle}>Your Personal Training Assistant</Text>
         
         <View style={styles.loadingContainer}>

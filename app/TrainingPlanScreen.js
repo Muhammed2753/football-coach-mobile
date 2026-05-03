@@ -1,11 +1,11 @@
-// app/TrainingPlanScreen.js
+﻿// app/TrainingPlanScreen.js
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Modal, Alert } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
-import { createTrainingPlan, estimateWeeksToGoal, recommendIntensity } from './utils/TrainingEngine';
-import { getAllPlayers } from './utils/playerDatabase';
+import { createTrainingPlan, estimateWeeksToGoal, recommendIntensity } from '';
+import { getAllPlayers } from '';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import AdBanner from './components/AdBanner';
+import AdBanner from '';
 
 export default function TrainingPlanScreen() {
   const router = useRouter();
@@ -112,7 +112,7 @@ export default function TrainingPlanScreen() {
       
       setShowPreview(false);
       
-      // ✅ Show interstitial before navigating to progress screen (30% chance)
+      // âœ… Show interstitial before navigating to progress screen (30% chance)
       if (Math.random() > 0.7) {
         showInterstitial();
       }
@@ -141,10 +141,10 @@ export default function TrainingPlanScreen() {
     return (
       <View style={styles.container}>
         <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-          <Text style={styles.backText}>← Back</Text>
+          <Text style={styles.backText}>â† Back</Text>
         </TouchableOpacity>
         <View style={styles.centerContent}>
-          <Text style={styles.errorTitle}>⚠️ Player Not Found</Text>
+          <Text style={styles.errorTitle}>âš ï¸ Player Not Found</Text>
           <Text style={styles.errorText}>
             We couldn't load your player data.{'\n'}{'\n'}
             Please create a profile first, then try again.
@@ -153,7 +153,7 @@ export default function TrainingPlanScreen() {
             style={styles.retryButton}
             onPress={() => router.push('/ProfileForm')}
           >
-            <Text style={styles.retryButtonText}>➕ Create Profile</Text>
+            <Text style={styles.retryButtonText}>âž• Create Profile</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -163,14 +163,14 @@ export default function TrainingPlanScreen() {
   const weaknesses = getWeaknesses();
 
   return (
-    // ✅ Wrap in flex container for banner at bottom
+    // âœ… Wrap in flex container for banner at bottom
     <View style={{ flex: 1, backgroundColor: '#0d1b2a' }}>
       <ScrollView contentContainerStyle={styles.container}>
         <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-          <Text style={styles.backText}>← Back</Text>
+          <Text style={styles.backText}>â† Back</Text>
         </TouchableOpacity>
         
-        <Text style={styles.title}>📋 Custom Training Plan</Text>
+        <Text style={styles.title}>ðŸ“‹ Custom Training Plan</Text>
         <Text style={styles.subtitle}>for {player.name} ({player.positions?.[0] || player.preferredPosition || 'CM'})</Text>
 
         {/* Intensity Selector */}
@@ -217,7 +217,7 @@ export default function TrainingPlanScreen() {
                 <Text style={styles.weeksEstimate}>
                   ~{weeksToGoal} weeks to 90
                 </Text>
-                <Text style={styles.checkmark}>{isSelected ? '✓' : ''}</Text>
+                <Text style={styles.checkmark}>{isSelected ? 'âœ“' : ''}</Text>
               </TouchableOpacity>
             );
           })}
@@ -229,7 +229,7 @@ export default function TrainingPlanScreen() {
           style={styles.generateButton}
         >
           <Text style={styles.generateButtonText}>
-            📊 Generate Training Plan
+            ðŸ“Š Generate Training Plan
           </Text>
         </TouchableOpacity>
 
@@ -245,14 +245,14 @@ export default function TrainingPlanScreen() {
                 onPress={() => setShowPreview(false)}
                 style={styles.closeButton}
               >
-                <Text style={styles.closeText}>✕ Close</Text>
+                <Text style={styles.closeText}>âœ• Close</Text>
               </TouchableOpacity>
 
               <Text style={styles.planTitle}>{plan.name}</Text>
               <Text style={styles.planSubtitle}>12-Week Progression</Text>
 
               {/* Estimated Gains */}
-              <Text style={styles.gainsTitle}>📈 Estimated Gains</Text>
+              <Text style={styles.gainsTitle}>ðŸ“ˆ Estimated Gains</Text>
               {Object.entries(plan.estimatedGains).map(([attr, gains]) => (
                 <View key={attr} style={styles.gainCard}>
                   <Text style={styles.gainAttr}>
@@ -270,7 +270,7 @@ export default function TrainingPlanScreen() {
                     />
                   </View>
                   <Text style={styles.gainText}>
-                    {gains.from} → {gains.to} (+{gains.gain})
+                    {gains.from} â†’ {gains.to} (+{gains.gain})
                   </Text>
                 </View>
               ))}
@@ -280,14 +280,14 @@ export default function TrainingPlanScreen() {
                 onPress={startTraining}
                 style={styles.startButton}
               >
-                <Text style={styles.startButtonText}>🚀 Start Training</Text>
+                <Text style={styles.startButtonText}>ðŸš€ Start Training</Text>
               </TouchableOpacity>
             </ScrollView>
           </Modal>
         )}
       </ScrollView>
 
-      {/* ✅ Banner Ad - Sticks to bottom, hidden for VIP */}
+      {/* âœ… Banner Ad - Sticks to bottom, hidden for VIP */}
       <AdBanner />
     </View>
   );

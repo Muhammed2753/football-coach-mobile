@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -11,7 +11,7 @@ import {
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { auth, isFirebaseInitialized } from './utils/firebaseConfig';
+import { auth, isFirebaseInitialized } from '';
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
@@ -86,7 +86,7 @@ export default function AuthScreen() {
       contentContainerStyle={styles.scrollContent}
       keyboardShouldPersistTaps="handled"
     >
-        <Text style={styles.title}>⚽ Football Coach</Text>
+        <Text style={styles.title}>âš½ Football Coach</Text>
         <Text style={styles.subtitle}>Your Personal Training Assistant</Text>
 
         <View style={styles.form}>
@@ -127,7 +127,7 @@ export default function AuthScreen() {
               onPress={() => setShowPassword(!showPassword)}
               activeOpacity={0.7}
             >
-              <Text style={styles.eyeText}>{showPassword ? '👁️' : '🙈'}</Text>
+              <Text style={styles.eyeText}>{showPassword ? 'ðŸ‘ï¸' : 'ðŸ™ˆ'}</Text>
             </TouchableOpacity>
           </View>
 
@@ -140,7 +140,7 @@ export default function AuthScreen() {
             {loading ? (
               <ActivityIndicator color="#fff" />
             ) : (
-              <Text style={styles.buttonText}>{isLogin ? '🔑 Login' : '📝 Sign Up'}</Text>
+              <Text style={styles.buttonText}>{isLogin ? 'ðŸ”‘ Login' : 'ðŸ“ Sign Up'}</Text>
             )}
           </TouchableOpacity>
 

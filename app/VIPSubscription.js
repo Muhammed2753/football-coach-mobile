@@ -1,8 +1,8 @@
-// app/VIPSubscription.js
+﻿// app/VIPSubscription.js
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert, ActivityIndicator } from 'react-native';
 import { useRouter } from 'expo-router';
-import { startCheckout } from './utils/stripePayment';
+import { startCheckout } from '';
 
 export default function VIPSubscription() {
   const router = useRouter();
@@ -29,14 +29,14 @@ export default function VIPSubscription() {
     <ScrollView style={styles.container}>
       <View style={styles.header}>
         <TouchableOpacity onPress={() => router.back()}>
-          <Text style={styles.backButton}>← Back</Text>
+          <Text style={styles.backButton}>â† Back</Text>
         </TouchableOpacity>
-        <Text style={styles.title}>⭐ VIP Premium</Text>
+        <Text style={styles.title}>â­ VIP Premium</Text>
         <Text style={styles.subtitle}>Unlock the full potential</Text>
       </View>
 
       <View style={styles.benefitsSection}>
-        <Text style={styles.sectionTitle}>🎯 VIP Benefits</Text>
+        <Text style={styles.sectionTitle}>ðŸŽ¯ VIP Benefits</Text>
         {[
           'Ad-Free Experience',
           'Unlimited Coach Chat',
@@ -48,14 +48,14 @@ export default function VIPSubscription() {
           'Unlimited Player Saves'
         ].map((benefit, i) => (
           <View key={i} style={styles.benefitItem}>
-            <Text style={styles.benefitIcon}>✅</Text>
+            <Text style={styles.benefitIcon}>âœ…</Text>
             <Text style={styles.benefitText}>{benefit}</Text>
           </View>
         ))}
       </View>
 
       <View style={styles.plansSection}>
-        <Text style={styles.sectionTitle}>💰 Choose Your Plan</Text>
+        <Text style={styles.sectionTitle}>ðŸ’° Choose Your Plan</Text>
 
         <View style={styles.planCard}>
           <Text style={styles.planTitle}>Monthly VIP</Text>
@@ -88,7 +88,7 @@ export default function VIPSubscription() {
           onPress={() => handleSubscribe('Yearly')}
           disabled={loading}
         >
-          {loading ? <ActivityIndicator color="#fff" /> : <Text style={styles.subscribeText}>Subscribe Yearly - $39.99 🔥 Save 33%</Text>}
+          {loading ? <ActivityIndicator color="#fff" /> : <Text style={styles.subscribeText}>Subscribe Yearly - $39.99 ðŸ”¥ Save 33%</Text>}
         </TouchableOpacity>
       </View>
     </ScrollView>

@@ -1,14 +1,14 @@
-// app/ProfileForm.js
+﻿// app/ProfileForm.js
 import React, { useState, useEffect } from 'react';
 import { ScrollView, StyleSheet, Text, TextInput, View, TouchableOpacity, Alert, Image, Modal, FlatList, Platform } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
-import PlayerCard from './components/PlayerCard';
-import { calculateOverall, getImprovementTips, recommendPosition, getMaxStatByAge } from './utils/ratingEngine';
-import { savePlayer, getTotalPlayersCount } from './utils/playerDatabase';
-import { canSaveMorePlayers } from './utils/vipSystem';
+import PlayerCard from '';
+import { calculateOverall, getImprovementTips, recommendPosition, getMaxStatByAge } from '';
+import { savePlayer, getTotalPlayersCount } from '';
+import { canSaveMorePlayers } from '';
 import { useRouter } from 'expo-router';
 
-// ✅ FIX 1: Move StarRating OUTSIDE main component (prevents re-render bugs)
+// âœ… FIX 1: Move StarRating OUTSIDE main component (prevents re-render bugs)
 const StarRating = ({ value, onChange, max = 5 }) => {
   const [current, setCurrent] = useState(value);
 
@@ -35,7 +35,7 @@ const StarRating = ({ value, onChange, max = 5 }) => {
             styles.star,
             current >= star ? styles.starActive : styles.starInactive,
           ]}>
-            ★
+            â˜…
           </Text>
         </TouchableOpacity>
       ))}
@@ -177,7 +177,7 @@ export default function ProfileForm() {
     setAttrs({ ...attrs, [key]: num });
   };
 
-  // ✅ FIX 2: Web-compatible DraggableSlider with proper drag handling
+  // âœ… FIX 2: Web-compatible DraggableSlider with proper drag handling
   const DraggableSlider = ({ attr, value, onValueChange, maxValue }) => {
     const maxStat = maxValue || getMaxStatByAge(parseInt(age) || 15);
     const [isDragging, setIsDragging] = useState(false);
@@ -280,7 +280,7 @@ export default function ProfileForm() {
     'Box-to-Box': { stamina: 85, shortPassing: 75, longPassing: 72, standingTackle: 75, interceptions: 72, acceleration: 75, finishing: 68 },
   };
 
-  // ✅ FIX 3: applyTemplate now clamps values to age-based max
+  // âœ… FIX 3: applyTemplate now clamps values to age-based max
   const applyTemplate = (templateName) => {
     const numAge = parseInt(age) || 15;
     const maxStat = getMaxStatByAge(numAge);
@@ -381,7 +381,7 @@ export default function ProfileForm() {
       </View>
 
       <View style={styles.imageSection}>
-        <Text style={styles.label}>👤 Add Your Face (Optional)</Text>
+        <Text style={styles.label}>ðŸ‘¤ Add Your Face (Optional)</Text>
         <TouchableOpacity onPress={pickImage} style={styles.imageButton}>
           {image ? (
             <Image source={{ uri: image }} style={styles.playerImage} />
@@ -391,7 +391,7 @@ export default function ProfileForm() {
         </TouchableOpacity>
       </View>
 
-      <Text style={styles.label}>⚡ Quick Templates</Text>
+      <Text style={styles.label}>âš¡ Quick Templates</Text>
       <View style={styles.templateGrid}>
         {['Custom', 'Striker', 'Winger', 'Midfielder', 'Defender', 'Goalkeeper', 'Full Back', 'Defensive Mid', 'Attacking Mid', 'Deep-Lying Playmaker', 'Box-to-Box'].map((temp) => (
           <TouchableOpacity
@@ -486,19 +486,19 @@ export default function ProfileForm() {
           style={[styles.conditionButton, disability && styles.conditionActive]}
           onPress={() => setDisability(!disability)}
         >
-          <Text style={[styles.conditionText, disability && styles.conditionTextActive]}>♿ Disability Support</Text>
+          <Text style={[styles.conditionText, disability && styles.conditionTextActive]}>â™¿ Disability Support</Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={[styles.conditionButton, mentalStress && styles.conditionActive]}
           onPress={() => setMentalStress(!mentalStress)}
         >
-          <Text style={[styles.conditionText, mentalStress && styles.conditionTextActive]}>🧠 Mental Health Support</Text>
+          <Text style={[styles.conditionText, mentalStress && styles.conditionTextActive]}>ðŸ§  Mental Health Support</Text>
         </TouchableOpacity>
       </View>
 
-      <Text style={styles.sectionTitle}>⚽ Player Attributes</Text>
+      <Text style={styles.sectionTitle}>âš½ Player Attributes</Text>
       
-      <Text style={styles.categoryTitle}>🏃 Pace</Text>
+      <Text style={styles.categoryTitle}>ðŸƒ Pace</Text>
       {['acceleration', 'sprintSpeed'].map((attr) => (
         <DraggableSlider
           key={attr}
@@ -508,7 +508,7 @@ export default function ProfileForm() {
         />
       ))}
 
-      <Text style={styles.categoryTitle}>⚽ Shooting</Text>
+      <Text style={styles.categoryTitle}>âš½ Shooting</Text>
       {['finishing', 'shotPower', 'longShots', 'volleys', 'penalties'].map((attr) => (
         <DraggableSlider
           key={attr}
@@ -518,7 +518,7 @@ export default function ProfileForm() {
         />
       ))}
 
-      <Text style={styles.categoryTitle}>🎯 Passing</Text>
+      <Text style={styles.categoryTitle}>ðŸŽ¯ Passing</Text>
       {['vision', 'crossing', 'shortPassing', 'longPassing', 'curve'].map((attr) => (
         <DraggableSlider
           key={attr}
@@ -528,7 +528,7 @@ export default function ProfileForm() {
         />
       ))}
 
-      <Text style={styles.categoryTitle}>🎨 Dribbling</Text>
+      <Text style={styles.categoryTitle}>ðŸŽ¨ Dribbling</Text>
       {['agility', 'balance', 'reactions', 'ballControl', 'dribbling', 'composure'].map((attr) => (
         <DraggableSlider
           key={attr}
@@ -538,7 +538,7 @@ export default function ProfileForm() {
         />
       ))}
 
-      <Text style={styles.categoryTitle}>🛡️ Defending</Text>
+      <Text style={styles.categoryTitle}>ðŸ›¡ï¸ Defending</Text>
       {['interceptions', 'headingAccuracy', 'marking', 'standingTackle', 'slidingTackle'].map((attr) => (
         <DraggableSlider
           key={attr}
@@ -548,7 +548,7 @@ export default function ProfileForm() {
         />
       ))}
 
-      <Text style={styles.categoryTitle}>💪 Physical</Text>
+      <Text style={styles.categoryTitle}>ðŸ’ª Physical</Text>
       {['jumping', 'stamina', 'strength', 'aggression'].map((attr) => (
         <DraggableSlider
           key={attr}
@@ -558,7 +558,7 @@ export default function ProfileForm() {
         />
       ))}
 
-      <Text style={styles.categoryTitle}>🥅 Goalkeeping</Text>
+      <Text style={styles.categoryTitle}>ðŸ¥… Goalkeeping</Text>
       {['diving', 'handling', 'kicking', 'positioning', 'reflexes'].map((attr) => (
         <DraggableSlider
           key={attr}
@@ -570,13 +570,13 @@ export default function ProfileForm() {
 
       {cardData && (
         <View style={styles.previewSection}>
-          <Text style={styles.sectionTitle}>🎴 Live Preview</Text>
+          <Text style={styles.sectionTitle}>ðŸŽ´ Live Preview</Text>
           <PlayerCard data={cardData} />
         </View>
       )}
 
       <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
-        <Text style={styles.submitText}>🚀 Generate Player Card</Text>
+        <Text style={styles.submitText}>ðŸš€ Generate Player Card</Text>
       </TouchableOpacity>
 
       <Modal
@@ -590,7 +590,7 @@ export default function ProfileForm() {
             <View style={styles.modalHeader}>
               <Text style={styles.modalTitle}>Select Country</Text>
               <TouchableOpacity onPress={() => setShowCountryPicker(false)}>
-                <Text style={styles.closeButton}>✕</Text>
+                <Text style={styles.closeButton}>âœ•</Text>
               </TouchableOpacity>
             </View>
             

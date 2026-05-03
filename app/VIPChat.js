@@ -1,10 +1,10 @@
-// app/VIPChat.js
+﻿// app/VIPChat.js
 import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, TextInput, TouchableOpacity, FlatList, StyleSheet, Alert, Linking, KeyboardAvoidingView, Platform } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
-import { generateSmartResponse } from './utils/smartCoachEngine';
-import { getRandomInspiration } from './utils/inspirations';
+import { generateSmartResponse } from '';
+import { getRandomInspiration } from '';
 
 const CHAT_STORAGE_KEY = 'vip_chat_messages';
 const USER_CONTEXT_KEY = 'user_coach_context';
@@ -107,9 +107,9 @@ class SmartCoachContext {
 const generateEncouragingOpener = (context) => {
   const { name, position, skillLevel } = context;
   const openers = [
-    `Hey ${name}! 👋 Great to see you. Whether you're a ${skillLevel} ${position || 'player'} or just starting out, I'm here to help you grow. What's on your mind today?`,
-    `${name}, your dedication inspires me! 💪 Let's make today's session count. What skill or challenge shall we tackle?`,
-    `Welcome back, ${name}! 🙌 Every pro was once a beginner. What's one thing you'd love to improve right now?`
+    `Hey ${name}! ðŸ‘‹ Great to see you. Whether you're a ${skillLevel} ${position || 'player'} or just starting out, I'm here to help you grow. What's on your mind today?`,
+    `${name}, your dedication inspires me! ðŸ’ª Let's make today's session count. What skill or challenge shall we tackle?`,
+    `Welcome back, ${name}! ðŸ™Œ Every pro was once a beginner. What's one thing you'd love to improve right now?`
   ];
   return openers[Math.floor(Math.random() * openers.length)];
 };
@@ -121,22 +121,22 @@ const generatePositionSpecificAdvice = (position, message, context) => {
   const adviceDB = {
     'goalkeeper': [
       isBeginner 
-        ? `${name}, let's start simple: **W-grip** behind the ball, **soft hands** to cushion, **eyes on the ball** all the way. Try 10 wall catches — you'll feel the difference!`
+        ? `${name}, let's start simple: **W-grip** behind the ball, **soft hands** to cushion, **eyes on the ball** all the way. Try 10 wall catches â€” you'll feel the difference!`
         : `${name}, elite GKs win games with **distribution**. Practice: 1-touch throw to a target 15 yards out. Accuracy > power at first.`,
-      `Your command of the box is your superpower, ${name}. 🗣️ Talk constantly: "Keeper's!", "Away!", "Step up!". Your voice organizes the defense.`,
-      `Penalty saving tip: ${isBeginner ? 'Watch the shooters plant foot — it points where they are likely to shoot.' : 'Study shooter patterns — most favor their strong side under pressure.'}`
+      `Your command of the box is your superpower, ${name}. ðŸ—£ï¸ Talk constantly: "Keeper's!", "Away!", "Step up!". Your voice organizes the defense.`,
+      `Penalty saving tip: ${isBeginner ? 'Watch the shooters plant foot â€” it points where they are likely to shoot.' : 'Study shooter patterns â€” most favor their strong side under pressure.'}`
     ],
     'striker': [
       isBeginner
         ? `${name}, finishing starts BEFORE the shot: **Body over the ball** for power, **eyes on target**, **follow through**. 5 reps, 3x/day = transformation.`
-        : `${name}, movement off the ball wins games. Practice: **Check away → explode back** to lose your marker. Timing > speed.`,
-      `First touch = first chance, ${name}. Drill: Wall passes → control with back foot → shoot in 2 touches. Crispness creates goals.`,
-      `Mental tip for strikers: Missed a chance? Next play is your redemption. Even Haaland misses — what matters is the next action.`
+        : `${name}, movement off the ball wins games. Practice: **Check away â†’ explode back** to lose your marker. Timing > speed.`,
+      `First touch = first chance, ${name}. Drill: Wall passes â†’ control with back foot â†’ shoot in 2 touches. Crispness creates goals.`,
+      `Mental tip for strikers: Missed a chance? Next play is your redemption. Even Haaland misses â€” what matters is the next action.`
     ],
     'central midfielder': [
-      `The engine room, ${name}! 💨 Your job: **Scan before receiving** (shoulder check), **one-touch when possible**, **cover when teammates push up.`,
-      `Passing lanes are invisible highways, ${name}. Practice: 3-cone triangle passing — one-touch only. Speed of thought > speed of foot.`,
-      `Defensive transition tip: Lose the ball? **Immediate pressure for 3 seconds** → if not won, **drop and reorganize**. Smart defending wins titles.`
+      `The engine room, ${name}! ðŸ’¨ Your job: **Scan before receiving** (shoulder check), **one-touch when possible**, **cover when teammates push up.`,
+      `Passing lanes are invisible highways, ${name}. Practice: 3-cone triangle passing â€” one-touch only. Speed of thought > speed of foot.`,
+      `Defensive transition tip: Lose the ball? **Immediate pressure for 3 seconds** â†’ if not won, **drop and reorganize**. Smart defending wins titles.`
     ],
     // Add more positions as needed...
   };
@@ -147,12 +147,12 @@ const generatePositionSpecificAdvice = (position, message, context) => {
 
 const generateDisabilityInclusiveAdvice = (context) => {
   const { name } = context;
-  return `Football is for EVERYONE, ${name}! 🌍\n\n✨ **Adaptive options**:\n• Frame Football (wheelchair users)\n• Blind Football (audio ball + guides)\n• Powerchair Football (electric chairs)\n• CP Football (cerebral palsy)\n\n✨ **Universal tips**:\n• Focus on **decision-making** — vision > speed\n• Use **voice cues** if visual impaired\n• Modify drills: seated passing, stationary shooting\n\nOrganizations like **CPISRA**, **IBSA**, and **The FA Inclusion** have amazing resources. You belong on the pitch! 💙`;
+  return `Football is for EVERYONE, ${name}! ðŸŒ\n\nâœ¨ **Adaptive options**:\nâ€¢ Frame Football (wheelchair users)\nâ€¢ Blind Football (audio ball + guides)\nâ€¢ Powerchair Football (electric chairs)\nâ€¢ CP Football (cerebral palsy)\n\nâœ¨ **Universal tips**:\nâ€¢ Focus on **decision-making** â€” vision > speed\nâ€¢ Use **voice cues** if visual impaired\nâ€¢ Modify drills: seated passing, stationary shooting\n\nOrganizations like **CPISRA**, **IBSA**, and **The FA Inclusion** have amazing resources. You belong on the pitch! ðŸ’™`;
 };
 
 const generateMentalWellnessSupport = (context) => {
   const { name } = context;
-  return `${name}, your mind matters as much as your feet. 💙\n\n🧠 **Quick resets**:\n• 4-7-8 breathing: Inhale 4s, hold 7s, exhale 8s\n• Grounding: Name 5 things you see, 4 you feel, 3 you hear\n• Self-talk: "I am prepared. I am capable."\n\n⚽ **Football-specific**:\n• Focus on PROCESS goals ("complete 5 passes") not outcome ("score")\n• Celebrate EFFORT — showing up is 80% of success\n• Talk to someone: coach, teammate, therapist — strength in vulnerability\n\nYou're not alone. Even Messi, Ronaldo, and Marta have mental challenges. What matters is you keep going. I believe in you. 🙌`;
+  return `${name}, your mind matters as much as your feet. ðŸ’™\n\nðŸ§  **Quick resets**:\nâ€¢ 4-7-8 breathing: Inhale 4s, hold 7s, exhale 8s\nâ€¢ Grounding: Name 5 things you see, 4 you feel, 3 you hear\nâ€¢ Self-talk: "I am prepared. I am capable."\n\nâš½ **Football-specific**:\nâ€¢ Focus on PROCESS goals ("complete 5 passes") not outcome ("score")\nâ€¢ Celebrate EFFORT â€” showing up is 80% of success\nâ€¢ Talk to someone: coach, teammate, therapist â€” strength in vulnerability\n\nYou're not alone. Even Messi, Ronaldo, and Marta have mental challenges. What matters is you keep going. I believe in you. ðŸ™Œ`;
 };
 
 const generateMicroDrill = (skill, context) => {
@@ -161,27 +161,27 @@ const generateMicroDrill = (skill, context) => {
   
   const drills = {
     'passing': isBeginner
-      ? `🎯 Wall Pass Drill (5 mins):\n1. Stand 2 yards from wall\n2. Pass firmly → control first touch → pass again\n3. 20 reps each foot\n💡 Keep ankle locked, eyes up between reps!`
-      : `🎯 Pressure Passing (10 mins):\n1. Set 3 cones in triangle (5-yard sides)\n2. Partner calls "LEFT"/"RIGHT" as you receive\n3. Pass to called cone in 1 touch\n💡 Scan BEFORE receiving — know your options!`,
+      ? `ðŸŽ¯ Wall Pass Drill (5 mins):\n1. Stand 2 yards from wall\n2. Pass firmly â†’ control first touch â†’ pass again\n3. 20 reps each foot\nðŸ’¡ Keep ankle locked, eyes up between reps!`
+      : `ðŸŽ¯ Pressure Passing (10 mins):\n1. Set 3 cones in triangle (5-yard sides)\n2. Partner calls "LEFT"/"RIGHT" as you receive\n3. Pass to called cone in 1 touch\nðŸ’¡ Scan BEFORE receiving â€” know your options!`,
       
     'shooting': isBeginner
-      ? `⚽ Confidence Finishing:\n1. Place ball 6 yards out\n2. Focus on PLACEMENT over power\n3. Hit 5 corners: top-left, top-right, bottom-left, bottom-right, center\n💡 Plant foot beside ball, eyes on target!`
-      : `⚽ Game-Speed Finishing:\n1. Partner serves ball from side\n2. Control → shoot in 2 touches MAX\n3. Alternate feet, vary angles\n💡 Shoot EARLY — before defender closes!`,
+      ? `âš½ Confidence Finishing:\n1. Place ball 6 yards out\n2. Focus on PLACEMENT over power\n3. Hit 5 corners: top-left, top-right, bottom-left, bottom-right, center\nðŸ’¡ Plant foot beside ball, eyes on target!`
+      : `âš½ Game-Speed Finishing:\n1. Partner serves ball from side\n2. Control â†’ shoot in 2 touches MAX\n3. Alternate feet, vary angles\nðŸ’¡ Shoot EARLY â€” before defender closes!`,
       
     'dribbling': isBeginner
-      ? `🌀 Close Control Basics:\n1. Dribble in small circle (2-yard diameter)\n2. Use BOTH feet, light touches\n3. 30 seconds on, 15 rest x 4 rounds\n💡 Keep ball within 1 foot — control > speed!`
-      : `🌀 1v1 Moves:\n1. Set cone as "defender"\n2. Practice ONE move: stepover, scissors, or body feint\n3. Execute at 70% speed → build to 100%\n💡 Sell the fake with eyes + shoulders!`,
+      ? `ðŸŒ€ Close Control Basics:\n1. Dribble in small circle (2-yard diameter)\n2. Use BOTH feet, light touches\n3. 30 seconds on, 15 rest x 4 rounds\nðŸ’¡ Keep ball within 1 foot â€” control > speed!`
+      : `ðŸŒ€ 1v1 Moves:\n1. Set cone as "defender"\n2. Practice ONE move: stepover, scissors, or body feint\n3. Execute at 70% speed â†’ build to 100%\nðŸ’¡ Sell the fake with eyes + shoulders!`,
       
-    'mental': `🧠 2-Minute Reset:\n1. Stop. Breathe deeply 3x\n2. Ask: "What's ONE thing I can control right now?"\n3. Focus ONLY on that\n💡 Pressure is privilege — it means you matter!`,
+    'mental': `ðŸ§  2-Minute Reset:\n1. Stop. Breathe deeply 3x\n2. Ask: "What's ONE thing I can control right now?"\n3. Focus ONLY on that\nðŸ’¡ Pressure is privilege â€” it means you matter!`,
       
     'fitness': isBeginner
-      ? `🏃 Beginner Endurance:\n• Walk/jog intervals: 1 min jog, 2 min walk x 10\n• Add 10 sec jogging each session\n• Hydrate + rest days are PART of training!`
-      : `🏃 Football-Specific Conditioning:\n• Shuttle runs: 10y → 20y → 30y → 20y → 10y (no rest)\n• Rest 90 sec, repeat 4x\n• Mimics match demands!`
+      ? `ðŸƒ Beginner Endurance:\nâ€¢ Walk/jog intervals: 1 min jog, 2 min walk x 10\nâ€¢ Add 10 sec jogging each session\nâ€¢ Hydrate + rest days are PART of training!`
+      : `ðŸƒ Football-Specific Conditioning:\nâ€¢ Shuttle runs: 10y â†’ 20y â†’ 30y â†’ 20y â†’ 10y (no rest)\nâ€¢ Rest 90 sec, repeat 4x\nâ€¢ Mimics match demands!`
   };
   
   // Nigerian/local flavor
   if (position === 'striker' && skill === 'shooting') {
-    return `🇳🇬 Nigerian Striker Special:\n\n1. Use a plastic bag as ball (like Jay-Jay!)\n2. Practice stepovers in your compound\n3. Finish with a chip over a water bottle!\n\nCreativity > fancy gear. You've got the magic! ✨`;
+    return `ðŸ‡³ðŸ‡¬ Nigerian Striker Special:\n\n1. Use a plastic bag as ball (like Jay-Jay!)\n2. Practice stepovers in your compound\n3. Finish with a chip over a water bottle!\n\nCreativity > fancy gear. You've got the magic! âœ¨`;
   }
   
   return drills[skill] || `Grab a ball and a wall, ${name}! 10 minutes of focused reps beats 1 hour of unfocused play. What skill shall we drill today?`;
@@ -207,7 +207,7 @@ const generateCoachResponse = (userMessage, conversationHistory, smartContext) =
         }
         return `Positions: ${valid.join(', ')}\nExample: /position st`;
       },
-      '/help': () => `Quick commands:\n/drill [passing|shooting|dribbling]\n/position [st|gk|cm...]\n/mental (wellness tips)\n/help\n\nOr just chat naturally! 😊`,
+      '/help': () => `Quick commands:\n/drill [passing|shooting|dribbling]\n/position [st|gk|cm...]\n/mental (wellness tips)\n/help\n\nOr just chat naturally! ðŸ˜Š`,
       '/inspire': () => getRandomInspiration(),
       '/mental': () => generateMentalWellnessSupport(smartContext.context)
     };
@@ -223,28 +223,28 @@ const generateCoachResponse = (userMessage, conversationHistory, smartContext) =
   // === 3. Effort celebration (positive reinforcement) ===
   const effortWords = ['trained', 'practiced', 'did', 'tried', 'worked', 'repeated', 'drilled', 'showed up'];
   if (effortWords.some(w => message.includes(w))) {
-    return `That's HUGE, ${name}! 🙌 Consistency beats talent when talent doesn't work hard. What part felt best? What's next?`;
+    return `That's HUGE, ${name}! ðŸ™Œ Consistency beats talent when talent doesn't work hard. What part felt best? What's next?`;
   }
   
   // === 4. Clarify vague struggles (empathetic probing) ===
   const vagueWords = ['struggling', 'hard', 'difficult', 'can\'t', 'not good', 'bad at', 'frustrated'];
   if (vagueWords.some(w => message.includes(w)) && !message.includes('youtube')) {
-    return `I'm here for you, ${name}. To give spot-on advice, help me understand:\n\n• What position do you play?\n• What specifically feels tough?\n• How long have you been working on it?\n\nNo judgment — just solutions! 💙`;
+    return `I'm here for you, ${name}. To give spot-on advice, help me understand:\n\nâ€¢ What position do you play?\nâ€¢ What specifically feels tough?\nâ€¢ How long have you been working on it?\n\nNo judgment â€” just solutions! ðŸ’™`;
   }
   
   // === 5. Handle complaints with humility ===
   const isComplaining = /not offering|doesn't have|wrong|bad recommendation|not helpful|doesn't work|tried that|already checked/i.test(message);
   if (isComplaining) {
-    return `My bad, ${name}! You deserve better. Tell me exactly what you've tried and what you need — I'll give you something that actually works. No fluff!`;
+    return `My bad, ${name}! You deserve better. Tell me exactly what you've tried and what you need â€” I'll give you something that actually works. No fluff!`;
   }
   
-  // === 6. Foul language → gentle redirect ===
+  // === 6. Foul language â†’ gentle redirect ===
   const FOUL_WORDS = ['damn', 'shit', 'fuck', 'bitch', 'ass', 'hell', 'crap', 'stupid', 'idiot'];
   if (FOUL_WORDS.some(word => message.includes(word))) {
-    return `Hey, I get it — football's frustrating sometimes! 😅 Let's reset: what's ONE thing you'd love to improve today? I'm all in to help.`;
+    return `Hey, I get it â€” football's frustrating sometimes! ðŸ˜… Let's reset: what's ONE thing you'd love to improve today? I'm all in to help.`;
   }
   
-  // === 7. Mental health keywords → supportive response ===
+  // === 7. Mental health keywords â†’ supportive response ===
   if (/confidence|nervous|scared|mental|pressure|anxiety|overwhelm/i.test(message)) {
     return generateMentalWellnessSupport(smartContext.context);
   }
@@ -346,10 +346,10 @@ export default function VIPChat() {
   
   const checkVIPAccess = async () => {
     try {
-      // ✅ Production: Check real subscription status
+      // âœ… Production: Check real subscription status
       const vipStatus = await AsyncStorage.getItem('isVIP');
       
-      // 🧪 DEV MODE: Auto-grant access for testing (REMOVE BEFORE PRODUCTION)
+      // ðŸ§ª DEV MODE: Auto-grant access for testing (REMOVE BEFORE PRODUCTION)
       if (__DEV__ && vipStatus === null) {
         await AsyncStorage.setItem('isVIP', 'true');
         setIsVIP(true);
@@ -406,7 +406,7 @@ export default function VIPChat() {
   const startNewChat = async () => {
     const freshStart = {
       id: Date.now().toString(),
-      text: `Fresh start, ${smartContext.context.name}! 💪\n\nWhat's your focus today?\n• Skill drill? (/drill passing)\n• Mental boost? (/mental)\n• Position advice? (/position st)\n\nI'm all yours!`,
+      text: `Fresh start, ${smartContext.context.name}! ðŸ’ª\n\nWhat's your focus today?\nâ€¢ Skill drill? (/drill passing)\nâ€¢ Mental boost? (/mental)\nâ€¢ Position advice? (/position st)\n\nI'm all yours!`,
       sender: 'Coach',
       timestamp: new Date().toISOString()
     };
@@ -476,7 +476,7 @@ export default function VIPChat() {
         // Fallback response
         const fallback = {
           id: (Date.now() + 1).toString(),
-          text: `I want to give you the best advice, ${smartContext.context.name}! Could you tell me a bit more about what you're working on? 🙌`,
+          text: `I want to give you the best advice, ${smartContext.context.name}! Could you tell me a bit more about what you're working on? ðŸ™Œ`,
           sender: 'Coach',
           timestamp: new Date().toISOString()
         };
@@ -492,7 +492,7 @@ export default function VIPChat() {
       styles.messageBubble,
       item.sender === 'Player' ? styles.playerMessage : styles.coachMessage
     ]}>
-      <Text style={styles.senderName}>{item.sender === 'Coach' ? '🤖 Coach' : '👤 You'}</Text>
+      <Text style={styles.senderName}>{item.sender === 'Coach' ? 'ðŸ¤– Coach' : 'ðŸ‘¤ You'}</Text>
       <Text style={styles.messageText}>{item.text}</Text>
       <Text style={styles.messageTime}>
         {new Date(item.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
@@ -503,7 +503,7 @@ export default function VIPChat() {
   if (checkingVIP) {
     return (
       <View style={styles.container}>
-        <Text style={styles.title}>💬 VIP Coach Chat</Text>
+        <Text style={styles.title}>ðŸ’¬ VIP Coach Chat</Text>
         <View style={styles.loadingContainer}>
           <Text style={styles.loadingText}>Checking Premium access...</Text>
         </View>
@@ -514,7 +514,7 @@ export default function VIPChat() {
   if (!isVIP) {
     return (
       <View style={styles.container}>
-        <Text style={styles.title}>💬 VIP Coach Chat</Text>
+        <Text style={styles.title}>ðŸ’¬ VIP Coach Chat</Text>
         <View style={styles.loadingContainer}>
           <Text style={styles.loadingText}>Premium access required</Text>
           <TouchableOpacity 
@@ -535,11 +535,11 @@ export default function VIPChat() {
     >
       <View style={styles.header}>
         <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-          <Text style={styles.backText}>←</Text>
+          <Text style={styles.backText}>â†</Text>
         </TouchableOpacity>
-        <Text style={styles.title}>💬 VIP Coach Chat</Text>
+        <Text style={styles.title}>ðŸ’¬ VIP Coach Chat</Text>
         <TouchableOpacity onPress={startNewChat} style={styles.newChatButton}>
-          <Text style={styles.newChatIcon}>🆕</Text>
+          <Text style={styles.newChatIcon}>ðŸ†•</Text>
         </TouchableOpacity>
       </View>
       
@@ -571,7 +571,7 @@ export default function VIPChat() {
           onPress={sendMessage}
           disabled={loading || !newMessage.trim()}
         >
-          <Text style={styles.sendButtonText}>{loading ? '⏳' : '➤'}</Text>
+          <Text style={styles.sendButtonText}>{loading ? 'â³' : 'âž¤'}</Text>
         </TouchableOpacity>
       </View>
       
@@ -579,7 +579,7 @@ export default function VIPChat() {
         style={styles.hintButton}
         onPress={() => setNewMessage('/help')}
       >
-        <Text style={styles.hintText}>💡 Try: /help • /drill passing • /mental • /inspire</Text>
+        <Text style={styles.hintText}>ðŸ’¡ Try: /help â€¢ /drill passing â€¢ /mental â€¢ /inspire</Text>
       </TouchableOpacity>
     </KeyboardAvoidingView>
   );
