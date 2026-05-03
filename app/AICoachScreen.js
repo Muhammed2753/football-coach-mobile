@@ -6,7 +6,7 @@ import {
 } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { AICoachSystem } from './utils/AICoachSystem'All" or add your own!`,
+import { AICoachSystem } from './utils/AICoachSystem';
         exercises: []
       }]);
       return;
