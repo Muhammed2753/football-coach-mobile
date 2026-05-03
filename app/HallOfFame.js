@@ -2,7 +2,7 @@
 import React, { useState, useCallback, useRef } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, FlatList, Alert } from 'react-native';
 import { useFocusEffect, useRouter } from 'expo-router';
-import { getAllPlayers, deletePlayer, getTotalPlayersCount } from '';
+import { getAllPlayers, deletePlayer, getTotalPlayersCount } from './utils/playerDatabase';
 
 const getRarityColor = (overall) => {
   if (overall >= 86) return '#D4AF37';
@@ -254,3 +254,4 @@ const styles = StyleSheet.create({
   backBtn: { backgroundColor: '#1e88e5', paddingVertical: 12, paddingHorizontal: 16, margin: 16, borderRadius: 8, alignItems: 'center' },
   backText: { color: '#fff', fontWeight: '600', fontSize: 16 },
 });
+
