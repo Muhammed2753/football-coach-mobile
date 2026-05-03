@@ -38,9 +38,3 @@ node_modules/
 # Native folders (using Prebuild)
 /android
 /ios
-# ... (your existing content)
-
-# Package managers (pick one)
-yarn.lock
-!yarn.lock          # ✅ Keep yarn.lock tracked
-package-lock.json   # ❌ Ignore npm's lock file
