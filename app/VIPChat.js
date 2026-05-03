@@ -3,8 +3,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, TextInput, TouchableOpacity, FlatList, StyleSheet, Alert, Linking, KeyboardAvoidingView, Platform } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
-import { generateSmartResponse } from '';
-import { getRandomInspiration } from '';
+import { generateSmartResponse } from '../utils/aiCoach';
+import { getRandomInspiration } from '../utils/aiCoach';
 
 const CHAT_STORAGE_KEY = 'vip_chat_messages';
 const USER_CONTEXT_KEY = 'user_coach_context';

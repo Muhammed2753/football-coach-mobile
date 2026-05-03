@@ -2,7 +2,7 @@
 import { View, Text, Image, StyleSheet, ActivityIndicator, Animated } from 'react-native';
 import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { footballQuotes } from '';
+import { footballQuotes } from '../utils/quotes';
 
 export default function SplashScreen() {
   const router = useRouter();

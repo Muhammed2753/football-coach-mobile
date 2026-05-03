@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert, Switch } from 'react-native';
 import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { exportAllData, exportTrainingSessions, generateProgressReport } from '';
+import { exportAllData, exportTrainingSessions, generateProgressReport } from '../utils/export';
 
 export default function SettingsScreen() {
   const router = useRouter();

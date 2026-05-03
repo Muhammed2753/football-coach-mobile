@@ -2,7 +2,7 @@
 // Firebase disabled - using local storage only
 export const generateTrainingPlan = async () => ({ drills: [] });
 export const saveProgress = async () => {};
-import { AnalyticsEngine } from '';
+import { AnalyticsEngine } from '../utils/analytics';
 
 export class SmartTrainingSystem {
   // Generate adaptive training plan

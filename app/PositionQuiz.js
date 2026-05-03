@@ -3,21 +3,7 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Alert } from 'react-native';
 import { useRouter } from 'expo-router';
 // âœ… Import interstitial ad hook
-import { useInterstitialAd } from '';
-
-export default function PositionQuiz() {
-  const router = useRouter();
-  const [currentQuestion, setCurrentQuestion] = useState(0);
-  const [answers, setAnswers] = useState({});
-  const [isCalculating, setIsCalculating] = useState(false);
-  
-  // âœ… Initialize interstitial ad hook
-  const { show: showInterstitial } = useInterstitialAd();
-
-  const questions = [
-    {
-      id: 1,
-      question: "What do you enjoy most on the pitch?",
+import { useInterstitialAd } from './hooks/useInterstitialAd'What do you enjoy most on the pitch?",
       options: [
         { text: "Scoring goals", points: { striker: 3, winger: 1 } },
         { text: "Creating chances for teammates", points: { midfielder: 3, attackingMid: 2 } },

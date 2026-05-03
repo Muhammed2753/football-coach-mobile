@@ -2,57 +2,7 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Alert, ActivityIndicator, ScrollView } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
-import { startCheckout } from '';
-
-export default function PaymentScreen() {
-  const router = useRouter();
-  const { planType, planName, price, duration } = useLocalSearchParams();
-  const [processing, setProcessing] = useState(false);
-
-  const handlePayment = async () => {
-    setProcessing(true);
-    try {
-      const result = await startCheckout(planType);
-      if (!result.success) {
-        Alert.alert('Error', result.error || 'Could not start checkout. Please try again.');
-      }
-      // On success, Stripe Checkout opens in browser.
-      // VIP is activated by the backend webhook after payment completes.
-    } catch (error) {
-      Alert.alert('Error', 'Payment processing failed. Please try again.');
-    } finally {
-      setProcessing(false);
-    }
-  };
-
-  return (
-    <ScrollView style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.title}>ðŸ’³ Secure Payment</Text>
-        <Text style={styles.subtitle}>Complete your {planName} subscription</Text>
-        <View style={styles.orderSummary}>
-          <Text style={styles.orderText}>Plan: {planName}</Text>
-          <Text style={styles.orderText}>Duration: {duration}</Text>
-          <Text style={styles.orderPrice}>Total: {price}</Text>
-        </View>
-      </View>
-
-      <View style={styles.form}>
-        <View style={styles.securityInfo}>
-          <Text style={styles.securityTitle}>ðŸ”’ Secure Checkout via Stripe</Text>
-          <Text style={styles.securityText}>â€¢ Card details are entered on Stripe's secure page</Text>
-          <Text style={styles.securityText}>â€¢ We never see or store your card number</Text>
-          <Text style={styles.securityText}>â€¢ 256-bit SSL encryption</Text>
-          <Text style={styles.securityText}>â€¢ PCI DSS Level 1 compliant</Text>
-        </View>
-
-        <TouchableOpacity
-          style={[styles.payButton, processing && styles.payButtonDisabled]}
-          onPress={handlePayment}
-          disabled={processing}
-        >
-          {processing
-            ? <ActivityIndicator color="#fff" />
+import { startCheckout } from './utils/payment'#fff" />
             : <Text style={styles.payButtonText}>Pay {price} via Stripe</Text>
           }
         </TouchableOpacity>
