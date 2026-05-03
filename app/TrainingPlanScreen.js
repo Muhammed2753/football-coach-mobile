@@ -5,9 +5,7 @@ import { useRouter, useLocalSearchParams } from 'expo-router';
 import { createTrainingPlan, estimateWeeksToGoal, recommendIntensity } from './utils/TrainingEngine';
 import { getAllPlayers } from './utils/playerDatabase';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-// ✅ Import ad components
-import AdBanner from './components/Adbanner';
-import { useInterstitialAd } from './hooks/useInterstitialAd';
+import AdBanner from './components/AdBanner';
 
 export default function TrainingPlanScreen() {
   const router = useRouter();
@@ -19,8 +17,7 @@ export default function TrainingPlanScreen() {
   const [plan, setPlan] = useState(null);
   const [showPreview, setShowPreview] = useState(false);
   
-  // ✅ Initialize interstitial ad hook
-  const { show: showInterstitial } = useInterstitialAd();
+  const { show: showInterstitial } = { show: () => false };
 
   useEffect(() => {
     const loadPlayer = async () => {
