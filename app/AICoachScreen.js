@@ -7,7 +7,7 @@ import {
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { AICoachSystem } from './utils/AiCoachSystem';
-import AdBanner from '../components/AdBanner';
+import AdBanner from './components/AdBanner';
 
 // Translation dictionary (simplified example)
 const t = {
