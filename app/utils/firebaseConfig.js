@@ -17,18 +17,13 @@ try {
   app = initializeApp(firebaseConfig);
   auth = getAuth(app);
   db = getFirestore(app);
-  const maskKey = (k = '') => (k ? `${k.slice(0,6)}...${k.slice(-4)}` : '<missing>');
-  console.log('✅ Firebase initialized successfully');
-  console.log('  • apiKey:', maskKey(firebaseConfig.apiKey));
-  console.log('  • authDomain:', firebaseConfig.authDomain || '<missing>');
 } catch (error) {
-  console.error('❌ Firebase initialization error:', error);
-  // Fallback to offline mode
-  app = null;
-  auth = null;
-  db = null;
+  console.error('Firebase initialization error:', error);
 }
+// ... inside app/utils/firebaseConfig.js
 
+// Add this line to define the variable
 const isFirebaseInitialized = !!app;
 
-export { app, auth, db, isFirebaseInitialized, firebaseConfig };
+// Update the export to include it
+export { app, auth, db, isFirebaseInitialized };
