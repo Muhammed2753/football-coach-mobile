@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Alert, ActivityIndicator, ScrollView } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
-import { startCheckout } from './utils/payment';
+import { startCheckout } from './utils/stripePayment';
 
 const PaymentScreen = () => {
   const router = useRouter();
