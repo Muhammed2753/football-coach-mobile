@@ -1,6 +1,7 @@
-﻿import React, { useState } from 'react';
+﻿// app/AuthScreen.js
+import React, { useState } from 'react';
 import {
-  View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ActivityIndicator, ScrollView,
+  View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ActivityIndicator, ScrollView, Image,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -9,7 +10,7 @@ import { auth, isFirebaseInitialized } from './utils/firebaseConfig';
 const AuthScreen = () => {
   const router = useRouter();
   
-  // State declarations (missing in your version)
+  // State declarations
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
@@ -17,7 +18,7 @@ const AuthScreen = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  // Auth handler (placeholder - replace with your Firebase logic)
+  // Auth handler
   const handleAuth = async () => {
     if (!email.trim() || !password.trim()) {
       Alert.alert('Error', 'Please fill in all fields');
@@ -52,6 +53,13 @@ const AuthScreen = () => {
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.scrollContent}>
+      {/* ✅ Add your logo here */}
+      <Image 
+        source={require('../images/react-logo.png')} 
+        style={styles.logo}
+        resizeMode="contain"
+      />
+      
       <Text style={styles.title}>⚽ Football Coach</Text>
       <Text style={styles.subtitle}>Your Personal Training Assistant</Text>
 
@@ -128,6 +136,14 @@ export default AuthScreen;
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#0d1b2a' },
   scrollContent: { flexGrow: 1, justifyContent: 'center', padding: 20 },
+  // ✅ Add logo styles
+  logo: { 
+    width: 120, 
+    height: 120, 
+    marginBottom: 20, 
+    alignSelf: 'center',
+    borderRadius: 10,
+  },
   title: { fontSize: 32, fontWeight: 'bold', color: '#f1faee', textAlign: 'center', marginBottom: 8 },
   subtitle: { fontSize: 16, color: '#a8dadc', textAlign: 'center', marginBottom: 40 },
   form: { gap: 16 },
