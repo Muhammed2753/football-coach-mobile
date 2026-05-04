@@ -55,7 +55,7 @@ const AuthScreen = () => {
     <ScrollView style={styles.container} contentContainerStyle={styles.scrollContent}>
       {/* ✅ Add your logo here */}
       <Image 
-        source={require('../images/react-logo.png')} 
+        source={require('./images/react-logo.png')} 
         style={styles.logo}
         resizeMode="contain"
       />
