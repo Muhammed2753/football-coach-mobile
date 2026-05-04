@@ -1,4 +1,5 @@
-﻿import React, { useEffect, useState } from 'react';
+﻿// app/splash.js
+import React, { useEffect, useState } from 'react';
 import { View, Text, Image, StyleSheet, ActivityIndicator, Animated } from 'react-native';
 import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -57,8 +58,10 @@ export default function SplashScreen() {
   return (
     <View style={styles.container}>
       <Animated.View style={[styles.content, { opacity: fadeAnim }]}>
-        <Image source={require('../assets/icon.png')} style={styles.logo} />
-        <Text style={styles.title}>âš½ Football Coach</Text>
+        {/* ✅ Using your actual image */}
+        <Image source={require('../images/splash-icon.png')} style={styles.logo} />
+        
+        <Text style={styles.title}>⚽ Football Coach</Text>
         <Text style={styles.subtitle}>Your Personal Training Assistant</Text>
         
         <View style={styles.loadingContainer}>
@@ -77,7 +80,14 @@ export default function SplashScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#0d1b2a', justifyContent: 'center', alignItems: 'center' },
   content: { alignItems: 'center' },
-  logo: { width: 150, height: 150, marginBottom: 24, borderRadius: 30 },
+  // ✅ Image styles for your splash-icon.png
+  logo: { 
+    width: 150, 
+    height: 150, 
+    marginBottom: 24, 
+    borderRadius: 30,
+    resizeMode: 'contain'  // Ensures image fits nicely
+  },
   title: { fontSize: 32, fontWeight: 'bold', color: '#ffd700', marginBottom: 8 },
   subtitle: { fontSize: 16, color: '#a8dadc', marginBottom: 40 },
   loadingContainer: { alignItems: 'center', marginTop: 20 },
