@@ -4,7 +4,7 @@ import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Modal, Alert, Act
 import { useRouter, useLocalSearchParams } from 'expo-router';
 // ⚠️ Update path if your file is named differently
 import { createTrainingPlan, estimateWeeksToGoal, recommendIntensity } from './utils/TrainingEngine';
-import AdBanner from '../components/AdBanner';
+import AdBanner from './components/AdBanner';
 
 const TrainingPlanScreen = () => {
   const router = useRouter();
