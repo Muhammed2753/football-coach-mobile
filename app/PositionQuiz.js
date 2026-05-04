@@ -2,8 +2,25 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Alert } from 'react-native';
 import { useRouter } from 'expo-router';
-// âœ… Import interstitial ad hook
-import { useInterstitialAd } from './hooks/useInterstitialAd'What do you enjoy most on the pitch?",
+// ✅ Import interstitial ad hook (create this file if missing)
+import { useInterstitialAd } from './hooks/useInterstitialAd';
+
+const PositionQuiz = () => {
+  const router = useRouter();
+  
+  // State declarations (missing in your version)
+  const [currentQuestion, setCurrentQuestion] = useState(0);
+  const [answers, setAnswers] = useState({});
+  const [isCalculating, setIsCalculating] = useState(false);
+  
+  // Initialize ad hook
+  const { showInterstitial, isAdReady } = useInterstitialAd();
+
+  // Quiz questions
+  const questions = [
+    {
+      id: 1,
+      question: "What do you enjoy most on the pitch?",
       options: [
         { text: "Scoring goals", points: { striker: 3, winger: 1 } },
         { text: "Creating chances for teammates", points: { midfielder: 3, attackingMid: 2 } },
@@ -111,13 +128,6 @@ import { useInterstitialAd } from './hooks/useInterstitialAd'What do you enjoy m
       newAnswers[position] = (newAnswers[position] || 0) + option.points[position];
     });
 
-    console.log('ðŸŽ¯ Quiz Progress:', {
-      question: currentQuestion + 1,
-      selected: option.text,
-      points: option.points,
-      totalSoFar: newAnswers
-    });
-
     if (currentQuestion < questions.length - 1) {
       setAnswers(newAnswers);
       setCurrentQuestion(currentQuestion + 1);
@@ -128,13 +138,12 @@ import { useInterstitialAd } from './hooks/useInterstitialAd'What do you enjoy m
   };
 
   const showResults = (finalAnswers) => {
-    // Small delay ensures UI is ready for Alert
     setTimeout(() => {
       try {
         const entries = Object.entries(finalAnswers || {});
         
         if (!entries || entries.length === 0) {
-          Alert.alert('âš ï¸ No Result', 'Could not determine a position.', [
+          Alert.alert('⚠️ No Result', 'Could not determine a position.', [
             { text: 'Retake Quiz', onPress: resetQuiz }
           ]);
           setIsCalculating(false);
@@ -146,31 +155,30 @@ import { useInterstitialAd } from './hooks/useInterstitialAd'What do you enjoy m
         
         const results = sorted.map(([key, score], index) => {
           const name = getPositionName(key);
-          const emoji = ['ðŸ¥‡', 'ðŸ¥ˆ', 'ðŸ¥‰'][index];
+          const emoji = ['🥇', '🥈', '🥉'][index];
           return `${emoji} ${name} (${score} pts)`;
         });
 
-        while (results.length < 3) results.push('â€”');
+        while (results.length < 3) results.push('—');
 
         Alert.alert(
-          'ðŸŽ¯ Your Ideal Positions!',
+          '🎯 Your Ideal Positions!',
           results.join('\n') + '\n\nThese positions match your playing style best!',
           [
             {
               text: 'Create Player Card',
               onPress: () => {
-                // âœ… Show interstitial before navigating to ProfileForm (30% chance)
-                if (Math.random() > 0.7) {
+                // Show interstitial before navigating (30% chance)
+                if (Math.random() > 0.7 && isAdReady) {
                   showInterstitial();
                 }
                 
-                // Delay navigation to ensure Alert closes properly
                 setTimeout(() => {
                   try {
                     router.push('/ProfileForm');
                   } catch (err) {
-                    console.error('âŒ Navigation failed:', err);
-                    Alert.alert('Error', 'Profile form not found. Please check your app routes.');
+                    console.error('❌ Navigation failed:', err);
+                    Alert.alert('Error', 'Profile form not found.');
                   }
                 }, 600);
               },
@@ -185,7 +193,7 @@ import { useInterstitialAd } from './hooks/useInterstitialAd'What do you enjoy m
           { cancelable: false, onDismiss: () => setIsCalculating(false) }
         );
       } catch (error) {
-        console.error('ðŸ’¥ showResults error:', error);
+        console.error('💥 showResults error:', error);
         Alert.alert('Error', 'Something went wrong. Please try again.', [
           { text: 'Retake Quiz', onPress: resetQuiz }
         ]);
@@ -200,9 +208,9 @@ import { useInterstitialAd } from './hooks/useInterstitialAd'What do you enjoy m
     <ScrollView style={styles.container} keyboardShouldPersistTaps="handled">
       <View style={styles.header}>
         <TouchableOpacity onPress={() => router.back()} disabled={isCalculating}>
-          <Text style={[styles.backButton, isCalculating && styles.disabled]}>â† Back</Text>
+          <Text style={[styles.backButton, isCalculating && styles.disabled]}>← Back</Text>
         </TouchableOpacity>
-        <Text style={styles.title}>ðŸŽ¯ Find My Position</Text>
+        <Text style={styles.title}>🎯 Find My Position</Text>
         <Text style={styles.subtitle}>Discover your ideal playing position</Text>
       </View>
 
@@ -214,15 +222,12 @@ import { useInterstitialAd } from './hooks/useInterstitialAd'What do you enjoy m
       </View>
 
       <View style={styles.questionContainer}>
-        <Text style={styles.question}>{questions[currentQuestion].question}</Text>
+        <Text style={styles.question}>{questions[currentQuestion]?.question}</Text>
         
-        {questions[currentQuestion].options.map((option, index) => (
+        {questions[currentQuestion]?.options.map((option, index) => (
           <TouchableOpacity
             key={index}
-            style={[
-              styles.optionButton,
-              isCalculating && styles.optionDisabled
-            ]}
+            style={[styles.optionButton, isCalculating && styles.optionDisabled]}
             onPress={() => handleAnswer(option)}
             disabled={isCalculating}
             activeOpacity={0.7}
@@ -231,11 +236,11 @@ import { useInterstitialAd } from './hooks/useInterstitialAd'What do you enjoy m
           </TouchableOpacity>
         ))}
       </View>
-
-      {/* Debug panel removed for production */}
     </ScrollView>
   );
-}
+};
+
+export default PositionQuiz;
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#0d1b2a' },
@@ -260,6 +265,4 @@ const styles = StyleSheet.create({
   },
   optionDisabled: { opacity: 0.6 },
   optionText: { fontSize: 16, color: '#f1faee', textAlign: 'center', fontWeight: '600' },
-  debugPanel: { padding: 10, backgroundColor: '#1b263b', margin: 10, borderRadius: 8 },
-  debugText: { color: '#a8dadc', fontSize: 10, fontFamily: 'monospace' },
 });
