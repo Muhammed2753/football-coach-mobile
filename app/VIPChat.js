@@ -1,292 +1,330 @@
-﻿// app/VIPChat.js
-import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, TextInput, TouchableOpacity, FlatList, StyleSheet, Alert, Linking, KeyboardAvoidingView, Platform } from 'react-native';
+﻿// app/VIPChat.js - Real AI Coach Experience
+import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { 
+  View, Text, TextInput, TouchableOpacity, FlatList, StyleSheet, 
+  Alert, Linking, KeyboardAvoidingView, Platform, Animated, 
+  ActivityIndicator, LayoutAnimation, UIManager 
+} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
-import { generateSmartResponse } from '../utils/aiCoach';
-import { getRandomInspiration } from '../utils/aiCoach';
 
-const CHAT_STORAGE_KEY = 'vip_chat_messages';
-const USER_CONTEXT_KEY = 'user_coach_context';
-const CONVERSATION_MEMORY_KEY = 'vip_conversation_memory';
+// Enable LayoutAnimation on Android
+if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
+  UIManager.setLayoutAnimationEnabledExperimental(true);
+}
 
-// === SMART CONTEXT ENGINE ===
-class SmartCoachContext {
-  constructor(initialContext = {}) {
-    this.context = {
-      name: 'Champion',
-      position: null,
-      skillLevel: 'beginner', // beginner, intermediate, advanced
-      goals: [],
-      challenges: [],
-      preferences: { tone: 'encouraging', detail: 'concise' },
-      lastTopics: [],
-      progress: {}, // { passing: { lastPracticed: '2024-01-15', confidence: 6 } }
-      specialNeeds: { disability: false, mentalHealth: false },
-      ...initialContext
+// === 🧠 AI COACH PERSONALITY & BRAIN ===
+const AI_COACH = {
+  name: 'Coach AI',
+  personality: {
+    tone: 'encouraging', // encouraging, direct, playful, serious
+    empathy: 'high',
+    expertise: 'elite',
+    humor: 'light',
+  },
+  
+  // Natural conversation starters
+  openers: [
+    "Hey {name}! 👋 Ready to level up today? What's on your mind?",
+    "{name}, great to see you! 💪 Whether you're warming up or winding down, I'm here. What shall we tackle?",
+    "Welcome back, champion! 🙌 Every pro started where you are. What's your focus today?",
+  ],
+  
+  // Empathetic responses for different emotions
+  empathyResponses: {
+    frustrated: "I hear you, {name}. Football can be tough sometimes. Let's break this down together — what specifically feels challenging right now?",
+    excited: "Love that energy, {name}! 🔥 Let's channel it. What skill are you most excited to work on?",
+    nervous: "It's totally normal to feel that way, {name}. Even pros get nervous. Let's focus on one small win today. What feels manageable?",
+    proud: "That's amazing, {name}! 🎉 Celebrate that win. What's the next step you're excited about?",
+  },
+  
+  // Smart follow-up questions to keep conversation flowing
+  followUps: {
+    afterAdvice: [
+      "How does that sound for your next session?",
+      "Want me to break that down further?",
+      "What part of that resonates most with you?",
+    ],
+    afterDrill: [
+      "How did that drill feel when you tried it?",
+      "Want to adjust the difficulty or try a variation?",
+      "What's one thing you noticed while doing that?",
+    ],
+    afterEncouragement: [
+      "What's one small action you can take today toward that goal?",
+      "Who can you share this progress with for accountability?",
+      "How are you feeling about that next step?",
+    ],
+  },
+  
+  // Natural transitions between topics
+  transitions: {
+    skillToMental: "By the way, {name} — how's your mindset feeling lately? Mental game is just as important as footwork. 🧠",
+    drillToRecovery: "Great work on that drill! 💦 Remember: recovery is where growth happens. How's your rest and hydration looking?",
+    generalToSpecific: "I'd love to give you more tailored advice. What position do you play, and what's one skill you're focusing on this week?",
+  },
+};
+
+// === 🎭 NATURAL LANGUAGE PROCESSOR ===
+class NaturalLanguageProcessor {
+  constructor() {
+    this.intentPatterns = {
+      greeting: /^(hi|hello|hey|greetings|good morning|good afternoon)/i,
+      farewell: /^(bye|goodbye|see you|later|catch you)/i,
+      thanks: /^(thanks|thank you|appreciate|grateful)/i,
+      question: /^(\w+\s)*(what|how|why|when|where|who|can|could|should|will|would)/i,
+      request: /^(can you|could you|please|help me|i need|i want)/i,
+      statement: /^(i think|i feel|i believe|i notice|i want to)/i,
+      emotion: /^(i'm feeling|i feel|i am|i'm so|this is so)/i,
+      skill: /^(passing|shooting|dribbling|defending|fitness|tactics|positioning)/i,
+      position: /^(goalkeeper|defender|midfielder|winger|striker|full.?back|center.?back)/i,
+    };
+    
+    this.emotionKeywords = {
+      positive: ['great', 'awesome', 'amazing', 'love', 'excited', 'proud', 'happy', 'confident'],
+      negative: ['frustrated', 'stuck', 'hard', 'difficult', 'can\'t', 'struggling', 'nervous', 'anxious'],
+      neutral: ['okay', 'fine', 'alright', 'not sure', 'maybe', 'thinking'],
     };
   }
-
-  update(newData) {
-    this.context = { ...this.context, ...newData };
-    return this.context;
-  }
-
-  get(key, defaultValue = null) {
-    return this.context[key] ?? defaultValue;
-  }
-
-  // Smart position detection with confidence scoring
-  detectPosition(message, history = []) {
-    const text = [message, ...history.slice(-5).map(m => m.text || '')].join(' ').toLowerCase();
-    
-    const positionSignals = {
-      'goalkeeper': { keywords: ['gk', 'goalkeeper', 'keeper', 'save', 'diving', 'handling', 'penalty'], weight: 3 },
-      'center back': { keywords: ['cb', 'center back', 'defender', 'marking', 'tackle', 'aerial'], weight: 2 },
-      'full back': { keywords: ['rb', 'lb', 'wing back', 'overlap', 'cross', 'track back'], weight: 2 },
-      'defensive midfielder': { keywords: ['cdm', 'holding', 'shield', 'break up', 'number 6'], weight: 2 },
-      'central midfielder': { keywords: ['cm', 'box to box', 'engine', 'number 8', 'link play'], weight: 2 },
-      'attacking midfielder': { keywords: ['cam', 'number 10', 'playmaker', 'through ball', 'assist'], weight: 2 },
-      'winger': { keywords: ['lw', 'rw', 'wing', 'dribble', 'beat man', 'cut inside'], weight: 2 },
-      'striker': { keywords: ['st', 'striker', 'forward', 'finish', 'goal', 'number 9'], weight: 3 }
+  
+  analyze(message) {
+    const text = message.toLowerCase().trim();
+    const result = {
+      intent: 'unknown',
+      emotion: 'neutral',
+      entities: [],
+      confidence: 0,
     };
-
-    let bestMatch = { position: 'general', score: 0 };
     
-    for (const [position, { keywords, weight }] of Object.entries(positionSignals)) {
-      const matches = keywords.filter(kw => text.includes(kw)).length;
-      const score = matches * weight;
-      if (score > bestMatch.score) {
-        bestMatch = { position, score };
+    // Detect intent
+    for (const [intent, pattern] of Object.entries(this.intentPatterns)) {
+      if (pattern.test(text)) {
+        result.intent = intent;
+        result.confidence = 0.8;
+        break;
       }
     }
     
-    // Only return if confidence is high enough
-    return bestMatch.score >= 2 ? bestMatch.position : this.context.position || 'general';
-  }
-
-  // Detect special needs with empathy
-  detectSpecialNeeds(message, history = []) {
-    const text = [message, ...history.slice(-3).map(m => m.text || '')].join(' ').toLowerCase();
-    
-    return {
-      hasDisability: /disab|wheelchair|mobility|prosth|amputee|visual impair|blind|deaf|adaptive|para football/i.test(text),
-      hasMentalStress: /anxiety|depress|stress|overwhelm|panic|adhd|ocd|mental health|burnout|nervous|scared|pressure|confidence/i.test(text),
-      isYoungPlayer: /\b(1[0-4]|under 15|youth|junior|school)\b/i.test(text),
-      isReturning: /comeback|return|after injury|back to play/i.test(text)
-    };
-  }
-
-  // Remember user preferences from conversation
-  learnFromInteraction(userMessage, coachResponse) {
-    const text = userMessage.toLowerCase();
-    
-    // Detect skill level from language
-    if (/\b(pro|expert|advanced|years of experience)\b/i.test(text)) {
-      this.update({ skillLevel: 'advanced' });
-    } else if (/\b(beginner|new|just started|learning)\b/i.test(text)) {
-      this.update({ skillLevel: 'beginner' });
+    // Detect emotion
+    for (const [emotion, keywords] of Object.entries(this.emotionKeywords)) {
+      if (keywords.some(kw => text.includes(kw))) {
+        result.emotion = emotion;
+        break;
+      }
     }
     
-    // Detect tone preference
-    if (/\b(more detail|explain|why|how does)\b/i.test(text)) {
-      this.update({ preferences: { ...this.context.preferences, detail: 'detailed' } });
-    }
+    // Extract entities (skills, positions, numbers)
+    const skillMatch = text.match(/\b(passing|shooting|dribbling|defending|fitness|tactics)\b/i);
+    if (skillMatch) result.entities.push({ type: 'skill', value: skillMatch[1] });
     
-    // Track topics for personalization
-    const topicKeywords = ['passing', 'shooting', 'dribbling', 'fitness', 'mental', 'tactics', 'nutrition'];
-    const detectedTopic = topicKeywords.find(kw => text.includes(kw));
-    if (detectedTopic) {
-      const topics = [...new Set([...(this.context.lastTopics || []), detectedTopic])].slice(-5);
-      this.update({ lastTopics: topics });
-    }
+    const positionMatch = text.match(/\b(goalkeeper|defender|midfielder|winger|striker)\b/i);
+    if (positionMatch) result.entities.push({ type: 'position', value: positionMatch[1] });
+    
+    const numberMatch = text.match(/\b(\d+)\b/);
+    if (numberMatch) result.entities.push({ type: 'number', value: parseInt(numberMatch[1]) });
+    
+    return result;
   }
 }
 
-// === ENHANCED RESPONSE GENERATORS ===
-const generateEncouragingOpener = (context) => {
-  const { name, position, skillLevel } = context;
-  const openers = [
-    `Hey ${name}! ðŸ‘‹ Great to see you. Whether you're a ${skillLevel} ${position || 'player'} or just starting out, I'm here to help you grow. What's on your mind today?`,
-    `${name}, your dedication inspires me! ðŸ’ª Let's make today's session count. What skill or challenge shall we tackle?`,
-    `Welcome back, ${name}! ðŸ™Œ Every pro was once a beginner. What's one thing you'd love to improve right now?`
-  ];
-  return openers[Math.floor(Math.random() * openers.length)];
-};
-
-const generatePositionSpecificAdvice = (position, message, context) => {
-  const { name, skillLevel } = context;
-  const isBeginner = skillLevel === 'beginner';
-  
-  const adviceDB = {
-    'goalkeeper': [
-      isBeginner 
-        ? `${name}, let's start simple: **W-grip** behind the ball, **soft hands** to cushion, **eyes on the ball** all the way. Try 10 wall catches â€” you'll feel the difference!`
-        : `${name}, elite GKs win games with **distribution**. Practice: 1-touch throw to a target 15 yards out. Accuracy > power at first.`,
-      `Your command of the box is your superpower, ${name}. ðŸ—£ï¸ Talk constantly: "Keeper's!", "Away!", "Step up!". Your voice organizes the defense.`,
-      `Penalty saving tip: ${isBeginner ? 'Watch the shooters plant foot â€” it points where they are likely to shoot.' : 'Study shooter patterns â€” most favor their strong side under pressure.'}`
-    ],
-    'striker': [
-      isBeginner
-        ? `${name}, finishing starts BEFORE the shot: **Body over the ball** for power, **eyes on target**, **follow through**. 5 reps, 3x/day = transformation.`
-        : `${name}, movement off the ball wins games. Practice: **Check away â†’ explode back** to lose your marker. Timing > speed.`,
-      `First touch = first chance, ${name}. Drill: Wall passes â†’ control with back foot â†’ shoot in 2 touches. Crispness creates goals.`,
-      `Mental tip for strikers: Missed a chance? Next play is your redemption. Even Haaland misses â€” what matters is the next action.`
-    ],
-    'central midfielder': [
-      `The engine room, ${name}! ðŸ’¨ Your job: **Scan before receiving** (shoulder check), **one-touch when possible**, **cover when teammates push up.`,
-      `Passing lanes are invisible highways, ${name}. Practice: 3-cone triangle passing â€” one-touch only. Speed of thought > speed of foot.`,
-      `Defensive transition tip: Lose the ball? **Immediate pressure for 3 seconds** â†’ if not won, **drop and reorganize**. Smart defending wins titles.`
-    ],
-    // Add more positions as needed...
-  };
-  
-  const positionAdvice = adviceDB[position] || adviceDB['central midfielder'];
-  return positionAdvice[Math.floor(Math.random() * positionAdvice.length)];
-};
-
-const generateDisabilityInclusiveAdvice = (context) => {
-  const { name } = context;
-  return `Football is for EVERYONE, ${name}! ðŸŒ\n\nâœ¨ **Adaptive options**:\nâ€¢ Frame Football (wheelchair users)\nâ€¢ Blind Football (audio ball + guides)\nâ€¢ Powerchair Football (electric chairs)\nâ€¢ CP Football (cerebral palsy)\n\nâœ¨ **Universal tips**:\nâ€¢ Focus on **decision-making** â€” vision > speed\nâ€¢ Use **voice cues** if visual impaired\nâ€¢ Modify drills: seated passing, stationary shooting\n\nOrganizations like **CPISRA**, **IBSA**, and **The FA Inclusion** have amazing resources. You belong on the pitch! ðŸ’™`;
-};
-
-const generateMentalWellnessSupport = (context) => {
-  const { name } = context;
-  return `${name}, your mind matters as much as your feet. ðŸ’™\n\nðŸ§  **Quick resets**:\nâ€¢ 4-7-8 breathing: Inhale 4s, hold 7s, exhale 8s\nâ€¢ Grounding: Name 5 things you see, 4 you feel, 3 you hear\nâ€¢ Self-talk: "I am prepared. I am capable."\n\nâš½ **Football-specific**:\nâ€¢ Focus on PROCESS goals ("complete 5 passes") not outcome ("score")\nâ€¢ Celebrate EFFORT â€” showing up is 80% of success\nâ€¢ Talk to someone: coach, teammate, therapist â€” strength in vulnerability\n\nYou're not alone. Even Messi, Ronaldo, and Marta have mental challenges. What matters is you keep going. I believe in you. ðŸ™Œ`;
-};
-
-const generateMicroDrill = (skill, context) => {
-  const { name, skillLevel, position } = context;
-  const isBeginner = skillLevel === 'beginner';
-  
-  const drills = {
-    'passing': isBeginner
-      ? `ðŸŽ¯ Wall Pass Drill (5 mins):\n1. Stand 2 yards from wall\n2. Pass firmly â†’ control first touch â†’ pass again\n3. 20 reps each foot\nðŸ’¡ Keep ankle locked, eyes up between reps!`
-      : `ðŸŽ¯ Pressure Passing (10 mins):\n1. Set 3 cones in triangle (5-yard sides)\n2. Partner calls "LEFT"/"RIGHT" as you receive\n3. Pass to called cone in 1 touch\nðŸ’¡ Scan BEFORE receiving â€” know your options!`,
-      
-    'shooting': isBeginner
-      ? `âš½ Confidence Finishing:\n1. Place ball 6 yards out\n2. Focus on PLACEMENT over power\n3. Hit 5 corners: top-left, top-right, bottom-left, bottom-right, center\nðŸ’¡ Plant foot beside ball, eyes on target!`
-      : `âš½ Game-Speed Finishing:\n1. Partner serves ball from side\n2. Control â†’ shoot in 2 touches MAX\n3. Alternate feet, vary angles\nðŸ’¡ Shoot EARLY â€” before defender closes!`,
-      
-    'dribbling': isBeginner
-      ? `ðŸŒ€ Close Control Basics:\n1. Dribble in small circle (2-yard diameter)\n2. Use BOTH feet, light touches\n3. 30 seconds on, 15 rest x 4 rounds\nðŸ’¡ Keep ball within 1 foot â€” control > speed!`
-      : `ðŸŒ€ 1v1 Moves:\n1. Set cone as "defender"\n2. Practice ONE move: stepover, scissors, or body feint\n3. Execute at 70% speed â†’ build to 100%\nðŸ’¡ Sell the fake with eyes + shoulders!`,
-      
-    'mental': `ðŸ§  2-Minute Reset:\n1. Stop. Breathe deeply 3x\n2. Ask: "What's ONE thing I can control right now?"\n3. Focus ONLY on that\nðŸ’¡ Pressure is privilege â€” it means you matter!`,
-      
-    'fitness': isBeginner
-      ? `ðŸƒ Beginner Endurance:\nâ€¢ Walk/jog intervals: 1 min jog, 2 min walk x 10\nâ€¢ Add 10 sec jogging each session\nâ€¢ Hydrate + rest days are PART of training!`
-      : `ðŸƒ Football-Specific Conditioning:\nâ€¢ Shuttle runs: 10y â†’ 20y â†’ 30y â†’ 20y â†’ 10y (no rest)\nâ€¢ Rest 90 sec, repeat 4x\nâ€¢ Mimics match demands!`
-  };
-  
-  // Nigerian/local flavor
-  if (position === 'striker' && skill === 'shooting') {
-    return `ðŸ‡³ðŸ‡¬ Nigerian Striker Special:\n\n1. Use a plastic bag as ball (like Jay-Jay!)\n2. Practice stepovers in your compound\n3. Finish with a chip over a water bottle!\n\nCreativity > fancy gear. You've got the magic! âœ¨`;
+// === 💬 CONVERSATION MEMORY ===
+class ConversationMemory {
+  constructor(maxHistory = 20) {
+    this.history = [];
+    this.maxHistory = maxHistory;
+    this.userProfile = {};
+    this.sessionContext = {};
   }
   
-  return drills[skill] || `Grab a ball and a wall, ${name}! 10 minutes of focused reps beats 1 hour of unfocused play. What skill shall we drill today?`;
-};
-
-// === MAIN SMART RESPONSE ENGINE ===
-const generateCoachResponse = (userMessage, conversationHistory, smartContext) => {
-  const message = userMessage.toLowerCase().trim();
-  const { name } = smartContext.context;
-  
-  // === 1. Quick-help commands (priority) ===
-  if (userMessage.startsWith('/')) {
-    const [cmd, ...args] = userMessage.split(' ');
-    const param = args[0]?.toLowerCase();
+  add(message, sender) {
+    this.history.push({
+      id: Date.now().toString() + Math.random(),
+      text: message,
+      sender,
+      timestamp: new Date().toISOString(),
+    });
     
-    const commands = {
-      '/drill': (skill) => `Here's your drill, ${name}!\n\n${generateMicroDrill(skill, smartContext.context)}`,
-      '/position': (pos) => {
-        const valid = ['gk','cb','rb','lb','cdm','cm','cam','lw','rw','st'];
-        if (valid.includes(pos)) {
-          smartContext.update({ position: pos });
-          return `Got it! I'll focus on ${pos.toUpperCase()} tips for you, ${name}. Ask away!`;
-        }
-        return `Positions: ${valid.join(', ')}\nExample: /position st`;
-      },
-      '/help': () => `Quick commands:\n/drill [passing|shooting|dribbling]\n/position [st|gk|cm...]\n/mental (wellness tips)\n/help\n\nOr just chat naturally! ðŸ˜Š`,
-      '/inspire': () => getRandomInspiration(),
-      '/mental': () => generateMentalWellnessSupport(smartContext.context)
-    };
-    
-    if (commands[cmd]) return commands[cmd](param);
-  }
-  
-  // === 2. Detect special needs FIRST (safety priority) ===
-  const specialNeeds = smartContext.detectSpecialNeeds(message, conversationHistory);
-  if (specialNeeds.hasDisability) return generateDisabilityInclusiveAdvice(smartContext.context);
-  if (specialNeeds.hasMentalStress) return generateMentalWellnessSupport(smartContext.context);
-  
-  // === 3. Effort celebration (positive reinforcement) ===
-  const effortWords = ['trained', 'practiced', 'did', 'tried', 'worked', 'repeated', 'drilled', 'showed up'];
-  if (effortWords.some(w => message.includes(w))) {
-    return `That's HUGE, ${name}! ðŸ™Œ Consistency beats talent when talent doesn't work hard. What part felt best? What's next?`;
-  }
-  
-  // === 4. Clarify vague struggles (empathetic probing) ===
-  const vagueWords = ['struggling', 'hard', 'difficult', 'can\'t', 'not good', 'bad at', 'frustrated'];
-  if (vagueWords.some(w => message.includes(w)) && !message.includes('youtube')) {
-    return `I'm here for you, ${name}. To give spot-on advice, help me understand:\n\nâ€¢ What position do you play?\nâ€¢ What specifically feels tough?\nâ€¢ How long have you been working on it?\n\nNo judgment â€” just solutions! ðŸ’™`;
-  }
-  
-  // === 5. Handle complaints with humility ===
-  const isComplaining = /not offering|doesn't have|wrong|bad recommendation|not helpful|doesn't work|tried that|already checked/i.test(message);
-  if (isComplaining) {
-    return `My bad, ${name}! You deserve better. Tell me exactly what you've tried and what you need â€” I'll give you something that actually works. No fluff!`;
-  }
-  
-  // === 6. Foul language â†’ gentle redirect ===
-  const FOUL_WORDS = ['damn', 'shit', 'fuck', 'bitch', 'ass', 'hell', 'crap', 'stupid', 'idiot'];
-  if (FOUL_WORDS.some(word => message.includes(word))) {
-    return `Hey, I get it â€” football's frustrating sometimes! ðŸ˜… Let's reset: what's ONE thing you'd love to improve today? I'm all in to help.`;
-  }
-  
-  // === 7. Mental health keywords â†’ supportive response ===
-  if (/confidence|nervous|scared|mental|pressure|anxiety|overwhelm/i.test(message)) {
-    return generateMentalWellnessSupport(smartContext.context);
-  }
-  
-  // === 8. Position detection + personalized advice ===
-  const detectedPosition = smartContext.detectPosition(message, conversationHistory);
-  if (detectedPosition !== 'general' && detectedPosition !== smartContext.context.position) {
-    smartContext.update({ position: detectedPosition });
-  }
-  
-  // Position-specific advice
-  if (detectedPosition !== 'general') {
-    return generatePositionSpecificAdvice(detectedPosition, message, smartContext.context);
-  }
-  
-  // === 9. Skill-specific micro-drills ===
-  const skillKeywords = {
-    'passing': /pass|through ball|cross|distribute/i,
-    'shooting': /shoot|finish|goal|strike|volley/i,
-    'dribbling': /dribbl|beat man|stepover|scissors/i,
-    'fitness': /fit|stamina|endurance|tired|condition/i,
-    'mental': /mind|confidence|focus|nervous|pressure/i
-  };
-  
-  for (const [skill, regex] of Object.entries(skillKeywords)) {
-    if (regex.test(message)) {
-      return `${name}, ${generateMicroDrill(skill, smartContext.context)}`;
+    // Keep history manageable
+    if (this.history.length > this.maxHistory) {
+      this.history = this.history.slice(-this.maxHistory);
     }
   }
   
-  // === 10. Fallback: Smart engine + conversational prompt ===
-  const smartResponse = generateSmartResponse(userMessage, conversationHistory, smartContext.context);
-  
-  // If smart engine returns generic, enhance with personality
-  if (smartResponse.length < 50 || /ask me|tell me|what/i.test(smartResponse)) {
-    return `${generateEncouragingOpener(smartContext.context)}\n\n(P.S. Try /drill passing or tell me your position for tailored tips!)`;
+  getRecent(count = 5) {
+    return this.history.slice(-count);
   }
   
-  return smartResponse;
+  updateUserProfile(updates) {
+    this.userProfile = { ...this.userProfile, ...updates };
+  }
+  
+  getContext(key, defaultValue = null) {
+    return this.sessionContext[key] ?? defaultValue;
+  }
+  
+  setContext(key, value) {
+    this.sessionContext[key] = value;
+  }
+  
+  // Smart topic tracking
+  detectTopic(message) {
+    const topics = {
+      skills: ['passing', 'shooting', 'dribbling', 'defending', 'fitness'],
+      mental: ['confidence', 'nervous', 'pressure', 'focus', 'mindset'],
+      tactics: ['formation', 'positioning', 'strategy', 'game plan'],
+      recovery: ['rest', 'sleep', 'hydration', 'nutrition', 'injury'],
+      goals: ['improve', 'get better', 'level up', 'next season'],
+    };
+    
+    const lower = message.toLowerCase();
+    for (const [topic, keywords] of Object.entries(topics)) {
+      if (keywords.some(kw => lower.includes(kw))) {
+        return topic;
+      }
+    }
+    return 'general';
+  }
+}
+
+// === 🎨 MESSAGE FORMATTER (Markdown-like support) ===
+const formatMessage = (text) => {
+  // Bold: **text** → <Text style={bold}>text</Text>
+  // Italic: *text* → <Text style={italic}>text</Text>
+  // Line breaks: \n → actual newlines
+  // Emojis: preserved as-is
+  
+  return text
+    .replace(/\*\*(.*?)\*\*/g, '$1') // Remove bold markers for display
+    .replace(/\*(.*?)\*/g, '$1') // Remove italic markers
+    .replace(/```([\s\S]*?)```/g, '$1') // Code blocks
+    .trim();
 };
 
-// === COMPONENT ===
+// === 🎲 RESPONSE GENERATOR (The "Brain") ===
+const generateAIResponse = (userMessage, memory, userProfile) => {
+  const nlp = new NaturalLanguageProcessor();
+  const analysis = nlp.analyze(userMessage);
+  const { name = 'Champion', position, skillLevel = 'developing' } = userProfile;
+  
+  // === 1. Greetings & Farewells ===
+  if (analysis.intent === 'greeting') {
+    const opener = AI_COACH.openers[Math.floor(Math.random() * AI_COACH.openers.length)];
+    return opener.replace('{name}', name);
+  }
+  
+  if (analysis.intent === 'farewell') {
+    const closers = [
+      `Keep pushing, ${name}! 💪 I'll be here when you're ready for the next session.`,
+      `Great chat today, ${name}! 🙌 Remember: progress > perfection. See you soon!`,
+      `You've got this, ${name}! ⚽ One step at a time. Come back anytime!`,
+    ];
+    return closers[Math.floor(Math.random() * closers.length)];
+  }
+  
+  // === 2. Gratitude ===
+  if (analysis.intent === 'thanks') {
+    const gratitude = [
+      `Anytime, ${name}! 🙏 That's what I'm here for. What's next on your list?`,
+      `Happy to help, champion! 💙 Keep that momentum going. What shall we tackle next?`,
+      `You're welcome, ${name}! 🌟 Your dedication inspires me. Ready for the next challenge?`,
+    ];
+    return gratitude[Math.floor(Math.random() * gratitude.length)];
+  }
+  
+  // === 3. Emotional Support (Priority) ===
+  if (analysis.emotion === 'negative') {
+    const empathy = AI_COACH.empathyResponses.frustrated.replace('{name}', name);
+    return `${empathy}\n\n💡 Quick reset: Take a deep breath. What's ONE small thing you can control right now?`;
+  }
+  
+  if (analysis.emotion === 'positive') {
+    const hype = AI_COACH.empathyResponses.excited.replace('{name}', name);
+    return `${hype}\n\n🔥 Let's channel that energy! What skill are you most excited to work on today?`;
+  }
+  
+  // === 4. Skill-Specific Advice ===
+  if (analysis.entities.some(e => e.type === 'skill')) {
+    const skill = analysis.entities.find(e => e.type === 'skill').value;
+    const drills = {
+      passing: `🎯 **Passing Focus**, ${name}:\n\n• Wall passes: 2 yards away, 20 reps each foot\n• Target practice: Hit a cone from 10 yards\n• One-touch: Partner serves, you return instantly\n\n💡 Pro tip: Ankles locked, eyes up between touches!`,
+      shooting: `⚽ **Finishing Focus**, ${name}:\n\n• Placement over power: Hit corners, not just hard\n• First touch setup: Control into shooting position\n• Game speed: Add a defender (cone) for pressure\n\n💡 Pro tip: Plant foot beside ball, eyes on target!`,
+      dribbling: `🌪️ **Dribbling Focus**, ${name}:\n\n• Close control: Dribble in small circle, light touches\n• Change of pace: Slow → burst → slow\n• Moves: Master ONE (stepover, scissors, body feint)\n\n💡 Pro tip: Keep ball within 1 foot — control > speed!`,
+      defending: `🛡️ **Defending Focus**, ${name}:\n\n• Stance: Low, balanced, on balls of feet\n• Angle: Force attacker to weak side\n• Patience: Don't dive in — jockey and wait\n\n💡 Pro tip: Watch the ball AND the attacker's hips!`,
+      fitness: `🏃 **Fitness Focus**, ${name}:\n\n• Intervals: 30s sprint, 90s walk x 8 rounds\n• Agility: Ladder drills or cone weaves\n• Core: Plank variations for stability\n\n💡 Pro tip: Consistency beats intensity — show up daily!`,
+    };
+    
+    const drill = drills[skill] || `Great focus on ${skill}, ${name}! Let's build a custom drill. What's your current level with this skill?`;
+    return drill;
+  }
+  
+  // === 5. Position-Specific Wisdom ===
+  if (analysis.entities.some(e => e.type === 'position')) {
+    const pos = analysis.entities.find(e => e.type === 'position').value;
+    const wisdom = {
+      goalkeeper: `🧤 **GK Wisdom**, ${name}:\n\n• Command your box: Voice = your superpower\n• Distribution: Practice throws to targets\n• Mental: Next play is always the most important\n\n💡 Pro tip: Study shooters' plant feet — they reveal intent!`,
+      defender: `🧱 **Defender Wisdom**, ${name}:\n\n• Positioning: Stay goal-side, force wide\n• Communication: Talk constantly — organize your line\n• Recovery: Speed back > speed forward\n\n💡 Pro tip: Win the first duel — set the tone!`,
+      midfielder: `⚙️ **Midfielder Wisdom**, ${name}:\n\n• Scan: Shoulder check before receiving\n• Transition: First thought after losing ball = pressure\n• Vision: See the field, not just the ball\n\n💡 Pro tip: One-touch passing speeds up the game!`,
+      winger: `⚡ **Winger Wisdom**, ${name}:\n\n• 1v1: Master one move, execute with confidence\n• Crossing: Early ball > perfect ball\n• Tracking back: Defense wins championships\n\n💡 Pro tip: Use the sideline as a teammate!`,
+      striker: `🎯 **Striker Wisdom**, ${name}:\n\n• Movement: Lose your marker before the ball arrives\n• Finishing: Placement > power, always\n• Mentality: Missed chance? Next play is redemption\n\n💡 Pro tip: Shoot early — before defender closes!`,
+    };
+    
+    return (wisdom[pos] || `Great position, ${name}! Let's tailor advice. What's one aspect of ${pos} play you want to improve?`).replace('{name}', name);
+  }
+  
+  // === 6. Mental Game Support ===
+  if (memory.detectTopic(userMessage) === 'mental') {
+    return `🧠 **Mental Game**, ${name}:\n\n• Breathing: 4-7-8 technique (inhale 4s, hold 7s, exhale 8s)\n• Self-talk: Replace "I can't" with "I'm learning"\n• Focus: Process goals ("complete 5 passes") > outcome ("score")\n\n💡 Remember: Even Messi feels pressure. What matters is you keep going. I believe in you. 🙌`;
+  }
+  
+  // === 7. Goal Setting & Motivation ===
+  if (memory.detectTopic(userMessage) === 'goals') {
+    return `🎯 **Goal Setting**, ${name}:\n\n• Make it SMART: Specific, Measurable, Achievable, Relevant, Time-bound\n• Break it down: Big goal → weekly actions → daily habits\n• Track progress: Journal wins, learn from setbacks\n\n💡 Example: "Improve weak foot passing" → "10 wall passes with left foot daily" → "Confidence in games"\n\nWhat's one goal you'd like to set today?`;
+  }
+  
+  // === 8. Natural Conversation Flow ===
+  const recentTopic = memory.detectTopic(memory.getRecent(3).map(m => m.text).join(' '));
+  if (recentTopic !== 'general' && Math.random() > 0.7) {
+    const transition = AI_COACH.transitions[`${recentTopic}ToGeneral`] || AI_COACH.transitions.generalToSpecific;
+    return transition.replace('{name}', name);
+  }
+  
+  // === 9. Smart Follow-Up ===
+  const lastMessage = memory.getRecent(1)[0];
+  if (lastMessage?.sender === 'Coach' && Math.random() > 0.5) {
+    const followUpType = Object.keys(AI_COACH.followUps)[Math.floor(Math.random() * 3)];
+    const followUps = AI_COACH.followUps[followUpType];
+    return followUps[Math.floor(Math.random() * followUps.length)];
+  }
+  
+  // === 10. Fallback: Engaging & Open-Ended ===
+  const fallbacks = [
+    `Interesting perspective, ${name}! 🤔 Help me understand: what's the biggest challenge you're facing with that right now?`,
+    `I'd love to give you the best advice possible, ${name}. Could you tell me a bit more about your current situation? 🙏`,
+    `Great question, ${name}! 💭 To tailor my response: What position do you play, and what's your main focus this week?`,
+  ];
+  
+  return fallbacks[Math.floor(Math.random() * fallbacks.length)];
+};
+
+// === 🎬 TYPING INDICATOR COMPONENT ===
+const TypingIndicator = () => {
+  const [dots, setDots] = useState('');
+  
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setDots(prev => prev.length >= 3 ? '' : prev + '.');
+    }, 500);
+    return () => clearInterval(interval);
+  }, []);
+  
+  return (
+    <View style={styles.typingBubble}>
+      <Text style={styles.typingText}>Coach AI is thinking{dots}</Text>
+    </View>
+  );
+};
+
+// === 💬 MAIN COMPONENT ===
 export default function VIPChat() {
   const router = useRouter();
   const [messages, setMessages] = useState([]);
@@ -294,23 +332,14 @@ export default function VIPChat() {
   const [loading, setLoading] = useState(false);
   const [isVIP, setIsVIP] = useState(false);
   const [checkingVIP, setCheckingVIP] = useState(true);
+  const [isTyping, setIsTyping] = useState(false);
   
-  // Smart context manager (persists across sessions)
-  const [smartContext] = useState(() => new SmartCoachContext());
+  // Initialize AI brain
+  const memoryRef = useRef(new ConversationMemory());
+  const userProfileRef = useRef({ name: 'Champion', position: null, skillLevel: 'developing' });
   const flatListRef = useRef(null);
   
-  useEffect(() => {
-    checkVIPAccess();
-  }, []);
-  
-  useEffect(() => {
-    if (isVIP) {
-      loadContext();
-      loadMessages();
-    }
-  }, [isVIP]);
-  
-  // Auto-scroll to bottom on new messages
+  // Smooth scrolling
   useEffect(() => {
     if (flatListRef.current && messages.length > 0) {
       setTimeout(() => {
@@ -319,37 +348,24 @@ export default function VIPChat() {
     }
   }, [messages]);
   
-  const loadContext = async () => {
-    try {
-      // Load user context
-      const storedContext = await AsyncStorage.getItem(USER_CONTEXT_KEY);
-      if (storedContext) {
-        smartContext.update(JSON.parse(storedContext));
-      } else {
-        // Initialize from user profile
-        const userStored = await AsyncStorage.getItem('user');
-        const userName = userStored ? JSON.parse(userStored)?.name || 'Champion' : 'Champion';
-        smartContext.update({ name: userName });
-        await AsyncStorage.setItem(USER_CONTEXT_KEY, JSON.stringify(smartContext.context));
-      }
-      
-      // Load conversation memory for continuity
-      const memory = await AsyncStorage.getItem(CONVERSATION_MEMORY_KEY);
-      if (memory) {
-        const parsed = JSON.parse(memory);
-        if (parsed.lastTopics) smartContext.update({ lastTopics: parsed.lastTopics });
-      }
-    } catch (error) {
-      console.error('Failed to load context:', error);
+  // Check VIP access
+  useEffect(() => {
+    checkVIPAccess();
+  }, []);
+  
+  // Load context when VIP confirmed
+  useEffect(() => {
+    if (isVIP) {
+      loadUserProfile();
+      loadMessages();
     }
-  };
+  }, [isVIP]);
   
   const checkVIPAccess = async () => {
     try {
-      // âœ… Production: Check real subscription status
       const vipStatus = await AsyncStorage.getItem('isVIP');
       
-      // ðŸ§ª DEV MODE: Auto-grant access for testing (REMOVE BEFORE PRODUCTION)
+      // Dev mode: auto-grant for testing
       if (__DEV__ && vipStatus === null) {
         await AsyncStorage.setItem('isVIP', 'true');
         setIsVIP(true);
@@ -359,10 +375,10 @@ export default function VIPChat() {
       
       if (vipStatus !== 'true') {
         Alert.alert(
-          'Premium Feature',
-          'VIP Coach Chat is only available for Premium members. Would you like to upgrade?',
+          '✨ Premium Feature',
+          'VIP Coach Chat gives you personalized AI coaching. Upgrade to unlock!',
           [
-            { text: 'Cancel', onPress: () => router.back() },
+            { text: 'Maybe Later', onPress: () => router.back(), style: 'cancel' },
             { 
               text: 'Upgrade Now', 
               onPress: () => router.replace('/VIPSubscription'),
@@ -375,137 +391,173 @@ export default function VIPChat() {
       setIsVIP(true);
     } catch (error) {
       console.error('VIP check failed:', error);
-      Alert.alert('Error', 'Failed to verify VIP status');
+      Alert.alert('Error', 'Failed to verify access');
       router.back();
     } finally {
       setCheckingVIP(false);
     }
   };
   
+  const loadUserProfile = async () => {
+    try {
+      const stored = await AsyncStorage.getItem('user');
+      if (stored) {
+        const user = JSON.parse(stored);
+        userProfileRef.current = {
+          name: user.name || 'Champion',
+          position: user.position || null,
+          skillLevel: user.skillLevel || 'developing',
+          ...userProfileRef.current,
+        };
+      }
+    } catch (error) {
+      console.error('Failed to load profile:', error);
+    }
+  };
+  
   const loadMessages = async () => {
     try {
-      const stored = await AsyncStorage.getItem(CHAT_STORAGE_KEY);
+      const stored = await AsyncStorage.getItem('vip_chat_messages');
       if (stored) {
-        setMessages(JSON.parse(stored));
+        const loaded = JSON.parse(stored);
+        setMessages(loaded);
+        // Restore to memory
+        loaded.forEach(m => memoryRef.current.add(m.text, m.sender));
       } else {
         // Personalized welcome
-        const welcomeMsg = {
-          id: '1',
-          text: generateEncouragingOpener(smartContext.context),
+        const { name } = userProfileRef.current;
+        const welcome = {
+          id: 'welcome',
+          text: AI_COACH.openers[0].replace('{name}', name),
           sender: 'Coach',
-          timestamp: new Date().toISOString()
+          timestamp: new Date().toISOString(),
         };
-        setMessages([welcomeMsg]);
-        await AsyncStorage.setItem(CHAT_STORAGE_KEY, JSON.stringify([welcomeMsg]));
+        setMessages([welcome]);
+        memoryRef.current.add(welcome.text, welcome.sender);
       }
     } catch (error) {
       console.error('Failed to load messages:', error);
     }
   };
   
-  const startNewChat = async () => {
-    const freshStart = {
-      id: Date.now().toString(),
-      text: `Fresh start, ${smartContext.context.name}! ðŸ’ª\n\nWhat's your focus today?\nâ€¢ Skill drill? (/drill passing)\nâ€¢ Mental boost? (/mental)\nâ€¢ Position advice? (/position st)\n\nI'm all yours!`,
-      sender: 'Coach',
-      timestamp: new Date().toISOString()
-    };
-    setMessages([freshStart]);
-    await AsyncStorage.setItem(CHAT_STORAGE_KEY, JSON.stringify([freshStart]));
-  };
-  
   const saveMessages = async (newMessages) => {
     try {
-      await AsyncStorage.setItem(CHAT_STORAGE_KEY, JSON.stringify(newMessages));
-      // Save conversation memory for continuity
-      await AsyncStorage.setItem(CONVERSATION_MEMORY_KEY, JSON.stringify({
-        lastTopics: smartContext.context.lastTopics,
-        lastPosition: smartContext.context.position,
-        updatedAt: new Date().toISOString()
-      }));
+      await AsyncStorage.setItem('vip_chat_messages', JSON.stringify(newMessages));
     } catch (error) {
       console.error('Failed to save messages:', error);
     }
   };
   
-  const sendMessage = async () => {
+  const sendMessage = useCallback(async () => {
     if (!newMessage.trim() || !isVIP || loading) return;
     
     const userText = newMessage.trim();
-    setLoading(true);
-    setNewMessage('');
+    const { name } = userProfileRef.current;
     
-    // Add user message immediately
+    // Add user message
     const userMessage = {
       id: Date.now().toString(),
       text: userText,
       sender: 'Player',
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     };
     
-    const updatedMessages = [...messages, userMessage];
-    setMessages(updatedMessages);
+    const updated = [...messages, userMessage];
+    setMessages(updated);
+    memoryRef.current.add(userText, 'Player');
+    setNewMessage('');
+    setLoading(true);
+    setIsTyping(true);
     
-    // Learn from this interaction
-    smartContext.learnFromInteraction(userText, '');
-    
-    // Simulate "thinking" time (more natural)
-    const thinkingTime = 800 + Math.random() * 1200;
+    // Simulate "thinking" time (more natural variation)
+    const thinkTime = 1000 + Math.random() * 2000;
     
     setTimeout(async () => {
       try {
-        // Generate smart response
-        const coachText = generateCoachResponse(userText, updatedMessages, smartContext);
+        // Generate intelligent response
+        const responseText = generateAIResponse(userText, memoryRef.current, userProfileRef.current);
         
         const coachMessage = {
           id: (Date.now() + 1).toString(),
-          text: coachText,
+          text: responseText,
           sender: 'Coach',
-          timestamp: new Date().toISOString()
+          timestamp: new Date().toISOString(),
         };
         
-        const finalMessages = [...updatedMessages, coachMessage];
-        setMessages(finalMessages);
-        await saveMessages(finalMessages);
+        const final = [...updated, coachMessage];
+        setMessages(final);
+        memoryRef.current.add(responseText, 'Coach');
+        await saveMessages(final);
         
-        // Update context with detected info
-        await AsyncStorage.setItem(USER_CONTEXT_KEY, JSON.stringify(smartContext.context));
+        // Update user profile if new info detected
+        if (userText.toLowerCase().includes('i play') || userText.toLowerCase().includes('position')) {
+          // Simple extraction (improve with NLP library in production)
+          const posMatch = userText.match(/\b(goalkeeper|defender|midfielder|winger|striker)\b/i);
+          if (posMatch) {
+            userProfileRef.current.position = posMatch[1];
+          }
+        }
         
       } catch (error) {
-        console.error('Response generation failed:', error);
-        // Fallback response
+        console.error('Response failed:', error);
         const fallback = {
           id: (Date.now() + 1).toString(),
-          text: `I want to give you the best advice, ${smartContext.context.name}! Could you tell me a bit more about what you're working on? ðŸ™Œ`,
+          text: `I want to give you the best advice, ${name}! Could you tell me a bit more about what you're working on? 🙌`,
           sender: 'Coach',
-          timestamp: new Date().toISOString()
+          timestamp: new Date().toISOString(),
         };
-        setMessages([...updatedMessages, fallback]);
+        setMessages([...updated, fallback]);
       } finally {
         setLoading(false);
+        setIsTyping(false);
       }
-    }, thinkingTime);
+    }, thinkTime);
+  }, [newMessage, isVIP, loading, messages]);
+  
+  const startNewChat = async () => {
+    const { name } = userProfileRef.current;
+    const fresh = {
+      id: Date.now().toString(),
+      text: `Fresh start, ${name}! 💪\n\nWhat's your focus today?\n• Skill drill? (e.g., "help with passing")\n• Mental boost? (e.g., "feeling nervous")\n• Position advice? (e.g., "tips for strikers")\n\nI'm all yours! 🙌`,
+      sender: 'Coach',
+      timestamp: new Date().toISOString(),
+    };
+    setMessages([fresh]);
+    memoryRef.current = new ConversationMemory();
+    memoryRef.current.add(fresh.text, 'Coach');
+    await saveMessages([fresh]);
   };
   
-  const renderMessage = ({ item }) => (
-    <View style={[
-      styles.messageBubble,
-      item.sender === 'Player' ? styles.playerMessage : styles.coachMessage
-    ]}>
-      <Text style={styles.senderName}>{item.sender === 'Coach' ? 'ðŸ¤– Coach' : 'ðŸ‘¤ You'}</Text>
-      <Text style={styles.messageText}>{item.text}</Text>
-      <Text style={styles.messageTime}>
-        {new Date(item.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-      </Text>
-    </View>
-  );
+  const renderMessage = ({ item }) => {
+    const isPlayer = item.sender === 'Player';
+    return (
+      <View style={[
+        styles.messageBubble,
+        isPlayer ? styles.playerBubble : styles.coachBubble,
+      ]}>
+        {!isPlayer && (
+          <Text style={styles.senderName}>🤖 {AI_COACH.name}</Text>
+        )}
+        <Text style={[
+          styles.messageText,
+          isPlayer ? styles.playerText : styles.coachText,
+        ]}>
+          {formatMessage(item.text)}
+        </Text>
+        <Text style={styles.messageTime}>
+          {new Date(item.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+        </Text>
+      </View>
+    );
+  };
   
+  // Loading states
   if (checkingVIP) {
     return (
       <View style={styles.container}>
-        <Text style={styles.title}>ðŸ’¬ VIP Coach Chat</Text>
-        <View style={styles.loadingContainer}>
-          <Text style={styles.loadingText}>Checking Premium access...</Text>
+        <View style={styles.centered}>
+          <ActivityIndicator size="large" color="#ffd700" />
+          <Text style={styles.loadingText}>Verifying Premium access...</Text>
         </View>
       </View>
     );
@@ -514,14 +566,26 @@ export default function VIPChat() {
   if (!isVIP) {
     return (
       <View style={styles.container}>
-        <Text style={styles.title}>ðŸ’¬ VIP Coach Chat</Text>
-        <View style={styles.loadingContainer}>
-          <Text style={styles.loadingText}>Premium access required</Text>
+        <View style={styles.centered}>
+          <Text style={styles.title}>✨ VIP Coach Chat</Text>
+          <Text style={styles.subtitle}>Your personal AI football coach</Text>
+          <View style={styles.featureList}>
+            <Text style={styles.feature}>• Personalized drills & advice</Text>
+            <Text style={styles.feature}>• Mental game support</Text>
+            <Text style={styles.feature}>• Position-specific wisdom</Text>
+            <Text style={styles.feature}>• 24/7 availability</Text>
+          </View>
           <TouchableOpacity 
             style={styles.upgradeButton}
             onPress={() => router.replace('/VIPSubscription')}
           >
-            <Text style={styles.upgradeButtonText}>Upgrade to Unlock</Text>
+            <Text style={styles.upgradeButtonText}>Unlock VIP Chat</Text>
+          </TouchableOpacity>
+          <TouchableOpacity 
+            style={styles.backButton}
+            onPress={() => router.back()}
+          >
+            <Text style={styles.backButtonText}>← Back</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -532,17 +596,23 @@ export default function VIPChat() {
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       style={styles.container}
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 0}
     >
+      {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-          <Text style={styles.backText}>â†</Text>
+        <TouchableOpacity onPress={() => router.back()} style={styles.iconButton}>
+          <Text style={styles.iconText}>←</Text>
         </TouchableOpacity>
-        <Text style={styles.title}>ðŸ’¬ VIP Coach Chat</Text>
-        <TouchableOpacity onPress={startNewChat} style={styles.newChatButton}>
-          <Text style={styles.newChatIcon}>ðŸ†•</Text>
+        <View style={styles.headerCenter}>
+          <Text style={styles.headerTitle}>🤖 Coach AI</Text>
+          <Text style={styles.headerStatus}>Online • Premium</Text>
+        </View>
+        <TouchableOpacity onPress={startNewChat} style={styles.iconButton}>
+          <Text style={styles.iconText}>🔄</Text>
         </TouchableOpacity>
       </View>
       
+      {/* Messages */}
       <FlatList
         ref={flatListRef}
         data={messages}
@@ -551,12 +621,17 @@ export default function VIPChat() {
         contentContainerStyle={styles.messagesContainer}
         style={styles.messagesList}
         showsVerticalScrollIndicator={false}
+        onContentSizeChange={() => flatListRef.current?.scrollToEnd({ animated: true })}
       />
       
-      <View style={styles.inputContainer}>
+      {/* Typing Indicator */}
+      {isTyping && <TypingIndicator />}
+      
+      {/* Input Area */}
+      <View style={styles.inputArea}>
         <TextInput
           style={styles.input}
-          placeholder="Ask your coach... (Try /help!)"
+          placeholder="Ask Coach AI... (Try: 'help with shooting')"
           placeholderTextColor="#666"
           value={newMessage}
           onChangeText={setNewMessage}
@@ -565,145 +640,173 @@ export default function VIPChat() {
           onSubmitEditing={sendMessage}
           returnKeyType="send"
           blurOnSubmit={false}
+          editable={!loading}
         />
         <TouchableOpacity
-          style={[styles.sendButton, (loading || !newMessage.trim()) && styles.disabledButton]}
+          style={[
+            styles.sendButton,
+            (loading || !newMessage.trim()) && styles.sendButtonDisabled,
+          ]}
           onPress={sendMessage}
           disabled={loading || !newMessage.trim()}
         >
-          <Text style={styles.sendButtonText}>{loading ? 'â³' : 'âž¤'}</Text>
+          {loading ? (
+            <ActivityIndicator size="small" color="#fff" />
+          ) : (
+            <Text style={styles.sendButtonText}>➤</Text>
+          )}
         </TouchableOpacity>
       </View>
       
+      {/* Quick Tips */}
       <TouchableOpacity 
-        style={styles.hintButton}
+        style={styles.tipsBar}
         onPress={() => setNewMessage('/help')}
+        activeOpacity={0.7}
       >
-        <Text style={styles.hintText}>ðŸ’¡ Try: /help â€¢ /drill passing â€¢ /mental â€¢ /inspire</Text>
+        <Text style={styles.tipsText}>💡 Try: "help with passing" • "feeling nervous" • "striker tips"</Text>
       </TouchableOpacity>
     </KeyboardAvoidingView>
   );
 }
 
+// === 🎨 STYLES ===
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#0d1b2a' },
-  header: { 
-    flexDirection: 'row', 
-    alignItems: 'center', 
-    padding: 16, 
-    borderBottomWidth: 1, 
-    borderBottomColor: '#1b263b',
-    backgroundColor: '#0d1b2a'
-  },
-  backButton: { padding: 8, marginRight: 8 },
-  backText: { color: '#1e88e5', fontSize: 20, fontWeight: 'bold' },
-  title: { 
-    flex: 1, 
-    fontSize: 20, 
-    fontWeight: 'bold', 
-    color: '#f1faee', 
-    textAlign: 'center' 
-  },
-  newChatButton: { padding: 8 },
-  newChatIcon: { fontSize: 18 },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: 'center',
+  centered: { flex: 1, justifyContent: 'center', alignItems: 'center', padding: 24 },
+  
+  // Header
+  header: {
+    flexDirection: 'row',
     alignItems: 'center',
-    padding: 20,
+    padding: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: '#1b263b',
+    backgroundColor: '#0d1b2a',
   },
-  loadingText: {
-    color: '#a8dadc',
-    fontSize: 16,
-    textAlign: 'center',
-    marginBottom: 20,
-  },
+  iconButton: { padding: 8 },
+  iconText: { color: '#1e88e5', fontSize: 20, fontWeight: 'bold' },
+  headerCenter: { flex: 1, alignItems: 'center' },
+  headerTitle: { fontSize: 18, fontWeight: 'bold', color: '#f1faee' },
+  headerStatus: { fontSize: 12, color: '#4CAF50' },
+  
+  // VIP Upgrade Screen
+  title: { fontSize: 24, fontWeight: 'bold', color: '#ffd700', marginBottom: 12, textAlign: 'center' },
+  subtitle: { fontSize: 16, color: '#a8dadc', marginBottom: 24, textAlign: 'center' },
+  featureList: { marginBottom: 32 },
+  feature: { fontSize: 14, color: '#f1faee', marginBottom: 8 },
   upgradeButton: {
     backgroundColor: '#1e88e5',
-    paddingVertical: 12,
-    paddingHorizontal: 24,
-    borderRadius: 8,
+    paddingVertical: 14,
+    paddingHorizontal: 32,
+    borderRadius: 12,
+    marginBottom: 16,
   },
-  upgradeButtonText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: '600',
-  },
+  upgradeButtonText: { color: '#fff', fontSize: 16, fontWeight: 'bold' },
+  backButton: { padding: 12 },
+  backButtonText: { color: '#a8dadc', fontSize: 14 },
+  
+  // Messages
   messagesList: { flex: 1 },
-  messagesContainer: { padding: 16, flexGrow: 1 },
-  messageBubble: { 
-    maxWidth: '85%', 
-    padding: 14, 
-    borderRadius: 16, 
+  messagesContainer: { padding: 16, paddingBottom: 100 },
+  messageBubble: {
+    maxWidth: '85%',
+    padding: 14,
+    borderRadius: 18,
     marginVertical: 6,
-    alignSelf: 'flex-start'
+    alignSelf: 'flex-start',
   },
-  playerMessage: { 
-    backgroundColor: '#1e88e5', 
+  playerBubble: {
+    backgroundColor: '#1e88e5',
     alignSelf: 'flex-end',
-    borderBottomRightRadius: 4
+    borderBottomRightRadius: 4,
   },
-  coachMessage: { 
+  coachBubble: {
     backgroundColor: '#1b263b',
-    borderBottomLeftRadius: 4
+    borderBottomLeftRadius: 4,
   },
   senderName: {
     color: '#a8dadc',
     fontSize: 11,
     fontWeight: '600',
     marginBottom: 4,
-    opacity: 0.9
+    opacity: 0.9,
   },
-  messageText: { 
-    color: '#f1faee', 
-    fontSize: 15, 
-    marginBottom: 6, 
+  messageText: {
+    fontSize: 15,
+    marginBottom: 6,
     lineHeight: 22,
-    fontWeight: '400'
   },
-  messageTime: { 
-    color: '#6c757d', 
-    fontSize: 10, 
+  playerText: { color: '#fff' },
+  coachText: { color: '#f1faee' },
+  messageTime: {
+    color: '#6c757d',
+    fontSize: 10,
     opacity: 0.8,
-    alignSelf: 'flex-end'
+    alignSelf: 'flex-end',
   },
-  inputContainer: { 
-    flexDirection: 'row', 
-    alignItems: 'flex-end', 
+  
+  // Typing Indicator
+  typingBubble: {
+    paddingHorizontal: 16,
+    paddingBottom: 8,
+  },
+  typingText: {
+    color: '#a8dadc',
+    fontSize: 13,
+    fontStyle: 'italic',
+  },
+  
+  // Input Area
+  inputArea: {
+    flexDirection: 'row',
+    alignItems: 'flex-end',
     padding: 12,
     borderTopWidth: 1,
     borderTopColor: '#1b263b',
-    backgroundColor: '#0d1b2a'
+    backgroundColor: '#0d1b2a',
   },
-  input: { 
-    flex: 1, 
-    backgroundColor: '#1b263b', 
-    color: '#f1faee', 
-    padding: 14, 
-    borderRadius: 20, 
+  input: {
+    flex: 1,
+    backgroundColor: '#1b263b',
+    color: '#f1faee',
+    padding: 14,
+    borderRadius: 24,
     maxHeight: 120,
     fontSize: 15,
     borderWidth: 1,
-    borderColor: '#2a3f5f'
+    borderColor: '#2a3f5f',
   },
-  sendButton: { 
-    backgroundColor: '#1e88e5', 
-    width: 44, 
-    height: 44, 
-    borderRadius: 22, 
+  sendButton: {
+    backgroundColor: '#1e88e5',
+    width: 48,
+    height: 48,
+    borderRadius: 24,
     marginLeft: 10,
     alignItems: 'center',
-    justifyContent: 'center'
+    justifyContent: 'center',
   },
-  disabledButton: { opacity: 0.5 },
-  sendButtonText: { color: '#fff', fontSize: 18, fontWeight: 'bold' },
-  hintButton: {
+  sendButtonDisabled: { opacity: 0.5 },
+  sendButtonText: { color: '#fff', fontSize: 20, fontWeight: 'bold' },
+  
+  // Tips Bar
+  tipsBar: {
     padding: 10,
     alignItems: 'center',
+    backgroundColor: '#0d1b2a',
   },
-  hintText: {
+  tipsText: {
     color: '#6c757d',
     fontSize: 12,
     fontStyle: 'italic',
+    textAlign: 'center',
+  },
+  
+  // Loading
+  loadingText: {
+    color: '#a8dadc',
+    fontSize: 16,
+    textAlign: 'center',
+    marginTop: 16,
   },
 });
