@@ -1,7 +1,7 @@
 ﻿// app/AuthScreen.js
 import React, { useState } from 'react';
 import {
-  View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ActivityIndicator, ScrollView, Image,
+  View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ActivityIndicator, ScrollView,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -53,12 +53,8 @@ const AuthScreen = () => {
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.scrollContent}>
-      {/* ✅ Add your logo here */}
-      <Image 
-        source={require('./images/react-logo.png')} 
-        style={styles.logo}
-        resizeMode="contain"
-      />
+      {/* ✅ Emoji placeholder instead of broken image */}
+      <Text style={styles.logo}>⚽</Text>
       
       <Text style={styles.title}>⚽ Football Coach</Text>
       <Text style={styles.subtitle}>Your Personal Training Assistant</Text>
@@ -136,13 +132,11 @@ export default AuthScreen;
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#0d1b2a' },
   scrollContent: { flexGrow: 1, justifyContent: 'center', padding: 20 },
-  // ✅ Add logo styles
+  // ✅ Text styles for emoji logo
   logo: { 
-    width: 120, 
-    height: 120, 
+    fontSize: 80, 
     marginBottom: 20, 
     alignSelf: 'center',
-    borderRadius: 10,
   },
   title: { fontSize: 32, fontWeight: 'bold', color: '#f1faee', textAlign: 'center', marginBottom: 8 },
   subtitle: { fontSize: 16, color: '#a8dadc', textAlign: 'center', marginBottom: 40 },
