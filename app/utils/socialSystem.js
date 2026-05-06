@@ -1,4 +1,4 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
+﻿import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export class SocialSystem {
   static async createTeam(teamData) {
@@ -78,11 +78,11 @@ export class SocialSystem {
   }
 
   static async shareProgress(progressData, platform) {
-    const shareText = `🏆 Football Progress Update!\n\n` +
-      `⚽ Level: ${progressData.level}\n` +
-      `🔥 Current Streak: ${progressData.currentStreak} days\n` +
-      `🏅 Badges Earned: ${progressData.badges.length}\n` +
-      `💪 Total Training Sessions: ${progressData.totalTrainingSessions}\n\n` +
+    const shareText = `ðŸ† Football Progress Update!\n\n` +
+      `âš½ Level: ${progressData.level}\n` +
+      `ðŸ”¥ Current Streak: ${progressData.currentStreak} days\n` +
+      `ðŸ… Badges Earned: ${progressData.badges.length}\n` +
+      `ðŸ’ª Total Training Sessions: ${progressData.totalTrainingSessions}\n\n` +
       `#FootballTraining #ChampionsApp`;
     
     return {

@@ -1,4 +1,4 @@
-// app/utils/adManager.js
+﻿// app/utils/adManager.js
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // Check if user is VIP (no ads for VIP users)

@@ -1,13 +1,13 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
+﻿import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export class GamificationSystem {
   static BADGES = {
-    FIRST_TRAINING: { id: 'first_training', name: 'First Steps', icon: '🏃', description: 'Complete your first training session' },
-    WEEK_STREAK: { id: 'week_streak', name: 'Dedicated', icon: '🔥', description: '7-day training streak' },
-    MONTH_STREAK: { id: 'month_streak', name: 'Champion', icon: '👑', description: '30-day training streak' },
-    SKILL_MASTER: { id: 'skill_master', name: 'Skill Master', icon: '⚽', description: 'Improve 3 skills to 80+' },
-    POSITION_EXPERT: { id: 'position_expert', name: 'Position Expert', icon: '🎯', description: 'Master your preferred position' },
-    SOCIAL_BUTTERFLY: { id: 'social_butterfly', name: 'Team Player', icon: '👥', description: 'Join your first team' }
+    FIRST_TRAINING: { id: 'first_training', name: 'First Steps', icon: 'ðŸƒ', description: 'Complete your first training session' },
+    WEEK_STREAK: { id: 'week_streak', name: 'Dedicated', icon: 'ðŸ”¥', description: '7-day training streak' },
+    MONTH_STREAK: { id: 'month_streak', name: 'Champion', icon: 'ðŸ‘‘', description: '30-day training streak' },
+    SKILL_MASTER: { id: 'skill_master', name: 'Skill Master', icon: 'âš½', description: 'Improve 3 skills to 80+' },
+    POSITION_EXPERT: { id: 'position_expert', name: 'Position Expert', icon: 'ðŸŽ¯', description: 'Master your preferred position' },
+    SOCIAL_BUTTERFLY: { id: 'social_butterfly', name: 'Team Player', icon: 'ðŸ‘¥', description: 'Join your first team' }
   };
 
   static async getUserProgress() {
@@ -83,7 +83,7 @@ export class GamificationSystem {
     const badgeDetails = newBadgeIds.map(id => {
       // find badge definition by id
       const entry = Object.values(this.BADGES).find(b => b.id === id);
-      return entry || { id, name: id, icon: '🏅', description: '' };
+      return entry || { id, name: id, icon: 'ðŸ…', description: '' };
     });
 
     // If there are new badges, optionally trigger a lightweight notification (console + AsyncStorage queue)

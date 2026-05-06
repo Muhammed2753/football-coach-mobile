@@ -1,4 +1,4 @@
-// app/components/LoadingSpinner.js
+﻿// app/components/LoadingSpinner.js
 import React from 'react';
 import { View, Text, StyleSheet, ActivityIndicator } from 'react-native';
 

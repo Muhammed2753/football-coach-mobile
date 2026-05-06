@@ -1,4 +1,4 @@
-// app/components/ErrorBoundary.js
+﻿// app/components/ErrorBoundary.js
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 
@@ -20,7 +20,7 @@ export default class ErrorBoundary extends React.Component {
     if (this.state.hasError) {
       return (
         <View style={styles.container}>
-          <Text style={styles.icon}>⚠️</Text>
+          <Text style={styles.icon}>âš ï¸</Text>
           <Text style={styles.title}>Oops! Something went wrong</Text>
           <Text style={styles.message}>
             Don't worry, your data is safe. Try restarting the app.

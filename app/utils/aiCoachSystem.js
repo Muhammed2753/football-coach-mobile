@@ -1,4 +1,4 @@
-export class AICoachSystem {
+﻿export class AICoachSystem {
   static generateRealTimeFeedback(playerStats, currentActivity) {
     const feedback = [];
     

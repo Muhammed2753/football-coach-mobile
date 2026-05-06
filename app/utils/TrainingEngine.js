@@ -1,4 +1,4 @@
-// app/utils/TrainingEngine.js
+﻿// app/utils/TrainingEngine.js
 /**
  * Training Progression System
  * Calculates training impact, estimates goal timelines, and generates training plans
@@ -263,7 +263,7 @@ export const checkMilestones = (playerAttrs, previousAttrs) => {
         attribute: attr,
         oldLevel: prevLevel,
         newLevel: currLevel,
-        message: `${attr} reached level ${currLevel}! 🎉`,
+        message: `${attr} reached level ${currLevel}! ðŸŽ‰`,
       });
     }
   });

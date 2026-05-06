@@ -3,7 +3,7 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { useRouter, useFocusEffect } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { checkDailyReminder, checkAchievements, getUnreadCount } from '../utils/notifications';
+import { checkDailyReminder, checkAchievements, getUnreadCount } from './utils/notificationSystem';
 
 export default function HomeScreen() {
   const router = useRouter();

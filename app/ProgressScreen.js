@@ -1,4 +1,4 @@
-// app/ProgressScreen.js
+﻿// app/ProgressScreen.js
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
@@ -155,7 +155,7 @@ export default function ProgressScreen() {
   if (!player) {
     return (
       <View style={styles.container}>
-        <Text style={styles.title}>📊 Track Progress</Text>
+        <Text style={styles.title}>ðŸ“Š Track Progress</Text>
         <View style={styles.noDataCard}>
           <Text style={styles.noDataTitle}>No Training Plan</Text>
           <Text style={styles.noDataText}>Create a training plan to start tracking progress</Text>
@@ -163,11 +163,11 @@ export default function ProgressScreen() {
             onPress={() => router.push('/TrainingPlanScreen')} 
             style={styles.createButton}
           >
-            <Text style={styles.createButtonText}>📋 Create Training Plan</Text>
+            <Text style={styles.createButtonText}>ðŸ“‹ Create Training Plan</Text>
           </TouchableOpacity>
         </View>
         <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-          <Text style={styles.backText}>← Back</Text>
+          <Text style={styles.backText}>â† Back</Text>
         </TouchableOpacity>
       </View>
     );
@@ -179,10 +179,10 @@ export default function ProgressScreen() {
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-        <Text style={styles.backText}>← Back</Text>
+        <Text style={styles.backText}>â† Back</Text>
       </TouchableOpacity>
 
-      <Text style={styles.title}>📊 Training Progress</Text>
+      <Text style={styles.title}>ðŸ“Š Training Progress</Text>
       <Text style={styles.subtitle}>{player.name} - Week {currentWeek}/12</Text>
 
       {/* Progress Overview */}
@@ -217,7 +217,7 @@ export default function ProgressScreen() {
       {/* Current Week */}
       {currentWeekPlan && (
         <View style={styles.weekSection}>
-          <Text style={styles.weekTitle}>📅 This Week's Focus</Text>
+          <Text style={styles.weekTitle}>ðŸ“… This Week's Focus</Text>
           <View style={[styles.weekCard, isWeekCompleted && styles.weekCardCompleted]}>
             <Text style={styles.focusAttr}>
               {currentWeekPlan.focus.key.replace(/([A-Z])/g, ' $1').trim().toUpperCase()}
@@ -229,7 +229,7 @@ export default function ProgressScreen() {
             <Text style={styles.exercisesTitle}>This Week's Training:</Text>
             {currentWeekPlan.session.exercises.map((exercise, idx) => (
               <Text key={idx} style={styles.exercise}>
-                • {exercise}
+                â€¢ {exercise}
               </Text>
             ))}
 
@@ -242,7 +242,7 @@ export default function ProgressScreen() {
               disabled={isWeekCompleted}
             >
               <Text style={styles.completeButtonText}>
-                {isWeekCompleted ? '✓ Week Complete!' : '✓ Complete This Week'}
+                {isWeekCompleted ? 'âœ“ Week Complete!' : 'âœ“ Complete This Week'}
               </Text>
             </TouchableOpacity>
           </View>
@@ -254,7 +254,7 @@ export default function ProgressScreen() {
               disabled={currentWeek === 1}
               style={[styles.navButton, currentWeek === 1 && styles.navButtonDisabled]}
             >
-              <Text style={styles.navButtonText}>← Previous</Text>
+              <Text style={styles.navButtonText}>â† Previous</Text>
             </TouchableOpacity>
 
             <TouchableOpacity
@@ -262,7 +262,7 @@ export default function ProgressScreen() {
               disabled={currentWeek === 12}
               style={[styles.navButton, currentWeek === 12 && styles.navButtonDisabled]}
             >
-              <Text style={styles.navButtonText}>Next →</Text>
+              <Text style={styles.navButtonText}>Next â†’</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -271,7 +271,7 @@ export default function ProgressScreen() {
       {/* Attribute Progress */}
       {trainingPlan && trainingPlan.focus && (
         <View style={styles.attributesSection}>
-          <Text style={styles.attributesTitle}>📈 Attribute Progress</Text>
+          <Text style={styles.attributesTitle}>ðŸ“ˆ Attribute Progress</Text>
           {trainingPlan.focus.map(weakness => {
             const prog = progressData[weakness.key];
             if (!prog) return null;
@@ -284,7 +284,7 @@ export default function ProgressScreen() {
                     {weakness.key.replace(/([A-Z])/g, ' $1').trim()}
                   </Text>
                   <Text style={[styles.attributeValue, improvement > 0 && styles.attributeValuePositive]}>
-                    {prog.initial} → {prog.current} {improvement > 0 && `(+${improvement})`}
+                    {prog.initial} â†’ {prog.current} {improvement > 0 && `(+${improvement})`}
                   </Text>
                 </View>
                 <View style={styles.progressBar}>

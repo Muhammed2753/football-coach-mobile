@@ -1,4 +1,4 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
+﻿import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const PROGRESS_STORAGE_KEY = 'player_progress_data';
 const ACHIEVEMENTS_STORAGE_KEY = 'player_achievements';
@@ -9,49 +9,49 @@ export const ACHIEVEMENTS = {
     id: 'first_training',
     title: 'First Steps',
     description: 'Complete your first training session',
-    icon: '🏃‍♂️',
+    icon: 'ðŸƒâ€â™‚ï¸',
     xp: 50
   },
   WEEK_STREAK: {
     id: 'week_streak',
     title: 'Dedicated Trainer',
     description: 'Train for 7 consecutive days',
-    icon: '🔥',
+    icon: 'ðŸ”¥',
     xp: 200
   },
   ATTRIBUTE_BOOST: {
     id: 'attribute_boost',
     title: 'Level Up!',
     description: 'Improve any attribute by 10 points',
-    icon: '📈',
+    icon: 'ðŸ“ˆ',
     xp: 100
   },
   GOALKEEPER_MASTER: {
     id: 'gk_master',
     title: 'Safe Hands',
     description: 'Reach 80+ in all goalkeeper attributes',
-    icon: '🥅',
+    icon: 'ðŸ¥…',
     xp: 500
   },
   STRIKER_MASTER: {
     id: 'st_master',
     title: 'Goal Machine',
     description: 'Reach 80+ finishing and positioning',
-    icon: '⚽',
+    icon: 'âš½',
     xp: 500
   },
   OVERALL_80: {
     id: 'overall_80',
     title: 'Rising Star',
     description: 'Reach 80 overall rating',
-    icon: '⭐',
+    icon: 'â­',
     xp: 300
   },
   OVERALL_90: {
     id: 'overall_90',
     title: 'World Class',
     description: 'Reach 90 overall rating',
-    icon: '🌟',
+    icon: 'ðŸŒŸ',
     xp: 1000
   }
 };

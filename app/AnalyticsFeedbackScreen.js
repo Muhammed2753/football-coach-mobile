@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput, Alert, Share, Linking } from 'react-native';
 import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -156,7 +156,7 @@ Sent from Football Coach Mobile App
 
   const handleShareApp = () => {
     Share.share({
-      message: 'Check out Football Coach Mobile - The ultimate training app for young players! 🎯⚽\n\nContact: muhammedajayi14@gmail.com',
+      message: 'Check out Football Coach Mobile - The ultimate training app for young players! ðŸŽ¯âš½\n\nContact: muhammedajayi14@gmail.com',
       title: 'Football Coach Mobile',
     }).catch((error) => console.log(error));
   };
@@ -181,7 +181,7 @@ Sent from Football Coach Mobile App
             style={styles.starButton}
           >
             <Text style={[styles.star, rating >= star && styles.starFilled]}>
-              ★
+              â˜…
             </Text>
           </TouchableOpacity>
         ))}
@@ -193,14 +193,14 @@ Sent from Football Coach Mobile App
     <ScrollView style={styles.container}>
       <View style={styles.header}>
         <TouchableOpacity onPress={() => router.back()}>
-          <Text style={styles.backButton}>← Back</Text>
+          <Text style={styles.backButton}>â† Back</Text>
         </TouchableOpacity>
         <Text style={styles.title}>Analytics & Feedback</Text>
       </View>
 
       {/* Analytics Section */}
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>📊 Your Analytics</Text>
+        <Text style={styles.sectionTitle}>ðŸ“Š Your Analytics</Text>
 
         <View style={styles.analyticsCard}>
           <View style={styles.statItem}>
@@ -222,14 +222,14 @@ Sent from Football Coach Mobile App
           <View style={styles.divider} />
           <View style={styles.statItem}>
             <Text style={styles.statLabel}>App Rating</Text>
-            <Text style={styles.statValue}>{rating > 0 ? `${rating}/5` : '—'}</Text>
+            <Text style={styles.statValue}>{rating > 0 ? `${rating}/5` : 'â€”'}</Text>
           </View>
         </View>
       </View>
 
       {/* Feedback Section */}
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>💬 Send Feedback Report</Text>
+        <Text style={styles.sectionTitle}>ðŸ’¬ Send Feedback Report</Text>
         <Text style={styles.emailInfo}>Reports sent to: muhammedajayi14@gmail.com</Text>
 
         <Text style={styles.label}>Rate Your Experience</Text>
@@ -251,14 +251,14 @@ Sent from Football Coach Mobile App
           style={[styles.button, styles.primaryButton]}
           onPress={handleSubmitFeedback}
         >
-          <Text style={styles.buttonText}>📧 Send Feedback Report</Text>
+          <Text style={styles.buttonText}>ðŸ“§ Send Feedback Report</Text>
         </TouchableOpacity>
       </View>
 
       {/* Feature Requests Section */}
       <View style={styles.section}>
         <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>💡 Feature Requests</Text>
+          <Text style={styles.sectionTitle}>ðŸ’¡ Feature Requests</Text>
           <TouchableOpacity onPress={resetVotes} style={styles.resetButton}>
             <Text style={styles.resetButtonText}>Reset Votes</Text>
           </TouchableOpacity>
@@ -269,11 +269,11 @@ Sent from Football Coach Mobile App
           onPress={() => handleVote('multiLanguage')}
         >
           <View>
-            <Text style={styles.featureTitle}>⭐ Multi-Language Support</Text>
-            <Text style={styles.featureCount}>👥 {votes.multiLanguage} votes</Text>
+            <Text style={styles.featureTitle}>â­ Multi-Language Support</Text>
+            <Text style={styles.featureCount}>ðŸ‘¥ {votes.multiLanguage} votes</Text>
           </View>
           <Text style={[styles.voteButton, userVotes.multiLanguage && styles.voteButtonActive]}>
-            {userVotes.multiLanguage ? '✓ Voted' : 'Vote'}
+            {userVotes.multiLanguage ? 'âœ“ Voted' : 'Vote'}
           </Text>
         </TouchableOpacity>
 
@@ -282,11 +282,11 @@ Sent from Football Coach Mobile App
           onPress={() => handleVote('videoTutorials')}
         >
           <View>
-            <Text style={styles.featureTitle}>🎬 Video Tutorials</Text>
-            <Text style={styles.featureCount}>👥 {votes.videoTutorials} votes</Text>
+            <Text style={styles.featureTitle}>ðŸŽ¬ Video Tutorials</Text>
+            <Text style={styles.featureCount}>ðŸ‘¥ {votes.videoTutorials} votes</Text>
           </View>
           <Text style={[styles.voteButton, userVotes.videoTutorials && styles.voteButtonActive]}>
-            {userVotes.videoTutorials ? '✓ Voted' : 'Vote'}
+            {userVotes.videoTutorials ? 'âœ“ Voted' : 'Vote'}
           </Text>
         </TouchableOpacity>
 
@@ -295,27 +295,27 @@ Sent from Football Coach Mobile App
           onPress={() => handleVote('multiplayer')}
         >
           <View>
-            <Text style={styles.featureTitle}>👥 Multiplayer Mode</Text>
-            <Text style={styles.featureCount}>👥 {votes.multiplayer} votes</Text>
+            <Text style={styles.featureTitle}>ðŸ‘¥ Multiplayer Mode</Text>
+            <Text style={styles.featureCount}>ðŸ‘¥ {votes.multiplayer} votes</Text>
           </View>
           <Text style={[styles.voteButton, userVotes.multiplayer && styles.voteButtonActive]}>
-            {userVotes.multiplayer ? '✓ Voted' : 'Vote'}
+            {userVotes.multiplayer ? 'âœ“ Voted' : 'Vote'}
           </Text>
         </TouchableOpacity>
       </View>
 
       {/* Share App */}
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>🌟 Share App</Text>
+        <Text style={styles.sectionTitle}>ðŸŒŸ Share App</Text>
 
         <TouchableOpacity style={styles.button} onPress={handleShareApp}>
-          <Text style={styles.buttonText}>📱 Share App with Friends</Text>
+          <Text style={styles.buttonText}>ðŸ“± Share App with Friends</Text>
         </TouchableOpacity>
       </View>
 
       {/* Contact Developer */}
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>📞 Contact Developer</Text>
+        <Text style={styles.sectionTitle}>ðŸ“ž Contact Developer</Text>
 
         <View style={styles.contactCard}>
           <Text style={styles.contactLabel}>Developer Email</Text>
@@ -325,7 +325,7 @@ Sent from Football Coach Mobile App
         </View>
 
         <TouchableOpacity style={styles.button} onPress={sendDirectEmail}>
-          <Text style={styles.buttonText}>📧 Send Direct Email</Text>
+          <Text style={styles.buttonText}>ðŸ“§ Send Direct Email</Text>
         </TouchableOpacity>
       </View>
 

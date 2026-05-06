@@ -1,4 +1,4 @@
-// Position-specific analysis and recommendations
+﻿// Position-specific analysis and recommendations
 export const POSITION_ANALYSIS = {
   GK: {
     name: 'Goalkeeper',

@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { Pressable } from 'react-native';
 
 export const HapticTab = ({ children, ...props }) => {

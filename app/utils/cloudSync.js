@@ -1,4 +1,4 @@
-// app/utils/cloudSync.js
+﻿// app/utils/cloudSync.js
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // Mock cloud sync - replace with actual Firebase implementation

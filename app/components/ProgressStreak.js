@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 
 const ProgressStreak = ({ streak, maxStreak = 30 }) => {
@@ -10,10 +10,10 @@ const ProgressStreak = ({ streak, maxStreak = 30 }) => {
   };
 
   const getStreakEmoji = (days) => {
-    if (days >= 30) return '🔥';
-    if (days >= 14) return '⚡';
-    if (days >= 7) return '💪';
-    return '🌟';
+    if (days >= 30) return 'ðŸ”¥';
+    if (days >= 14) return 'âš¡';
+    if (days >= 7) return 'ðŸ’ª';
+    return 'ðŸŒŸ';
   };
 
   return (

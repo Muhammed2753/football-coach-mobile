@@ -1,4 +1,4 @@
-// app/utils/bankAccountManager.js
+﻿// app/utils/bankAccountManager.js
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // Bank account configuration for receiving payments

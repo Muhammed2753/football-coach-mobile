@@ -1,4 +1,4 @@
-import { Button, StyleSheet, Text, View } from 'react-native';
+﻿import { Button, StyleSheet, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
 
 export default function PaymentPlaceholder() {

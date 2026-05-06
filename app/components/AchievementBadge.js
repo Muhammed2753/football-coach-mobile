@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 
 const AchievementBadge = ({ badge, size = 'medium' }) => {
@@ -33,7 +33,7 @@ const AchievementBadge = ({ badge, size = 'medium' }) => {
       </Text>
       {badge.unlocked && (
         <View style={styles.unlockedIndicator}>
-          <Text style={styles.checkmark}>✓</Text>
+          <Text style={styles.checkmark}>âœ“</Text>
         </View>
       )}
     </View>

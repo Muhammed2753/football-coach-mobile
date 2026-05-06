@@ -1,4 +1,4 @@
-// app/TermsOfServiceScreen.js
+﻿// app/TermsOfServiceScreen.js
 import React from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { useRouter } from 'expo-router';
@@ -10,7 +10,7 @@ export default function TermsOfServiceScreen() {
     <View style={styles.container}>
       <View style={styles.header}>
         <TouchableOpacity onPress={() => router.back()}>
-          <Text style={styles.backButton}>← Back</Text>
+          <Text style={styles.backButton}>â† Back</Text>
         </TouchableOpacity>
         <Text style={styles.title}>Terms of Service</Text>
       </View>
@@ -25,35 +25,35 @@ export default function TermsOfServiceScreen() {
 
         <Text style={styles.sectionTitle}>2. User Accounts</Text>
         <Text style={styles.text}>
-          • You must provide accurate information
-          {'\n'}• You are responsible for account security
-          {'\n'}• One account per person
-          {'\n'}• Accounts are non-transferable
+          â€¢ You must provide accurate information
+          {'\n'}â€¢ You are responsible for account security
+          {'\n'}â€¢ One account per person
+          {'\n'}â€¢ Accounts are non-transferable
         </Text>
 
         <Text style={styles.sectionTitle}>3. Acceptable Use</Text>
         <Text style={styles.text}>
           You agree NOT to:
-          {'\n\n'}• Violate any laws or regulations
-          {'\n'}• Harass or harm other users
-          {'\n'}• Share inappropriate content
-          {'\n'}• Attempt to hack or disrupt services
-          {'\n'}• Use the app for commercial purposes without permission
+          {'\n\n'}â€¢ Violate any laws or regulations
+          {'\n'}â€¢ Harass or harm other users
+          {'\n'}â€¢ Share inappropriate content
+          {'\n'}â€¢ Attempt to hack or disrupt services
+          {'\n'}â€¢ Use the app for commercial purposes without permission
         </Text>
 
         <Text style={styles.sectionTitle}>4. Subscription & Payments</Text>
         <Text style={styles.text}>
-          • VIP subscriptions are billed monthly or annually
-          {'\n'}• Prices are subject to change with notice
-          {'\n'}• Refunds are handled per app store policies
-          {'\n'}• Cancel anytime through your account settings
+          â€¢ VIP subscriptions are billed monthly or annually
+          {'\n'}â€¢ Prices are subject to change with notice
+          {'\n'}â€¢ Refunds are handled per app store policies
+          {'\n'}â€¢ Cancel anytime through your account settings
         </Text>
 
         <Text style={styles.sectionTitle}>5. Content Ownership</Text>
         <Text style={styles.text}>
-          • You retain ownership of your training data
-          {'\n'}• We own the app, design, and features
-          {'\n'}• You grant us license to use your data to provide services
+          â€¢ You retain ownership of your training data
+          {'\n'}â€¢ We own the app, design, and features
+          {'\n'}â€¢ You grant us license to use your data to provide services
         </Text>
 
         <Text style={styles.sectionTitle}>6. Disclaimer</Text>
@@ -80,7 +80,7 @@ export default function TermsOfServiceScreen() {
 
         <View style={styles.footer}>
           <Text style={styles.footerText}>
-            © {new Date().getFullYear()} Football Coach. All rights reserved.
+            Â© {new Date().getFullYear()} Football Coach. All rights reserved.
           </Text>
         </View>
       </ScrollView>

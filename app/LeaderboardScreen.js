@@ -1,4 +1,4 @@
-// app/LeaderboardScreen.js
+﻿// app/LeaderboardScreen.js
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { useRouter } from 'expo-router';
@@ -53,9 +53,9 @@ export default function LeaderboardScreen() {
   };
 
   const getMedal = (index) => {
-    if (index === 0) return '🥇';
-    if (index === 1) return '🥈';
-    if (index === 2) return '🥉';
+    if (index === 0) return 'ðŸ¥‡';
+    if (index === 1) return 'ðŸ¥ˆ';
+    if (index === 2) return 'ðŸ¥‰';
     return `${index + 1}`;
   };
 
@@ -63,9 +63,9 @@ export default function LeaderboardScreen() {
     <View style={styles.container}>
       <View style={styles.header}>
         <TouchableOpacity onPress={() => router.back()}>
-          <Text style={styles.backButton}>← Back</Text>
+          <Text style={styles.backButton}>â† Back</Text>
         </TouchableOpacity>
-        <Text style={styles.title}>🏆 Leaderboard</Text>
+        <Text style={styles.title}>ðŸ† Leaderboard</Text>
         <Text style={styles.subtitle}>Compete with other players</Text>
       </View>
 
@@ -120,7 +120,7 @@ export default function LeaderboardScreen() {
 
       <View style={styles.infoBox}>
         <Text style={styles.infoText}>
-          💡 Keep training to climb the ranks! Leaderboard updates daily.
+          ðŸ’¡ Keep training to climb the ranks! Leaderboard updates daily.
         </Text>
       </View>
     </View>

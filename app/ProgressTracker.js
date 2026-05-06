@@ -1,4 +1,4 @@
-// app/ProgressTracker.js
+﻿// app/ProgressTracker.js
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput, Alert } from 'react-native';
 import { useRouter } from 'expo-router';
@@ -129,9 +129,9 @@ export default function ProgressTracker() {
     <ScrollView style={styles.container}>
       <View style={styles.header}>
         <TouchableOpacity onPress={() => router.back()}>
-          <Text style={styles.backButton}>← Back</Text>
+          <Text style={styles.backButton}>â† Back</Text>
         </TouchableOpacity>
-        <Text style={styles.title}>📊 Progress Tracker</Text>
+        <Text style={styles.title}>ðŸ“Š Progress Tracker</Text>
         <Text style={styles.subtitle}>Track your training journey</Text>
       </View>
 
@@ -169,7 +169,7 @@ export default function ProgressTracker() {
         style={styles.analyticsButton}
         onPress={() => router.push('/PerformanceGraphsScreen')}
       >
-        <Text style={styles.analyticsButtonText}>📈 View Analytics</Text>
+        <Text style={styles.analyticsButtonText}>ðŸ“ˆ View Analytics</Text>
       </TouchableOpacity>
 
       <TouchableOpacity
@@ -177,7 +177,7 @@ export default function ProgressTracker() {
         onPress={() => setShowAddForm(!showAddForm)}
       >
         <Text style={styles.addButtonText}>
-          {showAddForm ? '✕ Cancel' : '+ Log Training Session'}
+          {showAddForm ? 'âœ• Cancel' : '+ Log Training Session'}
         </Text>
       </TouchableOpacity>
 
@@ -233,11 +233,11 @@ export default function ProgressTracker() {
               <View style={styles.sessionHeader}>
                 <Text style={styles.sessionDate}>{session.date}</Text>
                 <TouchableOpacity onPress={() => deleteSession(session.id)}>
-                  <Text style={styles.deleteButton}>🗑️</Text>
+                  <Text style={styles.deleteButton}>ðŸ—‘ï¸</Text>
                 </TouchableOpacity>
               </View>
               <Text style={styles.sessionActivity}>{session.activity}</Text>
-              <Text style={styles.sessionDuration}>⏱️ {session.duration} minutes</Text>
+              <Text style={styles.sessionDuration}>â±ï¸ {session.duration} minutes</Text>
               {session.notes && (
                 <Text style={styles.sessionNotes}>{session.notes}</Text>
               )}

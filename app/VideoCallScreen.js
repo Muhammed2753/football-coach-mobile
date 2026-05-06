@@ -1,4 +1,4 @@
-// app/VideoCallScreen.js
+﻿// app/VideoCallScreen.js
 import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
@@ -12,20 +12,20 @@ export default function VideoCallScreen() {
     try {
       // In production, you'd generate a Twilio token from your backend
       // For now, we'll simulate a call
-      alert('📞 Connecting to coach... (In production, this would start a real video call!)');
+      alert('ðŸ“ž Connecting to coach... (In production, this would start a real video call!)');
       setTimeout(() => {
         setIsCalling(false);
-        alert('✅ Call connected!');
+        alert('âœ… Call connected!');
       }, 2000);
     } catch (error) {
-      alert('❌ Failed to start call');
+      alert('âŒ Failed to start call');
       setIsCalling(false);
     }
   };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>🎥 VIP Video Call</Text>
+      <Text style={styles.title}>ðŸŽ¥ VIP Video Call</Text>
       <Text style={styles.subtitle}>Connect with your coach face-to-face!</Text>
       
       <TouchableOpacity 
@@ -42,7 +42,7 @@ export default function VideoCallScreen() {
         style={styles.backButton} 
         onPress={() => router.back()}
       >
-        <Text style={styles.backText}>← Back to Chat</Text>
+        <Text style={styles.backText}>â† Back to Chat</Text>
       </TouchableOpacity>
     </View>
   );

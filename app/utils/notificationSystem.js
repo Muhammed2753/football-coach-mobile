@@ -1,4 +1,4 @@
-// app/utils/notificationSystem.js
+﻿// app/utils/notificationSystem.js
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const NOTIFICATION_KEY = 'user_notifications';
@@ -55,7 +55,7 @@ export const checkDailyReminder = async () => {
     const today = new Date().toISOString().split('T')[0];
     
     if (lastTraining !== today) {
-      await createNotification('reminder', '⚽ Time to train! Even 15 minutes makes a difference.');
+      await createNotification('reminder', 'âš½ Time to train! Even 15 minutes makes a difference.');
     }
   } catch (error) {
     console.error('Failed to check daily reminder:', error);
@@ -73,13 +73,13 @@ export const checkAchievements = async () => {
     
     // Milestone achievements
     if (totalSessions === 10) {
-      await createNotification('achievement', '🏆 10 Sessions Complete! You\'re building consistency!');
+      await createNotification('achievement', 'ðŸ† 10 Sessions Complete! You\'re building consistency!');
     }
     if (totalSessions === 50) {
-      await createNotification('achievement', '🔥 50 Sessions! You\'re a training machine!');
+      await createNotification('achievement', 'ðŸ”¥ 50 Sessions! You\'re a training machine!');
     }
     if (totalSessions === 100) {
-      await createNotification('achievement', '⭐ 100 Sessions! Elite dedication!');
+      await createNotification('achievement', 'â­ 100 Sessions! Elite dedication!');
     }
   } catch (error) {
     console.error('Failed to check achievements:', error);
@@ -89,16 +89,16 @@ export const checkAchievements = async () => {
 // Daily tip
 export const sendDailyTip = async () => {
   const tips = [
-    '💡 Tip: Train your weak foot for 10 minutes today!',
-    '💡 Tip: Watch a pro match and study one player\'s movement.',
-    '💡 Tip: Hydrate! Drink 2L of water today.',
-    '💡 Tip: Practice first touch against a wall for 5 minutes.',
-    '💡 Tip: Visualize success before training.',
-    '💡 Tip: Sleep 8+ hours for optimal recovery.',
-    '💡 Tip: Set one specific goal for today\'s session.',
-    '💡 Tip: Film yourself training and review it.',
-    '💡 Tip: Stretch for 10 minutes before bed.',
-    '💡 Tip: Challenge yourself with a new skill today.'
+    'ðŸ’¡ Tip: Train your weak foot for 10 minutes today!',
+    'ðŸ’¡ Tip: Watch a pro match and study one player\'s movement.',
+    'ðŸ’¡ Tip: Hydrate! Drink 2L of water today.',
+    'ðŸ’¡ Tip: Practice first touch against a wall for 5 minutes.',
+    'ðŸ’¡ Tip: Visualize success before training.',
+    'ðŸ’¡ Tip: Sleep 8+ hours for optimal recovery.',
+    'ðŸ’¡ Tip: Set one specific goal for today\'s session.',
+    'ðŸ’¡ Tip: Film yourself training and review it.',
+    'ðŸ’¡ Tip: Stretch for 10 minutes before bed.',
+    'ðŸ’¡ Tip: Challenge yourself with a new skill today.'
   ];
   
   const randomTip = tips[Math.floor(Math.random() * tips.length)];

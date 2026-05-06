@@ -1,4 +1,4 @@
-// app/OnboardingScreen.js
+﻿// app/OnboardingScreen.js
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Dimensions } from 'react-native';
 import { useRouter } from 'expo-router';
@@ -8,22 +8,22 @@ const { width } = Dimensions.get('window');
 
 const slides = [
   {
-    icon: '⚽',
+    icon: 'âš½',
     title: 'Welcome to Football Coach',
     description: 'Your personal AI coach for football development. Track progress, get expert advice, and improve your game!'
   },
   {
-    icon: '📊',
+    icon: 'ðŸ“Š',
     title: 'Track Your Progress',
     description: 'Log training sessions, monitor your stats, and build winning streaks. Every session counts!'
   },
   {
-    icon: '💬',
+    icon: 'ðŸ’¬',
     title: 'AI Coach Chat',
     description: 'Get personalized advice 24/7. Ask about drills, tactics, nutrition, or mental preparation.'
   },
   {
-    icon: '🏆',
+    icon: 'ðŸ†',
     title: 'Achieve Greatness',
     description: 'Earn achievements, unlock features, and become the player you dream of being. Let\'s start!'
   }

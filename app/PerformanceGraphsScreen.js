@@ -1,4 +1,4 @@
-// app/PerformanceGraphsScreen.js
+﻿// app/PerformanceGraphsScreen.js
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Dimensions } from 'react-native';
 import { useRouter } from 'expo-router';
@@ -130,9 +130,9 @@ export default function PerformanceGraphsScreen() {
     <View style={styles.container}>
       <View style={styles.header}>
         <TouchableOpacity onPress={() => router.back()}>
-          <Text style={styles.backButton}>← Back</Text>
+          <Text style={styles.backButton}>â† Back</Text>
         </TouchableOpacity>
-        <Text style={styles.title}>📈 Performance Graphs</Text>
+        <Text style={styles.title}>ðŸ“ˆ Performance Graphs</Text>
       </View>
 
       <View style={styles.timeRangeContainer}>

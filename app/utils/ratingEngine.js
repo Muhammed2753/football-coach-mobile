@@ -1,4 +1,4 @@
-// utils/ratingEngine.js
+﻿// utils/ratingEngine.js
 export const getMaxRatingByAge = (age) => {
   if (age >= 4 && age <= 10) return 80;
   if (age >= 11 && age <= 14) return 83;
@@ -24,12 +24,12 @@ export const getMaxStatByAge = (age) => {
 
 const safeAttr = (val) => Math.max(1, Math.min(99, Number(val) || 1));
 
-// ✅ Detect Goalkeeper
+// âœ… Detect Goalkeeper
 export const isGoalkeeper = (attrs) => {
   return (attrs.reflexes || 0) > 60 && (attrs.handling || 0) > 60;
 };
 
-// ✅ Calculate Overall Rating
+// âœ… Calculate Overall Rating
 export const calculateOverall = (attrs, age, options = {}) => {
   let overall;
 
@@ -70,7 +70,7 @@ export const calculateOverall = (attrs, age, options = {}) => {
   return Math.min(overall, getMaxRatingByAge(age));
 };
 
-// ✅ Recommend Position - PRIMARY first, then ALTERNATES
+// âœ… Recommend Position - PRIMARY first, then ALTERNATES
 export const recommendPosition = (attrs, age, preferredFoot) => {
   if (isGoalkeeper(attrs)) {
     return ["GK"];
@@ -148,64 +148,64 @@ export const recommendPosition = (attrs, age, preferredFoot) => {
   return [primaryPos, ...alternates.slice(0, 2)];
 };
 
-// ✅ Drills for ALL positions (including RB, LB, RWB, LWB)
+// âœ… Drills for ALL positions (including RB, LB, RWB, LWB)
 export const getImprovementTips = (positions, attrs, options = {}) => {
   const tips = [];
   const top = positions[0];
 
   if (top === "GK") {
-    tips.push("🎯 GK Drills:");
-    tips.push("• Reaction Saves: Use rebounder wall or reaction balls.");
-    tips.push("• Distribution Accuracy: Practice punts & throws to targets at 30m–50m.");
-    tips.push("• 1v1 Breakaways: Simulate attackers running at you.");
+    tips.push("ðŸŽ¯ GK Drills:");
+    tips.push("â€¢ Reaction Saves: Use rebounder wall or reaction balls.");
+    tips.push("â€¢ Distribution Accuracy: Practice punts & throws to targets at 30mâ€“50m.");
+    tips.push("â€¢ 1v1 Breakaways: Simulate attackers running at you.");
   } else if (top === "CB") {
-    tips.push("🛡️ CB Drills:");
-    tips.push("• Aerial Duels: Win headers from crosses.");
-    tips.push("• 1v1 Defending: Jockey and tackle in confined space.");
-    tips.push("• Passing Under Pressure: Distribute accurately while pressed.");
+    tips.push("ðŸ›¡ï¸ CB Drills:");
+    tips.push("â€¢ Aerial Duels: Win headers from crosses.");
+    tips.push("â€¢ 1v1 Defending: Jockey and tackle in confined space.");
+    tips.push("â€¢ Passing Under Pressure: Distribute accurately while pressed.");
   } else if (["RB", "LB"].includes(top)) {
-    tips.push("🛡️ RB, LB Drills:");
-    tips.push("• Overlap Runs: Sprint past winger and deliver crosses.");
-    tips.push("• 1v1 Defending: Stop wingers cutting inside.");
-    tips.push("• Recovery Runs: Track back quickly after attacking.");
+    tips.push("ðŸ›¡ï¸ RB, LB Drills:");
+    tips.push("â€¢ Overlap Runs: Sprint past winger and deliver crosses.");
+    tips.push("â€¢ 1v1 Defending: Stop wingers cutting inside.");
+    tips.push("â€¢ Recovery Runs: Track back quickly after attacking.");
   } else if (["RWB", "LWB"].includes(top)) {
-    tips.push("⚡ RWB, LWB Drills:");
-    tips.push("• End-to-End Stamina: Shuttle runs with ball control.");
-    tips.push("• Crossing on the Move: Deliver accurate crosses at full speed.");
-    tips.push("• Defensive Transition: Immediately press after losing possession.");
+    tips.push("âš¡ RWB, LWB Drills:");
+    tips.push("â€¢ End-to-End Stamina: Shuttle runs with ball control.");
+    tips.push("â€¢ Crossing on the Move: Deliver accurate crosses at full speed.");
+    tips.push("â€¢ Defensive Transition: Immediately press after losing possession.");
   } else if (top === "CDM") {
-    tips.push("🛡️ CDM Drills:");
-    tips.push("• Interception Grid: Read passes and cut them in a 10x10m zone.");
-    tips.push("• Long Passing Range: Hit moving targets at 25m–45m.");
-    tips.push("• Shielding & Turn: Receive under pressure and turn away.");
+    tips.push("ðŸ›¡ï¸ CDM Drills:");
+    tips.push("â€¢ Interception Grid: Read passes and cut them in a 10x10m zone.");
+    tips.push("â€¢ Long Passing Range: Hit moving targets at 25mâ€“45m.");
+    tips.push("â€¢ Shielding & Turn: Receive under pressure and turn away.");
   } else if (top === "CM") {
-    tips.push("⚙️ CM Drills:");
-    tips.push("• Rondos (Keep-Away): 5v2 possession to improve passing under pressure.");
-    tips.push("• Box-to-Box Runs: Cover ground from penalty area to penalty area.");
+    tips.push("âš™ï¸ CM Drills:");
+    tips.push("â€¢ Rondos (Keep-Away): 5v2 possession to improve passing under pressure.");
+    tips.push("â€¢ Box-to-Box Runs: Cover ground from penalty area to penalty area.");
   } else if (top === "CAM") {
-    tips.push("🎨 CAM Drills:");
-    tips.push("• Through-Ball Vision: Spot and play final passes into space.");
-    tips.push("• Finishing from Distance: Shoot from 18–25 yards with both feet.");
+    tips.push("ðŸŽ¨ CAM Drills:");
+    tips.push("â€¢ Through-Ball Vision: Spot and play final passes into space.");
+    tips.push("â€¢ Finishing from Distance: Shoot from 18â€“25 yards with both feet.");
   } else if (["LW", "RW"].includes(top)) {
-    tips.push(`⚡ ${top} Drills:`);
-    tips.push("• 1v1 Take-Ons: Beat fullback using stepovers, cuts, feints.");
-    tips.push("• Cut-Inside Shooting: Curl shots with weaker foot after cutting in.");
+    tips.push(`âš¡ ${top} Drills:`);
+    tips.push("â€¢ 1v1 Take-Ons: Beat fullback using stepovers, cuts, feints.");
+    tips.push("â€¢ Cut-Inside Shooting: Curl shots with weaker foot after cutting in.");
   } else if (top === "ST") {
-    tips.push("⚽ ST Drills:");
-    tips.push("• First-Time Finishing: Volley, half-volley, one-touch shots.");
-    tips.push("• Blindside Runs: Make curved runs behind defense without looking.");
-    tips.push("• Hold-Up Play: Shield ball and lay off to midfielders.");
+    tips.push("âš½ ST Drills:");
+    tips.push("â€¢ First-Time Finishing: Volley, half-volley, one-touch shots.");
+    tips.push("â€¢ Blindside Runs: Make curved runs behind defense without looking.");
+    tips.push("â€¢ Hold-Up Play: Shield ball and lay off to midfielders.");
   } else {
-    tips.push("🔄 Utility Drills:");
-    tips.push("• Identify your weakest attribute and focus there weekly.");
-    tips.push("• Play small-sided games (3v3, 5v5) to develop all-round awareness.");
+    tips.push("ðŸ”„ Utility Drills:");
+    tips.push("â€¢ Identify your weakest attribute and focus there weekly.");
+    tips.push("â€¢ Play small-sided games (3v3, 5v5) to develop all-round awareness.");
   }
 
   // Universal tips
-  if (options.disability) tips.push("♿ Adaptive Tip: Focus on seated ball control and tactical IQ.");
-  if (options.mentalStress) tips.push("🧠 Wellness Tip: Practice 4-7-8 breathing before games.");
+  if (options.disability) tips.push("â™¿ Adaptive Tip: Focus on seated ball control and tactical IQ.");
+  if (options.mentalStress) tips.push("ðŸ§  Wellness Tip: Practice 4-7-8 breathing before games.");
 
-  tips.push("✨ Pro Tip: Record yourself training — watch for posture and decision-making.");
+  tips.push("âœ¨ Pro Tip: Record yourself training â€” watch for posture and decision-making.");
 
   return tips;
 };

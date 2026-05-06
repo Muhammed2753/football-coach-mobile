@@ -1,4 +1,4 @@
-// app/PrivacyPolicyScreen.js
+﻿// app/PrivacyPolicyScreen.js
 import React from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { useRouter } from 'expo-router';
@@ -10,7 +10,7 @@ export default function PrivacyPolicyScreen() {
     <View style={styles.container}>
       <View style={styles.header}>
         <TouchableOpacity onPress={() => router.back()}>
-          <Text style={styles.backButton}>← Back</Text>
+          <Text style={styles.backButton}>â† Back</Text>
         </TouchableOpacity>
         <Text style={styles.title}>Privacy Policy</Text>
       </View>
@@ -21,20 +21,20 @@ export default function PrivacyPolicyScreen() {
         <Text style={styles.sectionTitle}>1. Information We Collect</Text>
         <Text style={styles.text}>
           We collect information you provide directly to us, including:
-          {'\n\n'}• Account information (name, email)
-          {'\n'}• Training data (sessions, progress)
-          {'\n'}• Player profiles and statistics
-          {'\n'}• Usage data and preferences
+          {'\n\n'}â€¢ Account information (name, email)
+          {'\n'}â€¢ Training data (sessions, progress)
+          {'\n'}â€¢ Player profiles and statistics
+          {'\n'}â€¢ Usage data and preferences
         </Text>
 
         <Text style={styles.sectionTitle}>2. How We Use Your Information</Text>
         <Text style={styles.text}>
           We use your information to:
-          {'\n\n'}• Provide and improve our services
-          {'\n'}• Personalize your experience
-          {'\n'}• Send notifications and updates
-          {'\n'}• Analyze app performance
-          {'\n'}• Ensure security and prevent fraud
+          {'\n\n'}â€¢ Provide and improve our services
+          {'\n'}â€¢ Personalize your experience
+          {'\n'}â€¢ Send notifications and updates
+          {'\n'}â€¢ Analyze app performance
+          {'\n'}â€¢ Ensure security and prevent fraud
         </Text>
 
         <Text style={styles.sectionTitle}>3. Data Storage</Text>
@@ -45,18 +45,18 @@ export default function PrivacyPolicyScreen() {
         <Text style={styles.sectionTitle}>4. Data Sharing</Text>
         <Text style={styles.text}>
           We do NOT sell your personal information. We may share data only:
-          {'\n\n'}• With your explicit consent
-          {'\n'}• To comply with legal obligations
-          {'\n'}• To protect our rights and safety
+          {'\n\n'}â€¢ With your explicit consent
+          {'\n'}â€¢ To comply with legal obligations
+          {'\n'}â€¢ To protect our rights and safety
         </Text>
 
         <Text style={styles.sectionTitle}>5. Your Rights</Text>
         <Text style={styles.text}>
           You have the right to:
-          {'\n\n'}• Access your data
-          {'\n'}• Delete your account
-          {'\n'}• Export your data
-          {'\n'}• Opt-out of communications
+          {'\n\n'}â€¢ Access your data
+          {'\n'}â€¢ Delete your account
+          {'\n'}â€¢ Export your data
+          {'\n'}â€¢ Opt-out of communications
         </Text>
 
         <Text style={styles.sectionTitle}>6. Children's Privacy</Text>

@@ -1,4 +1,4 @@
-// app/DrillLibrary.js
+﻿// app/DrillLibrary.js
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { useRouter } from 'expo-router';
@@ -129,9 +129,9 @@ export default function DrillLibrary() {
     <ScrollView style={styles.container}>
       <View style={styles.header}>
         <TouchableOpacity onPress={() => router.back()}>
-          <Text style={styles.backButton}>← Back</Text>
+          <Text style={styles.backButton}>â† Back</Text>
         </TouchableOpacity>
-        <Text style={styles.title}>⚽ Drill Library</Text>
+        <Text style={styles.title}>âš½ Drill Library</Text>
         <Text style={styles.subtitle}>10 Essential Training Drills</Text>
       </View>
 
@@ -160,8 +160,8 @@ export default function DrillLibrary() {
             </View>
 
             <View style={styles.drillMeta}>
-              <Text style={styles.metaText}>⏱️ {drill.duration}</Text>
-              <Text style={styles.metaText}>📂 {drill.category}</Text>
+              <Text style={styles.metaText}>â±ï¸ {drill.duration}</Text>
+              <Text style={styles.metaText}>ðŸ“‚ {drill.category}</Text>
             </View>
 
             <Text style={styles.drillDescription}>{drill.description}</Text>
@@ -171,7 +171,7 @@ export default function DrillLibrary() {
               <View style={styles.benefitsList}>
                 {drill.benefits.map((benefit, i) => (
                   <View key={i} style={styles.benefitTag}>
-                    <Text style={styles.benefitText}>✓ {benefit}</Text>
+                    <Text style={styles.benefitText}>âœ“ {benefit}</Text>
                   </View>
                 ))}
               </View>

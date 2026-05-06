@@ -1,4 +1,4 @@
-// Enhanced Analytics Engine
+﻿// Enhanced Analytics Engine
 // Firebase disabled - using local storage only
 export const logEvent = async () => {};
 export const trackProgress = async () => {};
